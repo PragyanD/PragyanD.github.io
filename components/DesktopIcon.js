@@ -1,22 +1,52 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 export default function DesktopIcon({ icon, label, onDoubleClick, style }) {
     const [clicking, setClicking] = useState(false);
+    const [pos, setPos] = useState({ x: 0, y: 0 });
+    const dragging = useRef(false);
+    const offset = useRef({ x: 0, y: 0 });
 
-    const handleDoubleClick = () => {
+    const handleDoubleClick = (e) => {
+        e.stopPropagation();
         setClicking(true);
         setTimeout(() => setClicking(false), 150);
         onDoubleClick?.();
     };
 
+    const handleMouseDown = (e) => {
+        e.stopPropagation();
+        dragging.current = true;
+        offset.current = { x: e.clientX - pos.x, y: e.clientY - pos.y };
+
+        const handleMouseMove = (mouseMoveEvent) => {
+            if (dragging.current) {
+                setPos({
+                    x: mouseMoveEvent.clientX - offset.current.x,
+                    y: mouseMoveEvent.clientY - offset.current.y,
+                });
+            }
+        };
+
+        const handleMouseUp = () => {
+            dragging.current = false;
+            window.removeEventListener("mousemove", handleMouseMove);
+            window.removeEventListener("mouseup", handleMouseUp);
+        };
+
+        window.addEventListener("mousemove", handleMouseMove);
+        window.addEventListener("mouseup", handleMouseUp);
+    };
+
     return (
         <button
+            onMouseDown={handleMouseDown}
             onDoubleClick={handleDoubleClick}
             className="flex flex-col items-center gap-1.5 p-2 rounded-lg transition-all group focus:outline-none"
             style={{
                 width: 80,
-                transform: clicking ? "scale(0.88)" : "scale(1)",
-                transition: "transform 0.12s ease",
+                transform: `translate(${pos.x}px, ${pos.y}px) ${clicking ? "scale(0.88)" : "scale(1)"}`,
+                transition: dragging.current ? "none" : "transform 0.12s ease",
+                cursor: dragging.current ? "grabbing" : "pointer",
                 ...style,
             }}
             title={`Double-click to open ${label}`}
@@ -25,9 +55,9 @@ export default function DesktopIcon({ icon, label, onDoubleClick, style }) {
             <div
                 className="flex items-center justify-center rounded-xl transition-all"
                 style={{
-                    width: 52,
-                    height: 52,
-                    fontSize: 30,
+                    width: 60,
+                    height: 60,
+                    fontSize: 36,
                     background: "rgba(255,255,255,0.08)",
                     backdropFilter: "blur(8px)",
                     border: "1px solid rgba(255,255,255,0.12)",

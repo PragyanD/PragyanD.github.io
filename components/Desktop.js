@@ -112,7 +112,7 @@ export default function Desktop() {
         <div
             className="fixed inset-0 overflow-hidden"
             style={{
-                backgroundImage: "url('/wallpaper.png')",
+                backgroundImage: "url('/new_wallpaper.jpg')",
                 backgroundSize: "cover",
                 backgroundPosition: "center",
             }}

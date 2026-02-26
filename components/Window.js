@@ -46,15 +46,39 @@ export default function Window({
         e.stopPropagation();
     }, [maximized, size, id, onFocus]);
 
+    const [snapped, setSnapped] = useState(false); // 'left' | 'right' | false
+
     useEffect(() => {
         const onMouseMove = (e) => {
             if (dragging.current) {
+                // If dragged away from snapped state, restore original size and calculate new relative pos
+                if (snapped) {
+                    setSnapped(false);
+                    // Prevent jumping: set the mouse offset to center of the restored window title bar
+                    offset.current = { x: size.w / 2, y: 20 };
+                }
+
                 const TASKBAR = 48;
-                setPos({
-                    x: Math.max(0, Math.min(window.innerWidth - size.w, e.clientX - offset.current.x)),
-                    y: Math.max(0, Math.min(window.innerHeight - TASKBAR - 40, e.clientY - offset.current.y)),
-                });
+                let newX = e.clientX - offset.current.x;
+                let newY = Math.max(0, Math.min(window.innerHeight - TASKBAR - 40, e.clientY - offset.current.y));
+
+                // Snap logic
+                if (e.clientX <= 5) {
+                    setSnapped('left');
+                    prevState.current = { pos: { x: newX, y: newY }, size: { ...size } };
+                    setPos({ x: 0, y: 0 });
+                } else if (e.clientX >= window.innerWidth - 5) {
+                    setSnapped('right');
+                    prevState.current = { pos: { x: newX, y: newY }, size: { ...size } };
+                    setPos({ x: window.innerWidth / 2, y: 0 });
+                } else {
+                    setPos({
+                        x: Math.max(0, Math.min(window.innerWidth - size.w, newX)),
+                        y: newY,
+                    });
+                }
             } else if (resizing.current) {
+                if (snapped) setSnapped(false); // Cancel snap if resized manually
                 const deltaX = e.clientX - offset.current.x;
                 const deltaY = e.clientY - offset.current.y;
                 setSize({
@@ -75,7 +99,7 @@ export default function Window({
             window.removeEventListener("mousemove", onMouseMove);
             window.removeEventListener("mouseup", onMouseUp);
         };
-    }, [size]);
+    }, [size, snapped]);
 
     const toggleMaximize = () => {
         if (!maximized) {
@@ -99,7 +123,11 @@ export default function Window({
 
     const style = maximized
         ? { left: 0, top: 0, width: "100%", height: "calc(100vh - 48px)", zIndex }
-        : { left: pos.x, top: pos.y, width: size.w, height: size.h, zIndex };
+        : snapped === 'left'
+            ? { left: 0, top: 0, width: "50%", height: "calc(100vh - 48px)", zIndex }
+            : snapped === 'right'
+                ? { left: "50%", top: 0, width: "50%", height: "calc(100vh - 48px)", zIndex }
+                : { left: pos.x, top: pos.y, width: size.w, height: size.h, zIndex };
 
     return (
         <div
@@ -108,20 +136,21 @@ export default function Window({
                 ...style,
                 opacity: (mounted && !isMinimizing) ? 1 : 0,
                 transform: isMinimizing
-                    ? "translateY(100px) scale(0.1)"
+                    ? "translateY(80vh) scale(0)"
                     : isRestoring || !mounted
                         ? "scale(0.95)"
                         : "scale(1)",
+                transformOrigin: "bottom center",
                 transition: dragging.current || resizing.current
                     ? "none"
                     : "all 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease",
-                borderRadius: maximized ? 0 : 12,
-                boxShadow: maximized || isMinimizing
+                borderRadius: (maximized || snapped) ? 0 : 12,
+                boxShadow: maximized || isMinimizing || snapped
                     ? "none"
-                    : "0 24px 80px rgba(0,0,0,0.4), 0 0 1px rgba(255,255,255,0.2)",
-                border: "1px solid rgba(255,255,255,0.12)",
-                backdropFilter: isMinimizing ? "none" : "blur(20px)",
-                background: "rgba(255, 255, 255, 0.05)",
+                    : "inset 0 0 0 1px rgba(255,255,255,0.2), 0 24px 80px rgba(0,0,0,0.4), 0 0 1px rgba(255,255,255,0.2)",
+                border: "1px solid rgba(255,255,255,0.15)",
+                backdropFilter: isMinimizing ? "none" : "blur(30px)",
+                background: "rgba(255, 255, 255, 0.1)",
                 pointerEvents: isMinimizing ? "none" : "auto",
             }}
             onMouseDown={() => onFocus?.(id)}
@@ -131,7 +160,7 @@ export default function Window({
                 className="flex items-center gap-2 px-3 flex-shrink-0 cursor-default"
                 style={{
                     height: 38,
-                    background: "linear-gradient(180deg, #1e1e2e 0%, #161622 100%)",
+                    background: "rgba(30, 30, 46, 0.5)",
                     borderBottom: "1px solid rgba(255,255,255,0.08)",
                 }}
                 onMouseDown={onMouseDownTitle}

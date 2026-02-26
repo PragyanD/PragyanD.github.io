@@ -130,6 +130,30 @@ function CpuBar({ label, value }) {
     );
 }
 
+function HardwareValue({ baseValue, color }) {
+    const [val, setVal] = useState(baseValue);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            const jitter = Math.floor(Math.random() * 11) - 5; // -5 to +5
+            setVal(Math.max(0, Math.min(100, baseValue + jitter)));
+        }, 1500 + Math.random() * 2000);
+
+        return () => clearInterval(interval);
+    }, [baseValue]);
+
+    const isHigh = val > 75;
+
+    return (
+        <div className="flex flex-col items-center gap-0.5" title={`Base: ${baseValue}%`}>
+            <span className="text-xs font-mono" style={{ color: isHigh ? "#ff453a" : "#333" }}>{val}%</span>
+            <div className="w-12 rounded-sm overflow-hidden" style={{ height: 4, background: "#e0e0e0" }}>
+                <div style={{ width: `${val}%`, height: "100%", background: isHigh ? "#ff453a" : color, transition: "all 0.3s ease" }} />
+            </div>
+        </div>
+    );
+}
+
 export default function TaskManagerApp() {
     const [tab, setTab] = useState("processes");
     const [selected, setSelected] = useState(null); // role index
@@ -174,7 +198,7 @@ export default function TaskManagerApp() {
                     <div
                         className="grid text-xs font-semibold px-3 py-2 flex-shrink-0"
                         style={{
-                            gridTemplateColumns: "1fr 90px 90px 90px 140px",
+                            gridTemplateColumns: "1fr 90px 90px 110px 140px",
                             background: "#efefef",
                             borderBottom: "1px solid #ddd",
                             color: "#444",
@@ -193,7 +217,7 @@ export default function TaskManagerApp() {
                                 <div
                                     className="grid items-center px-3 py-3 cursor-pointer transition-all"
                                     style={{
-                                        gridTemplateColumns: "1fr 90px 90px 90px 140px",
+                                        gridTemplateColumns: "1fr 90px 90px 110px 140px",
                                         background: selected === i ? "rgba(0,120,212,0.1)" : i % 2 === 0 ? "#fff" : "#fafafa",
                                         borderBottom: "1px solid #eee",
                                     }}
@@ -208,18 +232,8 @@ export default function TaskManagerApp() {
                                             <p className="text-[10px]" style={{ color: "#777" }}>{exp.title}</p>
                                         </div>
                                     </div>
-                                    <div className="flex flex-col items-center gap-0.5">
-                                        <span className="text-xs font-mono" style={{ color: exp.cpu > 75 ? "#ff453a" : "#333" }}>{exp.cpu}%</span>
-                                        <div className="w-12 rounded-sm overflow-hidden" style={{ height: 4, background: "#e0e0e0" }}>
-                                            <div style={{ width: `${exp.cpu}%`, height: "100%", background: exp.cpu > 75 ? "#ff453a" : exp.color }} />
-                                        </div>
-                                    </div>
-                                    <div className="flex flex-col items-center gap-0.5">
-                                        <span className="text-xs font-mono" style={{ color: "#333" }}>{exp.memory}%</span>
-                                        <div className="w-12 rounded-sm overflow-hidden" style={{ height: 4, background: "#e0e0e0" }}>
-                                            <div style={{ width: `${exp.memory}%`, height: "100%", background: exp.color }} />
-                                        </div>
-                                    </div>
+                                    <HardwareValue baseValue={exp.cpu} color={exp.color} />
+                                    <HardwareValue baseValue={exp.memory} color={exp.color} />
                                     <div className="flex justify-center">
                                         <span className="text-xs px-1.5 py-0.5 rounded-full font-medium"
                                             style={{ background: "rgba(52,199,89,0.12)", color: "#28a745", border: "1px solid rgba(52,199,89,0.3)" }}>
@@ -262,7 +276,7 @@ export default function TaskManagerApp() {
                             <div
                                 className="grid items-center px-3 py-3 cursor-pointer transition-all"
                                 style={{
-                                    gridTemplateColumns: "1fr 90px 90px 90px 140px",
+                                    gridTemplateColumns: "1fr 90px 90px 110px 140px",
                                     background: eduExpanded ? "rgba(0,120,212,0.1)" : "#fff",
                                     borderBottom: "1px solid #eee",
                                 }}
@@ -277,18 +291,8 @@ export default function TaskManagerApp() {
                                         <p className="text-[10px]" style={{ color: "#777" }}>{EDUCATION.title}</p>
                                     </div>
                                 </div>
-                                <div className="flex flex-col items-center gap-0.5">
-                                    <span className="text-xs font-mono" style={{ color: "#333" }}>{EDUCATION.cpu}%</span>
-                                    <div className="w-12 rounded-sm overflow-hidden" style={{ height: 4, background: "#e0e0e0" }}>
-                                        <div style={{ width: `${EDUCATION.cpu}%`, height: "100%", background: EDUCATION.color }} />
-                                    </div>
-                                </div>
-                                <div className="flex flex-col items-center gap-0.5">
-                                    <span className="text-xs font-mono" style={{ color: "#333" }}>{EDUCATION.memory}%</span>
-                                    <div className="w-12 rounded-sm overflow-hidden" style={{ height: 4, background: "#e0e0e0" }}>
-                                        <div style={{ width: `${EDUCATION.memory}%`, height: "100%", background: EDUCATION.color }} />
-                                    </div>
-                                </div>
+                                <HardwareValue baseValue={EDUCATION.cpu} color={EDUCATION.color} />
+                                <HardwareValue baseValue={EDUCATION.memory} color={EDUCATION.color} />
                                 <div className="flex justify-center">
                                     <span className="text-xs px-1.5 py-0.5 rounded-full font-medium"
                                         style={{ background: "rgba(52,199,89,0.12)", color: "#28a745", border: "1px solid rgba(52,199,89,0.3)" }}>

@@ -5,9 +5,9 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Pragyan Das — Portfolio</title>
+        <title>PragyanOS</title>
         <meta name="description" content="Pragyan Das — Software Engineer. Interactive desktop portfolio." />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/favicon.png" />
       </Head>
       <Desktop />
     </>
