@@ -1,3 +1,5 @@
+import { useState, useCallback } from "react";
+
 const PROJECTS = [
     {
         name: "Scene Recognition AI",
@@ -19,7 +21,7 @@ const PROJECTS = [
     },
     {
         name: "BISS Encryption (TSDuck)",
-        logo: "https://avatars.githubusercontent.com/u/10368383?s=200&v=4",
+        logo: "https://avatars.githubusercontent.com/u/29593658?s=200&v=4",
         stack: ["C", "Bouncy Castle", "DVB/ETSI", "TSDuck"],
         description: "Developed a proprietary patch for DTV Innovations which added support for BISS-1/E/CA encryption for real-time video scrambling.",
         highlight: "Multimedia Encryption",
@@ -36,15 +38,14 @@ const PROJECTS = [
         links: [],
     },
 ];
-
 export default function ProjectsApp() {
     return (
-        <div className="w-full h-full overflow-y-auto os-scroll p-6" style={{ background: "#f7f8fb" }}>
-            <div className="grid grid-cols-2 gap-4">
+        <div className="w-full h-full overflow-y-auto os-scroll p-8" style={{ background: "#f7f8fb" }}>
+            <div className="grid grid-cols-2 gap-6">
                 {PROJECTS.map((project) => (
                     <div
                         key={project.name}
-                        className="flex flex-col p-5 rounded-xl transition-all"
+                        className="flex flex-col p-6 rounded-xl transition-all"
                         style={{
                             background: "#fff",
                             border: "1px solid #e8e8e8",

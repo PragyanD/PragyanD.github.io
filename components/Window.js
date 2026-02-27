@@ -24,7 +24,8 @@ export default function Window({
     const [size, setSize] = useState({ w: initialWidth, h: initialHeight });
 
     const dragging = useRef(false);
-    const resizing = useRef(false);
+    const [isDragging, setIsDragging] = useState(false);
+    const resizing = useRef(false); // store direction string: 'n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw'
     const offset = useRef({ x: 0, y: 0 });
     const prevState = useRef(null);
 
@@ -32,19 +33,27 @@ export default function Window({
         if (maximized) return;
         if (e.target.closest(".win-control")) return;
         dragging.current = true;
+        setIsDragging(true);
         offset.current = { x: e.clientX - pos.x, y: e.clientY - pos.y };
         onFocus?.(id);
         e.preventDefault();
     }, [maximized, pos, id, onFocus]);
 
-    const onMouseDownResize = useCallback((e) => {
+    const onMouseDownResize = useCallback((e, dir) => {
         if (maximized) return;
-        resizing.current = true;
-        offset.current = { x: e.clientX, y: e.clientY, w: size.w, h: size.h };
+        resizing.current = dir;
+        offset.current = {
+            startX: e.clientX,
+            startY: e.clientY,
+            startW: size.w,
+            startH: size.h,
+            startXPos: pos.x,
+            startYPos: pos.y
+        };
         onFocus?.(id);
         e.preventDefault();
         e.stopPropagation();
-    }, [maximized, size, id, onFocus]);
+    }, [maximized, size, pos, id, onFocus]);
 
     const [snapped, setSnapped] = useState(false); // 'left' | 'right' | false
 
@@ -78,18 +87,43 @@ export default function Window({
                     });
                 }
             } else if (resizing.current) {
-                if (snapped) setSnapped(false); // Cancel snap if resized manually
-                const deltaX = e.clientX - offset.current.x;
-                const deltaY = e.clientY - offset.current.y;
-                setSize({
-                    w: Math.max(300, offset.current.w + deltaX),
-                    h: Math.max(200, offset.current.h + deltaY),
-                });
+                if (snapped) setSnapped(false);
+                const dir = resizing.current;
+                const deltaX = e.clientX - offset.current.startX;
+                const deltaY = e.clientY - offset.current.startY;
+
+                let newW = offset.current.startW;
+                let newH = offset.current.startH;
+                let newX = offset.current.startXPos;
+                let newY = offset.current.startYPos;
+
+                if (dir.includes('e')) {
+                    newW = Math.max(300, offset.current.startW + deltaX);
+                }
+                if (dir.includes('s')) {
+                    newH = Math.max(200, offset.current.startH + deltaY);
+                }
+                if (dir.includes('w')) {
+                    newW = Math.max(300, offset.current.startW - deltaX);
+                    if (newW > 300) {
+                        newX = offset.current.startXPos + deltaX;
+                    }
+                }
+                if (dir.includes('n')) {
+                    newH = Math.max(200, offset.current.startH - deltaY);
+                    if (newH > 200) {
+                        newY = offset.current.startYPos + deltaY;
+                    }
+                }
+
+                setSize({ w: newW, h: newH });
+                setPos({ x: newX, y: newY });
             }
         };
 
         const onMouseUp = () => {
             dragging.current = false;
+            setIsDragging(false);
             resizing.current = false;
         };
 
@@ -143,13 +177,15 @@ export default function Window({
                 transformOrigin: "bottom center",
                 transition: dragging.current || resizing.current
                     ? "none"
-                    : "all 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease",
+                    : "all 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease, box-shadow 0.2s ease",
                 borderRadius: (maximized || snapped) ? 0 : 12,
                 boxShadow: maximized || isMinimizing || snapped
                     ? "none"
-                    : "inset 0 0 0 1px rgba(255,255,255,0.2), 0 24px 80px rgba(0,0,0,0.4), 0 0 1px rgba(255,255,255,0.2)",
+                    : isDragging
+                        ? "inset 0 1px 0 rgba(255,255,255,0.3), inset 0 0 0 1px rgba(255,255,255,0.1), 0 35px 100px rgba(0,0,0,0.55)"
+                        : "inset 0 1px 0 rgba(255,255,255,0.3), inset 0 0 0 1px rgba(255,255,255,0.1), 0 24px 80px rgba(0,0,0,0.4)",
                 border: "1px solid rgba(255,255,255,0.15)",
-                backdropFilter: isMinimizing ? "none" : "blur(30px)",
+                backdropFilter: isMinimizing ? "none" : "blur(40px)",
                 background: "rgba(255, 255, 255, 0.1)",
                 pointerEvents: isMinimizing ? "none" : "auto",
             }}
@@ -195,7 +231,7 @@ export default function Window({
 
                 {/* Title */}
                 <div className="flex-1 flex items-center justify-center gap-1.5 pointer-events-none text-center">
-                    {icon && <span className="text-sm">{icon}</span>}
+                    {icon && <div className="w-4 h-4 flex items-center justify-center flex-shrink-0">{icon}</div>}
                     <span className="text-xs font-medium truncate max-w-[200px]" style={{ color: "rgba(255,255,255,0.75)" }}>
                         {title}
                     </span>
@@ -208,17 +244,25 @@ export default function Window({
             {/* Content */}
             <div className="flex-1 overflow-hidden relative" style={{ background: "#f3f3f3" }}>
                 {children}
-
-                {/* Resize handle */}
-                {!maximized && (
-                    <div
-                        onMouseDown={onMouseDownResize}
-                        className="absolute bottom-0 right-0 w-4 h-4 cursor-nwse-resize z-50 flex items-end justify-end p-0.5 group"
-                    >
-                        <div className="w-1.5 h-1.5 border-r-2 border-b-2 border-gray-400 opacity-30 group-hover:opacity-100 transition-opacity" />
-                    </div>
-                )}
             </div>
+
+            {/* Omni-directional Resize Handles */}
+            {!maximized && !isMinimizing && (
+                <>
+                    {/* Edges */}
+                    <div onMouseDown={(e) => onMouseDownResize(e, 'n')} className="absolute top-0 left-2 right-2 h-1 cursor-ns-resize z-50" />
+                    <div onMouseDown={(e) => onMouseDownResize(e, 's')} className="absolute bottom-0 left-2 right-2 h-2 cursor-ns-resize z-50" />
+                    <div onMouseDown={(e) => onMouseDownResize(e, 'e')} className="absolute top-2 bottom-2 right-0 w-2 cursor-ew-resize z-50" />
+                    <div onMouseDown={(e) => onMouseDownResize(e, 'w')} className="absolute top-2 bottom-2 left-0 w-2 cursor-ew-resize z-50" />
+                    {/* Corners */}
+                    <div onMouseDown={(e) => onMouseDownResize(e, 'nw')} className="absolute top-0 left-0 w-3 h-3 cursor-nwse-resize z-50" />
+                    <div onMouseDown={(e) => onMouseDownResize(e, 'ne')} className="absolute top-0 right-0 w-3 h-3 cursor-nesw-resize z-50" />
+                    <div onMouseDown={(e) => onMouseDownResize(e, 'sw')} className="absolute bottom-0 left-0 w-3 h-3 cursor-nesw-resize z-50" />
+                    <div onMouseDown={(e) => onMouseDownResize(e, 'se')} className="absolute bottom-0 right-0 w-4 h-4 cursor-nwse-resize z-50 flex items-end justify-end p-0.5 group">
+                        <div className="w-1.5 h-1.5 border-r-2 border-b-2 border-gray-400 opacity-50 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                    </div>
+                </>
+            )}
         </div>
     );
 }

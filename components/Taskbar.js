@@ -24,10 +24,10 @@ function Clock() {
 
 export default function Taskbar({ openWindows, minimizedWindows, onStartClick, startOpen, onRestoreWindow, onOpenApp }) {
     const APP_META = {
-        taskmanager: { icon: "📊", label: "Task Manager" },
-        about: { icon: "👤", label: "About Me" },
-        projects: { icon: "💼", label: "Projects" },
-        resume: { icon: "📄", label: "Resume" },
+        taskmanager: { icon: <img src="/icon_task_manager.png" alt="Task Manager" className="w-full h-full object-contain" />, label: "Task Manager" },
+        about: { icon: <img src="/icon_about.png" alt="About Me" className="w-full h-full object-contain" />, label: "About Me" },
+        projects: { icon: <img src="/icon_projects.png" alt="Projects" className="w-full h-full object-contain" />, label: "Projects" },
+        resume: { icon: <img src="/icon_resume.png" alt="Resume" className="w-full h-full object-contain" />, label: "Resume" },
     };
 
     return (
@@ -36,9 +36,9 @@ export default function Taskbar({ openWindows, minimizedWindows, onStartClick, s
             style={{
                 height: 48,
                 background: "rgba(10, 10, 25, 0.4)",
-                backdropFilter: "blur(30px)",
+                backdropFilter: "blur(40px)",
                 borderTop: "1px solid rgba(255,255,255,0.15)",
-                boxShadow: "inset 0 1px 0 rgba(255,255,255,0.1), 0 -4px 30px rgba(0,0,0,0.3)",
+                boxShadow: "inset 0 1px 0 rgba(255,255,255,0.3), 0 -4px 30px rgba(0,0,0,0.3)",
             }}
         >
             {/* Start Button */}
@@ -88,7 +88,7 @@ export default function Taskbar({ openWindows, minimizedWindows, onStartClick, s
                             onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(0,120,212,0.3)"; }}
                             onMouseLeave={(e) => { e.currentTarget.style.background = isMin ? "rgba(255,255,255,0.05)" : "rgba(0,120,212,0.2)"; }}
                         >
-                            <span>{meta.icon}</span>
+                            <div className="w-4 h-4 flex items-center justify-center flex-shrink-0">{meta.icon}</div>
                             <span>{meta.label}</span>
                         </button>
                     );
@@ -97,10 +97,13 @@ export default function Taskbar({ openWindows, minimizedWindows, onStartClick, s
 
             {/* System Tray */}
             <div className="flex items-center gap-1 pr-1">
-                <div className="flex items-center gap-2 px-2 py-1 rounded text-xs cursor-default"
-                    style={{ color: "rgba(255,255,255,0.5)" }}>
-                    <span title="Wi-Fi">📶</span>
-                    <span title="Volume">🔊</span>
+                <div className="flex items-center gap-2 px-2 py-1 rounded text-xs cursor-default">
+                    <img
+                        src="/icon_volume.svg"
+                        alt="Volume"
+                        title="Volume"
+                        className="w-[18px] h-[18px] opacity-60 hover:opacity-100 transition-opacity"
+                    />
                 </div>
                 <div style={{ width: 1, height: 20, background: "rgba(255,255,255,0.08)" }} />
                 <Clock />

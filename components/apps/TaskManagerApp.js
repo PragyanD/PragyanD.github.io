@@ -165,8 +165,8 @@ export default function TaskManagerApp() {
 
     return (
         <div
-            className="flex flex-col w-full h-full overflow-hidden"
-            style={{ fontFamily: "'Segoe UI', Inter, sans-serif", background: "#f3f3f3" }}
+            className="flex flex-col w-full h-full overflow-hidden font-mono"
+            style={{ background: "#f3f3f3" }}
         >
             {/* Tab bar */}
             <div

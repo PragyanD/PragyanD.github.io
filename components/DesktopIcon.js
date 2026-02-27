@@ -9,8 +9,10 @@ export default function DesktopIcon({ icon, label, onDoubleClick, style }) {
     const handleDoubleClick = (e) => {
         e.stopPropagation();
         setClicking(true);
-        setTimeout(() => setClicking(false), 150);
-        onDoubleClick?.();
+        setTimeout(() => {
+            setClicking(false);
+            onDoubleClick?.();
+        }, 250);
     };
 
     const handleMouseDown = (e) => {
@@ -44,8 +46,9 @@ export default function DesktopIcon({ icon, label, onDoubleClick, style }) {
             className="flex flex-col items-center gap-1.5 p-2 rounded-lg transition-all group focus:outline-none"
             style={{
                 width: 80,
-                transform: `translate(${pos.x}px, ${pos.y}px) ${clicking ? "scale(0.88)" : "scale(1)"}`,
-                transition: dragging.current ? "none" : "transform 0.12s ease",
+                transform: `translate(${pos.x}px, ${pos.y}px) ${clicking ? "scale(1.2)" : "scale(1)"}`,
+                transition: dragging.current ? "none" : clicking ? "transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.2s ease" : "transform 0.2s ease",
+                filter: clicking ? "brightness(1.2)" : "none",
                 cursor: dragging.current ? "grabbing" : "pointer",
                 ...style,
             }}

@@ -104,10 +104,11 @@ export default function StartMenu({ open, onClose, onOpenApp }) {
                     </p>
                     <div className="grid grid-cols-3 gap-2">
                         {[
-                            { app: "taskmanager", icon: "📊", label: "Task\nManager" },
-                            { app: "about", icon: "👤", label: "About\nMe" },
-                            { app: "projects", icon: "💼", label: "Projects" },
-                            { app: "resume", icon: "📄", label: "Resume" },
+                            { app: "taskmanager", icon: <img src="/icon_task_manager.png" alt="Task Manager" className="w-full h-full object-contain" />, label: "Task\nManager" },
+                            { app: "about", icon: <img src="/icon_about.png" alt="About Me" className="w-full h-full object-contain" />, label: "About\nMe" },
+                            { app: "projects", icon: <img src="/icon_projects.png" alt="Projects" className="w-full h-full object-contain" />, label: "Projects" },
+                            { app: "resume", icon: <img src="/icon_resume.png" alt="Resume" className="w-full h-full object-contain" />, label: "Resume" },
+                            { app: "terminal", icon: <div className="w-full h-full flex items-center justify-center bg-black rounded text-[10px] font-bold text-green-500 border border-green-900/50">_&gt;</div>, label: "Terminal" },
                         ].map(({ app, icon, label }) => (
                             <button
                                 key={app}
@@ -117,7 +118,7 @@ export default function StartMenu({ open, onClose, onOpenApp }) {
                                 onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.08)"; e.currentTarget.style.color = "#fff"; }}
                                 onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "rgba(255,255,255,0.75)"; }}
                             >
-                                <span className="text-3xl">{icon}</span>
+                                <div className="w-8 h-8 flex items-center justify-center mb-1">{icon}</div>
                                 <span className="text-xs font-medium leading-tight whitespace-pre-line">{label}</span>
                             </button>
                         ))}
