@@ -10,15 +10,29 @@ const SKILLS = [
 
 const COLORS = ["#0078d4", "#34c759", "#febc2e", "#ff453a"];
 
-export default function AboutApp() {
+export default function AboutApp({ darkTheme = false }) {
+    const t = darkTheme ? {
+        containerBg: "#0a0a1e",
+        heroBorder: "1px solid rgba(255,255,255,0.08)",
+        bioText: "rgba(255,255,255,0.75)",
+        cardBg: "rgba(20,20,40,0.6)",
+        cardShadow: "0 1px 4px rgba(0,0,0,0.3)",
+    } : {
+        containerBg: "#f7f8fb",
+        heroBorder: "1px solid #e0e0e0",
+        bioText: "#444",
+        cardBg: "#fff",
+        cardShadow: "0 1px 4px rgba(0,0,0,0.06)",
+    };
+
     return (
-        <div className="w-full h-full overflow-y-auto os-scroll" style={{ background: "#f7f8fb" }}>
+        <div className="w-full h-full overflow-y-auto os-scroll" style={{ background: t.containerBg }}>
             {/* Hero */}
             <div
                 className="flex items-center gap-6 p-8"
                 style={{
                     background: "linear-gradient(135deg, #0a0a1e 0%, #1a1a35 50%, #0d1b3e 100%)",
-                    borderBottom: "1px solid #e0e0e0",
+                    borderBottom: t.heroBorder,
                 }}
             >
                 <div
@@ -60,7 +74,7 @@ export default function AboutApp() {
 
             {/* Bio */}
             <div className="px-8 py-6">
-                <p className="text-sm leading-relaxed" style={{ color: "#444" }}>
+                <p className="text-sm leading-relaxed" style={{ color: t.bioText }}>
                     I&apos;m a software engineer who loves building systems that matter — from low-latency video pipelines to
                     distributed ML platforms. I graduated from UW-Madison and have shipped production code
                     across broadcast infrastructure, machine learning, and graph databases.
@@ -70,7 +84,13 @@ export default function AboutApp() {
             {/* Skills grid */}
             <div className="px-8 pb-8 grid grid-cols-2 gap-4">
                 {SKILLS.map(({ category, items }, i) => (
-                    <div key={category} className="p-4 rounded-lg" style={{ background: "#fff", border: "1px solid #e8e8e8", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+                    <div
+                        key={category}
+                        className="p-4 rounded-lg"
+                        style={{ background: t.cardBg, border: `1px solid ${COLORS[i]}33`, boxShadow: t.cardShadow, transition: "transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease" }}
+                        onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = `0 8px 24px ${COLORS[i]}22`; e.currentTarget.style.borderColor = `${COLORS[i]}55`; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.transform = ""; e.currentTarget.style.boxShadow = t.cardShadow; e.currentTarget.style.borderColor = `${COLORS[i]}33`; }}
+                    >
                         <p className="text-xs font-semibold mb-2.5" style={{ color: COLORS[i], textTransform: "uppercase", letterSpacing: "0.07em" }}>
                             {category}
                         </p>

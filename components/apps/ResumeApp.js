@@ -2,12 +2,12 @@ export default function ResumeApp() {
     const handleDownload = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch("resume.pdf");
+            const response = await fetch("/Pragyans_Resume.pdf");
             const blob = await response.blob();
             const url = window.URL.createObjectURL(blob);
             const link = document.createElement("a");
             link.href = url;
-            link.setAttribute("download", "resume.pdf");
+            link.setAttribute("download", "/Pragyans_Resume.pdf");
             document.body.appendChild(link);
             link.click();
             link.parentNode.removeChild(link);
@@ -15,7 +15,7 @@ export default function ResumeApp() {
         } catch (error) {
             console.error("Download failed:", error);
             // Fallback to direct link
-            window.open("resume.pdf", "_blank");
+            window.open("/Pragyans_Resume.pdf", "_blank");
         }
     };
 
@@ -31,7 +31,7 @@ export default function ResumeApp() {
                 }}
             >
                 <span>📄</span>
-                <span>resume.pdf</span>
+                <span>Pragyan&apos;s Resume</span>
                 <div className="flex-1" />
                 <button
                     onClick={handleDownload}
@@ -46,7 +46,7 @@ export default function ResumeApp() {
             {/* PDF Viewer */}
             <div className="flex-1 overflow-hidden">
                 <iframe
-                    src="resume.pdf"
+                    src="/Pragyans_Resume.pdf"
                     className="w-full h-full"
                     style={{ border: "none", display: "block" }}
                     title="Pragyan Das Resume"

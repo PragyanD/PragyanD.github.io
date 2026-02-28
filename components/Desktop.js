@@ -1,104 +1,79 @@
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useState, useCallback, useEffect } from "react";
 import Window from "./Window";
 import Taskbar from "./Taskbar";
 import StartMenu from "./StartMenu";
 import DesktopIcon from "./DesktopIcon";
-import TaskManagerApp from "./apps/TaskManagerApp";
-import ResumeApp from "./apps/ResumeApp";
-import AboutApp from "./apps/AboutApp";
-import ProjectsApp from "./apps/ProjectsApp";
-import TerminalApp from "./apps/TerminalApp";
 import Spotlight from "./Spotlight";
+import ErrorBoundary from "./ErrorBoundary";
+import { APPS_CONFIG, renderWindowIcon, renderDesktopIcon } from "../lib/apps.config";
+import useWindowManager from "../hooks/useWindowManager";
+import useAudio from "../hooks/useAudio";
+import Toast from "./Toast";
+import SystemWidget from "./SystemWidget";
 
-const APPS = {
-    taskmanager: {
-        title: "Task Manager",
-        icon: <img src="/icon_task_manager.png" alt="Task Manager" className="w-full h-full object-contain" />,
-        component: TaskManagerApp,
-        width: 820,
-        height: 560,
-        initialX: 140,
-        initialY: 60,
-    },
-    resume: {
-        title: "resume.pdf — Viewer",
-        icon: <img src="/icon_resume.png" alt="Resume" className="w-full h-full object-contain" />,
-        component: ResumeApp,
-        width: 720,
-        height: 580,
-        initialX: 220,
-        initialY: 80,
-    },
-    about: {
-        title: "About Me",
-        icon: <img src="/icon_about.png" alt="About Me" className="w-full h-full object-contain" />,
-        component: AboutApp,
-        width: 680,
-        height: 520,
-        initialX: 180,
-        initialY: 70,
-    },
-    projects: {
-        title: "Projects",
-        icon: <img src="/icon_projects.png" alt="Projects" className="w-full h-full object-contain" />,
-        component: ProjectsApp,
-        width: 820,
-        height: 560,
-        initialX: 160,
-        initialY: 65,
-    },
-    terminal: {
-        title: "Terminal",
-        icon: <div className="w-full h-full flex items-center justify-center bg-black rounded text-[10px] font-bold text-green-500 border border-green-900/50">_&gt;</div>,
-        component: TerminalApp,
-        width: 640,
-        height: 480,
-        initialX: 300,
-        initialY: 150,
-    },
-};
+const APPS = Object.fromEntries(
+    APPS_CONFIG.map(app => [app.id, {
+        title: app.title,
+        icon: renderWindowIcon(app),
+        component: app.component,
+        width: app.width,
+        height: app.height,
+        initialX: app.initialX,
+        initialY: app.initialY,
+    }])
+);
 
-const DESKTOP_ICONS = [
-    { id: "about", icon: <img src="/icon_about.png" alt="About Me" className="w-full h-full object-contain drop-shadow-md" />, label: "About Me" },
-    { id: "taskmanager", icon: <img src="/icon_task_manager.png" alt="Task Manager" className="w-full h-full object-contain drop-shadow-md" />, label: "Task Manager" },
-    { id: "projects", icon: <img src="/icon_projects.png" alt="Projects" className="w-full h-full object-contain drop-shadow-md" />, label: "Projects" },
-    { id: "resume", icon: <img src="/icon_resume.png" alt="Resume" className="w-full h-full object-contain drop-shadow-md" />, label: "resume.pdf" },
-    { id: "terminal", icon: <div className="w-full h-full flex items-center justify-center bg-black rounded-xl text-2xl font-bold text-green-500 border border-green-900/50 shadow-inner group-hover:border-green-400/50 transition-colors">_&gt;</div>, label: "Terminal" },
+const DESKTOP_ICONS = APPS_CONFIG.map(app => ({
+    id: app.id,
+    icon: renderDesktopIcon(app),
+    label: app.label,
+}));
+
+const WALLPAPERS = [
+    { id: 'default', label: 'Default', value: "url('/wallpaper.jpg')" },
+    { id: 'midnight', label: 'Midnight', value: "linear-gradient(135deg, #0a0a1e 0%, #1a1a4e 50%, #0a0a2e 100%)" },
+    { id: 'aurora', label: 'Aurora', value: "linear-gradient(135deg, #0d1b2a 0%, #1b4332 40%, #081c15 100%)" },
+    { id: 'dusk', label: 'Dusk', value: "linear-gradient(135deg, #1a0533 0%, #4a1942 50%, #1a0a2e 100%)" },
+    { id: 'slate', label: 'Slate', value: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)" },
 ];
 
 export default function Desktop() {
-    const [openWindows, setOpenWindows] = useState([]);
-    const [minimizedWindows, setMinimizedWindows] = useState([]);
-    const [focusOrder, setFocusOrder] = useState([]);
     const [startOpen, setStartOpen] = useState(false);
-    const [minimizing, setMinimizing] = useState(null);
-    const [restoring, setRestoring] = useState(null);
     const [contextMenu, setContextMenu] = useState({ visible: false, x: 0, y: 0 });
     const [spotlightOpen, setSpotlightOpen] = useState(false);
     const [showSpotlightTip, setShowSpotlightTip] = useState(false);
-    const [volume, setVolume] = useState(0.5);
-    const [soundOpen, setSoundOpen] = useState(false);
-    const [isPlaying, setIsPlaying] = useState(false);
-    const audioRef = useRef(null);
+    const [wallpaper, setWallpaper] = useState(() => {
+        if (typeof window !== 'undefined') {
+            return localStorage.getItem('pdos_wallpaper') || 'default';
+        }
+        return 'default';
+    });
+    const [wallpaperPickerOpen, setWallpaperPickerOpen] = useState(false);
+    const [displaySettingsOpen, setDisplaySettingsOpen] = useState(false);
+    const [darkTheme, setDarkTheme] = useState(() => {
+        if (typeof window !== 'undefined') {
+            return localStorage.getItem('pdos_dark_theme') === 'true';
+        }
+        return false;
+    });
+    const [toasts, setToasts] = useState([]);
 
-    useEffect(() => {
-        audioRef.current = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3');
-        audioRef.current.loop = true;
-        audioRef.current.volume = volume;
+    const addToast = useCallback((message, type = 'info') => {
+        const id = Date.now();
+        setToasts(prev => [...prev, { id, message, type }]);
     }, []);
 
-    useEffect(() => {
-        if (audioRef.current) audioRef.current.volume = volume;
-    }, [volume]);
+    const dismissToast = useCallback((id) => {
+        setToasts(prev => prev.filter(t => t.id !== id));
+    }, []);
 
-    useEffect(() => {
-        if (!audioRef.current) return;
-        if (isPlaying) {
-            audioRef.current.play().catch(() => setIsPlaying(false));
-        } else {
-            audioRef.current.pause();
-        }
-    }, [isPlaying]);
+    const { volume, setVolume, isPlaying, setIsPlaying, soundOpen, setSoundOpen } = useAudio();
+
+    const {
+        minimizedWindows, focusOrder, minimizing, restoring, closing,
+        activeWindows, allRunning,
+        openApp, closeApp, minimizeApp, focusApp,
+    } = useWindowManager(useCallback(() => setStartOpen(false), []));
 
     useEffect(() => {
         const hasSeenTip = localStorage.getItem('spotlight_tip_seen');
@@ -128,7 +103,6 @@ export default function Desktop() {
     }, []);
 
     const handleContextMenu = useCallback((e) => {
-        // Only trigger desktop context menu if clicking directly on the desktop or icons
         if (e.target.closest(".window-open") || e.target.closest("#start-button") || e.target.closest(".taskbar")) return;
         e.preventDefault();
         setContextMenu({ visible: true, x: e.clientX, y: e.clientY });
@@ -139,62 +113,19 @@ export default function Desktop() {
         if (contextMenu.visible) setContextMenu({ visible: false, x: 0, y: 0 });
     }, [contextMenu.visible]);
 
-    const openApp = useCallback((appId) => {
-        setStartOpen(false);
-        if (minimizedWindows.includes(appId)) {
-            setRestoring(appId);
-            setMinimizedWindows((prev) => prev.filter((id) => id !== appId));
-            setFocusOrder((prev) => [...prev.filter((id) => id !== appId), appId]);
-            setTimeout(() => setRestoring(null), 450);
-            return;
-        }
-        if (!openWindows.includes(appId)) {
-            setOpenWindows((prev) => [...prev, appId]);
-            setFocusOrder((prev) => [...prev.filter((id) => id !== appId), appId]);
-        } else {
-            setFocusOrder((prev) => [...prev.filter((id) => id !== appId), appId]);
-        }
-    }, [openWindows, minimizedWindows]);
-
-    const closeApp = useCallback((appId) => {
-        setOpenWindows((prev) => prev.filter((id) => id !== appId));
-        setMinimizedWindows((prev) => prev.filter((id) => id !== appId));
-        setFocusOrder((prev) => prev.filter((id) => id !== appId));
-    }, []);
-
-    const minimizeApp = useCallback((appId) => {
-        setMinimizing(appId);
-        setTimeout(() => {
-            setMinimizedWindows((prev) => prev.includes(appId) ? prev : [...prev, appId]);
-            setFocusOrder((prev) => prev.filter((id) => id !== appId));
-            setMinimizing(null);
-        }, 450);
-    }, []);
-
-    const focusApp = useCallback((appId) => {
-        setFocusOrder((prev) => [...prev.filter((id) => id !== appId), appId]);
-        // Un-minimize if minimized (with animation)
-        if (minimizedWindows.includes(appId)) {
-            openApp(appId);
-        }
-    }, [minimizedWindows, openApp]);
-
-    // Windows that should be rendered (open but not minimized, OR currently minimizing)
-    const activeWindows = [...new Set([...openWindows.filter(id => !minimizedWindows.includes(id)), (minimizing || [])].flat())].filter(Boolean);
-
-    // All "running" (open + minimized) for taskbar
-    const allRunning = [...new Set([...openWindows, ...minimizedWindows])];
+    const activeWallpaper = WALLPAPERS.find(w => w.id === wallpaper) || WALLPAPERS[0];
+    const isImageWallpaper = activeWallpaper.value.startsWith('url(');
 
     return (
         <div
             className="fixed inset-0 overflow-hidden"
             style={{
-                backgroundImage: "url('/new_wallpaper.jpg')",
-                backgroundSize: "cover",
-                backgroundPosition: "center",
+                background: isImageWallpaper
+                    ? `${activeWallpaper.value} center / cover no-repeat`
+                    : activeWallpaper.value,
             }}
             onContextMenu={handleContextMenu}
-            onClick={closeContextMenu}
+            onClick={() => { closeContextMenu(); setWallpaperPickerOpen(false); }}
         >
             {/* Context Menu */}
             {contextMenu.visible && (
@@ -214,18 +145,24 @@ export default function Desktop() {
                     <button onClick={() => window.location.reload()} className="text-left px-3 py-1.5 text-xs text-white hover:bg-white/10 rounded-lg transition-colors">
                         Refresh Desktop
                     </button>
-                    <div className="h-px bg-white/10 my-1 mx-2" />
+                    <div className="h-px my-1.5 mx-2" style={{ background: "linear-gradient(to right, transparent, rgba(255,255,255,0.18), transparent)" }} />
                     <button onClick={() => openApp("about")} className="text-left px-3 py-1.5 text-xs text-white hover:bg-white/10 rounded-lg transition-colors">
-                        About PragyanOS
+                        About PDOS
                     </button>
                     <button onClick={() => window.open('https://github.com/PragyanD', '_blank')} className="text-left px-3 py-1.5 text-xs text-white hover:bg-white/10 rounded-lg transition-colors">
                         View GitHub
                     </button>
-                    <div className="h-px bg-white/10 my-1 mx-2" />
-                    <button disabled className="text-left px-3 py-1.5 text-xs text-white/40 cursor-not-allowed">
+                    <div className="h-px my-1.5 mx-2" style={{ background: "linear-gradient(to right, transparent, rgba(255,255,255,0.18), transparent)" }} />
+                    <button
+                        onClick={(e) => { e.stopPropagation(); setWallpaperPickerOpen(true); setContextMenu({ visible: false, x: 0, y: 0 }); }}
+                        className="text-left px-3 py-1.5 text-xs text-white hover:bg-white/10 rounded-lg transition-colors"
+                    >
                         Change Wallpaper
                     </button>
-                    <button disabled className="text-left px-3 py-1.5 text-xs text-white/40 cursor-not-allowed">
+                    <button
+                        onClick={(e) => { e.stopPropagation(); setDisplaySettingsOpen(true); setContextMenu({ visible: false, x: 0, y: 0 }); }}
+                        className="text-left px-3 py-1.5 text-xs text-white hover:bg-white/10 rounded-lg transition-colors"
+                    >
                         Display Settings
                     </button>
                 </div>
@@ -274,8 +211,12 @@ export default function Desktop() {
                         zIndex={zIndex}
                         isMinimizing={minimizing === appId}
                         isRestoring={restoring === appId}
+                        isClosing={closing.has(appId)}
+                        focused={focusOrder.at(-1) === appId}
                     >
-                        <AppComponent />
+                        <ErrorBoundary key={appId}>
+                            <AppComponent darkTheme={darkTheme} />
+                        </ErrorBoundary>
                     </Window>
                 );
             })}
@@ -286,6 +227,9 @@ export default function Desktop() {
                 onClose={() => setStartOpen(false)}
                 onOpenApp={openApp}
             />
+
+            {/* System Status Widget */}
+            <SystemWidget />
 
             {/* Taskbar */}
             <Taskbar
@@ -325,9 +269,10 @@ export default function Desktop() {
                             className="flex-1 accent-blue-500 h-1 bg-white/10 rounded-lg appearance-none cursor-pointer"
                         />
                         <span className="text-sm opacity-40">🔊</span>
+                        <span className="text-[10px] text-white/50 w-7 text-right tabular-nums">{Math.round(volume * 100)}%</span>
                     </div>
                     <div className="mt-3 text-[10px] text-blue-400 font-mono text-center">
-                        Lo-Fi Study Beats — 128kbps
+                        SomaFM Fluid · Chillhop — 128kbps
                     </div>
                 </div>
             )}
@@ -342,12 +287,120 @@ export default function Desktop() {
             {/* Spotlight Tip */}
             {showSpotlightTip && (
                 <div
-                    className="fixed bottom-20 left-1/2 -translate-x-1/2 px-6 py-3 rounded-2xl bg-white/10 backdrop-blur-3xl border border-white/20 shadow-2xl z-[300] animate-bounce-slow"
+                    className="fixed bottom-20 left-1/2 -translate-x-1/2 flex items-center gap-3 px-5 py-3 rounded-2xl bg-white/10 backdrop-blur-3xl border border-white/20 shadow-2xl z-[300]"
                     style={{ animation: 'bounce 3s infinite' }}
                 >
                     <p className="text-white text-sm font-medium">Press <kbd className="bg-white/20 px-1.5 py-0.5 rounded text-xs mx-1">⌘ + K</kbd> to search everything.</p>
+                    <button onClick={() => setShowSpotlightTip(false)} className="text-white/50 hover:text-white text-sm leading-none ml-1 transition-colors" aria-label="Dismiss tip">✕</button>
                 </div>
             )}
+
+            {/* Wallpaper Picker */}
+            {wallpaperPickerOpen && (
+                <div
+                    className="fixed inset-0 z-[400] flex items-center justify-center"
+                    onClick={() => setWallpaperPickerOpen(false)}
+                >
+                    <div
+                        className="rounded-2xl p-5 shadow-2xl border border-white/10"
+                        style={{ background: "rgba(18,18,30,0.95)", backdropFilter: "blur(40px)", width: 320 }}
+                        onClick={e => e.stopPropagation()}
+                    >
+                        <p className="text-xs font-semibold text-white/40 uppercase tracking-widest mb-4">Choose Wallpaper</p>
+                        <div className="grid grid-cols-5 gap-2">
+                            {WALLPAPERS.map(w => (
+                                <button
+                                    key={w.id}
+                                    onClick={() => {
+                                        setWallpaper(w.id);
+                                        localStorage.setItem('pdos_wallpaper', w.id);
+                                        setWallpaperPickerOpen(false);
+                                        addToast(`Wallpaper changed to ${w.label}`, 'success');
+                                    }}
+                                    className="flex flex-col items-center gap-1.5 group"
+                                >
+                                    <div
+                                        className="rounded-lg w-full aspect-video transition-all"
+                                        style={{
+                                            background: w.value.startsWith('url(')
+                                                ? `${w.value} center / cover no-repeat`
+                                                : w.value,
+                                            outline: wallpaper === w.id ? '2px solid #0078d4' : '2px solid transparent',
+                                            outlineOffset: 2,
+                                        }}
+                                    />
+                                    <span className="text-[9px] text-white/50 group-hover:text-white/80 transition-colors">{w.label}</span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Display Settings Modal */}
+            {displaySettingsOpen && (
+                <div
+                    className="fixed inset-0 z-[400] flex items-center justify-center"
+                    onClick={() => setDisplaySettingsOpen(false)}
+                >
+                    <div
+                        className="rounded-2xl p-6 shadow-2xl border border-white/10"
+                        style={{ background: "rgba(18,18,30,0.95)", backdropFilter: "blur(40px)", width: 300 }}
+                        onClick={e => e.stopPropagation()}
+                    >
+                        <p className="text-xs font-semibold uppercase tracking-widest mb-5" style={{ color: "rgba(255,255,255,0.4)" }}>Display Settings</p>
+
+                        {/* Dark Theme Toggle */}
+                        <div className="flex items-center justify-between mb-2">
+                            <div>
+                                <p className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.85)" }}>Dark App Theme</p>
+                                <p className="text-[11px] mt-0.5" style={{ color: "rgba(255,255,255,0.4)" }}>Dark backgrounds for About, Projects &amp; Task Manager</p>
+                            </div>
+                            <button
+                                onClick={() => {
+                                    const next = !darkTheme;
+                                    setDarkTheme(next);
+                                    localStorage.setItem('pdos_dark_theme', String(next));
+                                    addToast(`Dark theme ${next ? 'enabled' : 'disabled'}`, 'success');
+                                }}
+                                className="relative flex-shrink-0 rounded-full transition-all duration-200"
+                                style={{
+                                    width: 44,
+                                    height: 24,
+                                    background: darkTheme ? "#0078d4" : "rgba(255,255,255,0.15)",
+                                    border: darkTheme ? "1px solid #0078d4" : "1px solid rgba(255,255,255,0.2)",
+                                }}
+                                aria-label="Toggle dark theme"
+                            >
+                                <span
+                                    className="absolute top-0.5 rounded-full bg-white transition-all duration-200"
+                                    style={{
+                                        width: 19,
+                                        height: 19,
+                                        left: darkTheme ? 22 : 2,
+                                        boxShadow: "0 1px 4px rgba(0,0,0,0.3)",
+                                    }}
+                                />
+                            </button>
+                        </div>
+
+                        <div className="h-px my-4" style={{ background: "rgba(255,255,255,0.08)" }} />
+
+                        <button
+                            onClick={() => setDisplaySettingsOpen(false)}
+                            className="w-full py-1.5 rounded-lg text-xs transition-colors hover:bg-white/5"
+                            style={{ color: "rgba(255,255,255,0.5)" }}
+                            onMouseEnter={(e) => { e.currentTarget.style.color = "rgba(255,255,255,0.85)"; }}
+                            onMouseLeave={(e) => { e.currentTarget.style.color = "rgba(255,255,255,0.5)"; }}
+                        >
+                            Done
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* Toast Notifications */}
+            <Toast toasts={toasts} onDismiss={dismissToast} />
         </div>
     );
 }

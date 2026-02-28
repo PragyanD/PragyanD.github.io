@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import profilePic from "../public/profilePic.jpg";
+import { APPS_CONFIG, renderWindowIcon } from "../lib/apps.config";
 
 const LINKS = [
     { label: "GitHub", href: "https://github.com/PragyanD", icon: "⌥" },
     { label: "LinkedIn", href: "https://www.linkedin.com/in/daspragyan", icon: "in" },
-    { label: "Resume", href: "resume.pdf", icon: "📄", target: "_blank" },
+    { label: "Resume", href: "/Pragyans_Resume.pdf", iconImg: "/icon_resume.png", target: "_blank" },
     { label: "Email", href: "mailto:pragyan0506@gmail.com", icon: "✉" },
 ];
 
@@ -27,7 +28,7 @@ export default function StartMenu({ open, onClose, onOpenApp }) {
                     height: 560,
                     borderRadius: "12px 12px 0 12px",
                     background: "rgba(18, 18, 32, 0.95)",
-                    backdropFilter: "blur(30px)",
+                    backdropFilter: "blur(32px)",
                     border: "1px solid rgba(255,255,255,0.1)",
                     boxShadow: "0 -8px 60px rgba(0,0,0,0.7)",
                 }}
@@ -36,7 +37,7 @@ export default function StartMenu({ open, onClose, onOpenApp }) {
                 <div
                     className="flex flex-col"
                     style={{
-                        width: 160,
+                        width: 140,
                         background: "rgba(0,0,0,0.3)",
                         borderRight: "1px solid rgba(255,255,255,0.06)",
                     }}
@@ -46,13 +47,13 @@ export default function StartMenu({ open, onClose, onOpenApp }) {
                         <div
                             className="rounded-full overflow-hidden flex-shrink-0"
                             style={{
-                                width: 80,
-                                height: 80,
+                                width: 70,
+                                height: 70,
                                 border: "3px solid rgba(0,120,212,0.8)",
                                 boxShadow: "0 0 20px rgba(0,120,212,0.4)",
                             }}
                         >
-                            <Image src={profilePic} alt="Pragyan Das" width={80} height={80} style={{ objectFit: "cover" }} />
+                            <Image src={profilePic} alt="Pragyan Das" width={70} height={70} style={{ objectFit: "cover" }} />
                         </div>
                         <div className="text-center">
                             <p className="text-white font-semibold text-sm leading-tight">Pragyan Das</p>
@@ -72,12 +73,14 @@ export default function StartMenu({ open, onClose, onOpenApp }) {
                                 target={link.target || "_self"}
                                 rel="noopener noreferrer"
                                 onClick={onClose}
-                                className="flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-medium transition-all"
+                                className="hover-pill flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-medium"
                                 style={{ color: "rgba(255,255,255,0.7)" }}
-                                onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.08)"; e.currentTarget.style.color = "#fff"; }}
-                                onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "rgba(255,255,255,0.7)"; }}
                             >
-                                <span className="text-sm w-5 text-center">{link.icon}</span>
+                                <span className="w-5 h-5 flex items-center justify-center flex-shrink-0">
+                                    {link.iconImg
+                                        ? <img src={link.iconImg} alt={link.label} className="w-full h-full object-contain" />
+                                        : <span className="text-sm">{link.icon}</span>}
+                                </span>
                                 {link.label}
                             </a>
                         ))}
@@ -103,23 +106,15 @@ export default function StartMenu({ open, onClose, onOpenApp }) {
                         Applications
                     </p>
                     <div className="grid grid-cols-3 gap-2">
-                        {[
-                            { app: "taskmanager", icon: <img src="/icon_task_manager.png" alt="Task Manager" className="w-full h-full object-contain" />, label: "Task\nManager" },
-                            { app: "about", icon: <img src="/icon_about.png" alt="About Me" className="w-full h-full object-contain" />, label: "About\nMe" },
-                            { app: "projects", icon: <img src="/icon_projects.png" alt="Projects" className="w-full h-full object-contain" />, label: "Projects" },
-                            { app: "resume", icon: <img src="/icon_resume.png" alt="Resume" className="w-full h-full object-contain" />, label: "Resume" },
-                            { app: "terminal", icon: <div className="w-full h-full flex items-center justify-center bg-black rounded text-[10px] font-bold text-green-500 border border-green-900/50">_&gt;</div>, label: "Terminal" },
-                        ].map(({ app, icon, label }) => (
+                        {APPS_CONFIG.map((app) => (
                             <button
-                                key={app}
-                                onClick={() => { onOpenApp(app); onClose(); }}
-                                className="flex flex-col items-center gap-1.5 p-3 rounded-lg transition-all text-center"
+                                key={app.id}
+                                onClick={() => { onOpenApp(app.id); onClose(); }}
+                                className="hover-pill flex flex-col items-center gap-1.5 p-3 rounded-lg text-center"
                                 style={{ color: "rgba(255,255,255,0.75)" }}
-                                onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.08)"; e.currentTarget.style.color = "#fff"; }}
-                                onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "rgba(255,255,255,0.75)"; }}
                             >
-                                <div className="w-8 h-8 flex items-center justify-center mb-1">{icon}</div>
-                                <span className="text-xs font-medium leading-tight whitespace-pre-line">{label}</span>
+                                <div className="w-8 h-8 flex items-center justify-center mb-1">{renderWindowIcon(app)}</div>
+                                <span className="text-xs font-medium leading-tight whitespace-pre-line">{app.startMenuLabel}</span>
                             </button>
                         ))}
                     </div>

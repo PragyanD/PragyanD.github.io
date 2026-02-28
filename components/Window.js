@@ -1,6 +1,7 @@
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useRef, useCallback, useEffect, memo } from "react";
+import { createPortal } from "react-dom";
 
-export default function Window({
+function Window({
     id,
     title,
     icon,
@@ -15,13 +16,27 @@ export default function Window({
     zIndex,
     isMinimizing,
     isRestoring,
+    isClosing = false,
+    focused = true,
 }) {
     const [maximized, setMaximized] = useState(false);
-    const [pos, setPos] = useState({
-        x: initialX ?? Math.max(60, Math.floor(Math.random() * 300) + 80),
-        y: initialY ?? Math.max(40, Math.floor(Math.random() * 120) + 40),
+    const [pos, setPos] = useState(() => {
+        try {
+            const saved = sessionStorage.getItem(`window_state_${id}`);
+            if (saved) { const s = JSON.parse(saved); return s.pos; }
+        } catch (_) { /* ignore */ }
+        return {
+            x: initialX ?? Math.max(60, Math.floor(Math.random() * 300) + 80),
+            y: initialY ?? Math.max(40, Math.floor(Math.random() * 120) + 40),
+        };
     });
-    const [size, setSize] = useState({ w: initialWidth, h: initialHeight });
+    const [size, setSize] = useState(() => {
+        try {
+            const saved = sessionStorage.getItem(`window_state_${id}`);
+            if (saved) { const s = JSON.parse(saved); return s.size; }
+        } catch (_) { /* ignore */ }
+        return { w: initialWidth, h: initialHeight };
+    });
 
     const dragging = useRef(false);
     const [isDragging, setIsDragging] = useState(false);
@@ -56,6 +71,7 @@ export default function Window({
     }, [maximized, size, pos, id, onFocus]);
 
     const [snapped, setSnapped] = useState(false); // 'left' | 'right' | false
+    const [snapPreview, setSnapPreview] = useState(null); // 'left' | 'right' | null
 
     useEffect(() => {
         const onMouseMove = (e) => {
@@ -71,12 +87,21 @@ export default function Window({
                 let newX = e.clientX - offset.current.x;
                 let newY = Math.max(0, Math.min(window.innerHeight - TASKBAR - 40, e.clientY - offset.current.y));
 
+                // Snap preview
+                if (e.clientX <= 20) {
+                    setSnapPreview('left');
+                } else if (e.clientX >= window.innerWidth - 20) {
+                    setSnapPreview('right');
+                } else {
+                    setSnapPreview(null);
+                }
+
                 // Snap logic
-                if (e.clientX <= 5) {
+                if (e.clientX <= 20) {
                     setSnapped('left');
                     prevState.current = { pos: { x: newX, y: newY }, size: { ...size } };
                     setPos({ x: 0, y: 0 });
-                } else if (e.clientX >= window.innerWidth - 5) {
+                } else if (e.clientX >= window.innerWidth - 20) {
                     setSnapped('right');
                     prevState.current = { pos: { x: newX, y: newY }, size: { ...size } };
                     setPos({ x: window.innerWidth / 2, y: 0 });
@@ -122,9 +147,19 @@ export default function Window({
         };
 
         const onMouseUp = () => {
+            if (dragging.current || resizing.current) {
+                setPos(p => {
+                    setSize(s => {
+                        try { sessionStorage.setItem(`window_state_${id}`, JSON.stringify({ pos: p, size: s })); } catch (_) { /* ignore */ }
+                        return s;
+                    });
+                    return p;
+                });
+            }
             dragging.current = false;
             setIsDragging(false);
             resizing.current = false;
+            setSnapPreview(null);
         };
 
         window.addEventListener("mousemove", onMouseMove);
@@ -149,12 +184,6 @@ export default function Window({
         onFocus?.(id);
     };
 
-    const [mounted, setMounted] = useState(false);
-
-    useEffect(() => {
-        setMounted(true);
-    }, []);
-
     const style = maximized
         ? { left: 0, top: 0, width: "100%", height: "calc(100vh - 48px)", zIndex }
         : snapped === 'left'
@@ -163,51 +192,56 @@ export default function Window({
                 ? { left: "50%", top: 0, width: "50%", height: "calc(100vh - 48px)", zIndex }
                 : { left: pos.x, top: pos.y, width: size.w, height: size.h, zIndex };
 
+    // Only play the windowOpen animation on a true first-open, NOT on restore-from-minimized.
+    // If we always added "window-open", removing "win-restore" at the end of the restore timeout
+    // would leave only "window-open", restarting the open animation a second time.
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const [playOpenAnim] = useState(() => !isRestoring);
+
+    const animClass = isClosing ? "win-close" : isMinimizing ? "win-minimize" : isRestoring ? "win-restore" : "";
+    const openClass = playOpenAnim ? "window-open" : "";
+
     return (
         <div
-            className="window-open fixed flex flex-col overflow-hidden select-none"
+            className={`${openClass} fixed flex flex-col overflow-hidden select-none${animClass ? ` ${animClass}` : ""}`.trim()}
             style={{
                 ...style,
-                opacity: (mounted && !isMinimizing) ? 1 : 0,
-                transform: isMinimizing
-                    ? "translateY(80vh) scale(0)"
-                    : isRestoring || !mounted
-                        ? "scale(0.95)"
-                        : "scale(1)",
-                transformOrigin: "bottom center",
-                transition: dragging.current || resizing.current
-                    ? "none"
-                    : "all 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease, box-shadow 0.2s ease",
                 borderRadius: (maximized || snapped) ? 0 : 12,
                 boxShadow: maximized || isMinimizing || snapped
                     ? "none"
                     : isDragging
-                        ? "inset 0 1px 0 rgba(255,255,255,0.3), inset 0 0 0 1px rgba(255,255,255,0.1), 0 35px 100px rgba(0,0,0,0.55)"
-                        : "inset 0 1px 0 rgba(255,255,255,0.3), inset 0 0 0 1px rgba(255,255,255,0.1), 0 24px 80px rgba(0,0,0,0.4)",
-                border: "1px solid rgba(255,255,255,0.15)",
+                        ? "inset 0 1px 0 rgba(255,255,255,0.3), 0 0 32px rgba(0,120,212,0.3), 0 35px 100px rgba(0,0,0,0.55)"
+                        : focused
+                            ? "inset 0 1px 0 rgba(255,255,255,0.3), 0 0 24px rgba(0,120,212,0.25), 0 24px 80px rgba(0,0,0,0.4)"
+                            : "inset 0 1px 0 rgba(255,255,255,0.08), 0 6px 20px rgba(0,0,0,0.18)",
+                border: focused
+                    ? "1px solid rgba(0,120,212,0.45)"
+                    : "1px solid rgba(255,255,255,0.12)",
                 backdropFilter: isMinimizing ? "none" : "blur(40px)",
                 background: "rgba(255, 255, 255, 0.1)",
-                pointerEvents: isMinimizing ? "none" : "auto",
+                transition: "box-shadow 0.2s ease, border-color 0.2s ease",
+                pointerEvents: (isMinimizing || isClosing) ? "none" : "auto",
             }}
             onMouseDown={() => onFocus?.(id)}
         >
             {/* Title Bar */}
             <div
-                className="flex items-center gap-2 px-3 flex-shrink-0 cursor-default"
+                className="flex items-center gap-2 px-3 flex-shrink-0 cursor-default transition-colors duration-200"
                 style={{
                     height: 38,
-                    background: "rgba(30, 30, 46, 0.5)",
-                    borderBottom: "1px solid rgba(255,255,255,0.08)",
+                    background: focused ? "rgba(30, 30, 46, 0.25)" : "rgba(20, 20, 30, 0.15)",
+                    backdropFilter: "blur(20px)",
+                    borderBottom: "1px solid rgba(255,255,255,0.12)",
                 }}
                 onMouseDown={onMouseDownTitle}
             >
                 {/* Traffic Lights */}
-                <div className="flex items-center gap-1.5 win-control">
+                <div className="flex items-center gap-1.5 win-control" style={{ filter: focused ? "none" : "saturate(0) opacity(0.4)" }}>
                     <button
                         onClick={(e) => { e.stopPropagation(); onClose?.(id); }}
                         className="w-3 h-3 rounded-full flex items-center justify-center group transition-all"
                         style={{ background: "#ff5f57" }}
-                        title="Close"
+                        title="Close" aria-label="Close"
                     >
                         <span className="opacity-0 group-hover:opacity-100 text-[8px] font-bold text-red-900 leading-none">✕</span>
                     </button>
@@ -215,7 +249,7 @@ export default function Window({
                         onClick={(e) => { e.stopPropagation(); onMinimize?.(id); }}
                         className="w-3 h-3 rounded-full flex items-center justify-center group transition-all"
                         style={{ background: "#febc2e" }}
-                        title="Minimize"
+                        title="Minimize" aria-label="Minimize"
                     >
                         <span className="opacity-0 group-hover:opacity-100 text-[8px] font-bold text-yellow-900 leading-none">−</span>
                     </button>
@@ -223,7 +257,7 @@ export default function Window({
                         onClick={(e) => { e.stopPropagation(); toggleMaximize(); }}
                         className="w-3 h-3 rounded-full flex items-center justify-center group transition-all"
                         style={{ background: "#28c840" }}
-                        title="Maximize"
+                        title={maximized ? "Restore" : "Maximize"} aria-label={maximized ? "Restore" : "Maximize"}
                     >
                         <span className="opacity-0 group-hover:opacity-100 text-[8px] font-bold text-green-900 leading-none">⤢</span>
                     </button>
@@ -231,8 +265,8 @@ export default function Window({
 
                 {/* Title */}
                 <div className="flex-1 flex items-center justify-center gap-1.5 pointer-events-none text-center">
-                    {icon && <div className="w-4 h-4 flex items-center justify-center flex-shrink-0">{icon}</div>}
-                    <span className="text-xs font-medium truncate max-w-[200px]" style={{ color: "rgba(255,255,255,0.75)" }}>
+                    {icon && <div className="w-4 h-4 flex items-center justify-center flex-shrink-0" style={{ opacity: focused ? 1 : 0.4 }}>{icon}</div>}
+                    <span className="text-xs font-medium truncate max-w-[200px]" style={{ color: focused ? "rgba(255,255,255,0.75)" : "rgba(255,255,255,0.3)" }}>
                         {title}
                     </span>
                 </div>
@@ -242,7 +276,7 @@ export default function Window({
             </div>
 
             {/* Content */}
-            <div className="flex-1 overflow-hidden relative" style={{ background: "#f3f3f3" }}>
+            <div className="flex-1 overflow-hidden relative" style={{ background: "#f3f3f3", fontFamily: "'JetBrains Mono', 'Courier New', monospace" }}>
                 {children}
             </div>
 
@@ -259,10 +293,31 @@ export default function Window({
                     <div onMouseDown={(e) => onMouseDownResize(e, 'ne')} className="absolute top-0 right-0 w-3 h-3 cursor-nesw-resize z-50" />
                     <div onMouseDown={(e) => onMouseDownResize(e, 'sw')} className="absolute bottom-0 left-0 w-3 h-3 cursor-nesw-resize z-50" />
                     <div onMouseDown={(e) => onMouseDownResize(e, 'se')} className="absolute bottom-0 right-0 w-4 h-4 cursor-nwse-resize z-50 flex items-end justify-end p-0.5 group">
-                        <div className="w-1.5 h-1.5 border-r-2 border-b-2 border-gray-400 opacity-50 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                        <div className="w-1.5 h-1.5 border-r-2 border-b-2 border-gray-400 opacity-[0.25] group-hover:opacity-75 transition-opacity duration-150 pointer-events-none" />
                     </div>
                 </>
+            )}
+
+            {/* Snap preview portal */}
+            {snapPreview && typeof document !== 'undefined' && createPortal(
+                <div
+                    className="fixed pointer-events-none"
+                    style={{
+                        zIndex: 4,
+                        left: snapPreview === 'left' ? 0 : '50%',
+                        top: 0,
+                        width: '50%',
+                        height: 'calc(100vh - 48px)',
+                        border: '2px dashed rgba(0,120,212,0.6)',
+                        background: 'rgba(0,120,212,0.06)',
+                        borderRadius: 8,
+                        transition: 'left 0.1s ease',
+                    }}
+                />,
+                document.body
             )}
         </div>
     );
 }
+
+export default memo(Window);

@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
+import { APPS_CONFIG } from '../lib/apps.config';
 
-const SEARCH_ITEMS = [
-    { id: 'about', name: 'About Me', type: 'app', icon: '👤', keywords: 'profile, bio, personal' },
-    { id: 'taskmanager', name: 'Task Manager', type: 'app', icon: '📊', keywords: 'experience, skills, work' },
-    { id: 'projects', name: 'Projects', type: 'app', icon: '📁', keywords: 'work, code, portfolio' },
-    { id: 'resume', name: 'Resume viewer', type: 'app', icon: '📄', keywords: 'cv, download, pdf' },
-    { id: 'terminal', name: 'Terminal', type: 'app', icon: '⌨️', keywords: 'shell, bash, command line' },
-];
+const SEARCH_ITEMS = APPS_CONFIG.map(app => ({
+    id: app.id,
+    name: app.spotlightName,
+    type: 'app',
+    icon: app.spotlightEmoji,
+    keywords: app.spotlightKeywords,
+}));
 
 export default function Spotlight({ isOpen, onClose, onOpenApp }) {
     const [query, setQuery] = useState('');
@@ -58,6 +59,11 @@ export default function Spotlight({ isOpen, onClose, onOpenApp }) {
                         ref={inputRef}
                         type="text"
                         placeholder="Search apps, files, or settings..."
+                        aria-label="Spotlight search"
+                        role="combobox"
+                        aria-expanded={filtered.length > 0}
+                        aria-controls="spotlight-listbox"
+                        aria-autocomplete="list"
                         className="flex-1 bg-transparent border-none outline-none text-xl text-white/90 placeholder:text-white/20"
                         value={query}
                         onChange={e => { setQuery(e.target.value); setSelectedIndex(0); }}
@@ -68,12 +74,14 @@ export default function Spotlight({ isOpen, onClose, onOpenApp }) {
                     </div>
                 </div>
 
-                <div className="max-h-[400px] overflow-y-auto os-scroll">
+                <div id="spotlight-listbox" className="max-h-[400px] overflow-y-auto os-scroll" role="listbox" aria-label="Search results">
                     {filtered.length > 0 ? (
                         <div className="p-2">
                             {filtered.map((item, index) => (
                                 <div
                                     key={item.id}
+                                    role="option"
+                                    aria-selected={index === selectedIndex}
                                     className={`flex items-center gap-4 px-4 py-3 rounded-xl cursor-default transition-all ${index === selectedIndex ? 'bg-white/10 shadow-inner' : 'hover:bg-white/5'
                                         }`}
                                     onClick={() => { onOpenApp(item.id); onClose(); }}

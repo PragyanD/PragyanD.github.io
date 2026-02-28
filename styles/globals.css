@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 :root {
   --os-accent: #0078d4;
@@ -13,6 +13,23 @@
   --os-border: rgba(255, 255, 255, 0.1);
   --os-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 4px 16px rgba(0, 0, 0, 0.4);
   --os-font: 'Pixelify Sans', 'Segoe UI', system-ui, sans-serif;
+
+  /* Blur tiers */
+  --blur-icon: blur(8px);
+  --blur-standard: blur(32px);
+  --blur-deep: blur(40px);
+  --blur-extreme: blur(48px);
+
+  /* Easing */
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Semantic colors */
+  --color-primary: #0078d4;
+  --color-success: #34c759;
+  --color-warning: #febc2e;
+  --color-danger: #ff453a;
 }
 
 html,
@@ -59,13 +76,31 @@ body {
 @keyframes windowOpen {
   from {
     opacity: 0;
-    transform: scale(0.92) translateY(10px);
+    transform: scale(0.9) translateY(12px);
   }
 
   to {
     opacity: 1;
     transform: scale(1) translateY(0);
   }
+}
+
+/* Window close */
+@keyframes winClose {
+  from { opacity: 1; transform: scale(1); }
+  to   { opacity: 0; transform: scale(0.78); }
+}
+
+/* Window minimize — collapses toward taskbar (transform-origin: center bottom set on class) */
+@keyframes winMinimize {
+  from { opacity: 1; transform: scale(1); }
+  to   { opacity: 0; transform: scaleX(0.08) scaleY(0.03); }
+}
+
+/* Window restore — expands up from taskbar */
+@keyframes winRestore {
+  from { opacity: 0; transform: scale(0.88) translateY(14px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
 }
 
 /* Start menu slide up */
@@ -109,6 +144,19 @@ body {
   }
 }
 
+/* Taskbar pill disappear */
+@keyframes pillDisappear {
+  from {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: scaleX(0.5);
+  }
+}
+
 /* Blinking cursor for terminal-style elements */
 @keyframes blink {
 
@@ -130,7 +178,25 @@ body {
 }
 
 .window-open {
-  animation: windowOpen 0.18s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  animation: windowOpen 0.36s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* These are declared AFTER .window-open so they win the cascade when both classes are present.
+   CSS animations: same specificity → last declaration wins → these always override the open animation. */
+.win-close {
+  animation: winClose 160ms ease-out both;
+  pointer-events: none !important;
+}
+
+.win-minimize {
+  animation: winMinimize 300ms cubic-bezier(0.4, 0, 1, 1) both;
+  transform-origin: center bottom !important;
+  pointer-events: none !important;
+}
+
+.win-restore {
+  animation: winRestore 360ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  transform-origin: center bottom !important;
 }
 
 .start-menu-open {
@@ -143,6 +209,20 @@ body {
 
 .pill-appear {
   animation: pillAppear 0.2s ease-out forwards;
+}
+
+.pill-disappear {
+  animation: pillDisappear 0.15s ease-in forwards;
+}
+
+/* Shared hover utility for dark glass panels */
+.hover-pill {
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.hover-pill:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #fff !important;
 }
 
 @font-face {

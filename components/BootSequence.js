@@ -7,11 +7,11 @@ const BOOT_LOG = [
     { text: 'Detecting Primary Master... OK', delay: 300 },
     { text: 'Detecting Secondary Master... OK', delay: 200 },
     { text: 'Verifying DMI Pool Data...', delay: 800 },
-    { text: 'Booting PragyanOS kernel...', delay: 400 },
+    { text: 'Booting PDOS kernel...', delay: 400 },
     { text: 'Loading UI modules...', delay: 300 },
     { text: 'Mounting /Users/pragyan/desktop...', delay: 500 },
     { text: 'Starting XServer...', delay: 400 },
-    { text: 'Welcome to PragyanOS!', delay: 200 },
+    { text: 'Welcome to PDOS!', delay: 200 },
 ];
 
 export default function BootSequence({ onComplete }) {
@@ -41,7 +41,7 @@ export default function BootSequence({ onComplete }) {
                     if (prev >= 100) {
                         clearInterval(interval);
                         setTimeout(() => {
-                            const audio = new Audio('https://www.soundboard.com/handler/DownLoadTrack.ashx?cliptitle=Windows+XP+Startup&filename=mt/MTYxNzY4OTE2MTYxOTM5_oD7s_2b2_2fK06E.MP3');
+                            const audio = new Audio('/startup.mp3');
                             audio.play().catch(() => { });
                             onComplete();
                         }, 500);

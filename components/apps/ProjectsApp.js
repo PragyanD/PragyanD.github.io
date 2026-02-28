@@ -1,5 +1,3 @@
-import { useState, useCallback } from "react";
-
 const PROJECTS = [
     {
         name: "Scene Recognition AI",
@@ -38,18 +36,43 @@ const PROJECTS = [
         links: [],
     },
 ];
-export default function ProjectsApp() {
+
+export default function ProjectsApp({ darkTheme = false }) {
+    const t = darkTheme ? {
+        containerBg: "#0a0a1e",
+        cardBg: "rgba(20,20,40,0.6)",
+        cardBorder: "rgba(255,255,255,0.08)",
+        cardShadow: "0 2px 8px rgba(0,0,0,0.3)",
+        logoBg: "rgba(255,255,255,0.08)",
+        title: "rgba(255,255,255,0.9)",
+        desc: "rgba(255,255,255,0.6)",
+        pillBg: "rgba(255,255,255,0.08)",
+        pillText: "rgba(255,255,255,0.6)",
+        pillBorder: "rgba(255,255,255,0.12)",
+    } : {
+        containerBg: "#f7f8fb",
+        cardBg: "#fff",
+        cardBorder: "#e8e8e8",
+        cardShadow: "0 2px 8px rgba(0,0,0,0.06)",
+        logoBg: "white",
+        title: "#111",
+        desc: "#555",
+        pillBg: "#f0f0f0",
+        pillText: "#555",
+        pillBorder: "#e0e0e0",
+    };
+
     return (
-        <div className="w-full h-full overflow-y-auto os-scroll p-8" style={{ background: "#f7f8fb" }}>
+        <div className="w-full h-full overflow-y-auto os-scroll p-8" style={{ background: t.containerBg }}>
             <div className="grid grid-cols-2 gap-6">
                 {PROJECTS.map((project) => (
                     <div
                         key={project.name}
                         className="flex flex-col p-6 rounded-xl transition-all"
                         style={{
-                            background: "#fff",
-                            border: "1px solid #e8e8e8",
-                            boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+                            background: t.cardBg,
+                            border: `1px solid ${t.cardBorder}`,
+                            boxShadow: t.cardShadow,
                         }}
                         onMouseEnter={(e) => {
                             e.currentTarget.style.boxShadow = `0 6px 24px ${project.color}22`;
@@ -57,29 +80,35 @@ export default function ProjectsApp() {
                             e.currentTarget.style.transform = "translateY(-2px)";
                         }}
                         onMouseLeave={(e) => {
-                            e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.06)";
-                            e.currentTarget.style.borderColor = "#e8e8e8";
+                            e.currentTarget.style.boxShadow = t.cardShadow;
+                            e.currentTarget.style.borderColor = t.cardBorder;
                             e.currentTarget.style.transform = "translateY(0)";
                         }}
                     >
                         {/* Header */}
                         <div className="flex items-start gap-3 mb-3">
                             <div
-                                className="flex items-center justify-center flex-shrink-0 rounded-lg text-xl bg-white overflow-hidden p-1 shadow-sm"
+                                className="flex items-center justify-center flex-shrink-0 rounded-lg text-xl overflow-hidden p-1"
                                 style={{
                                     width: 44,
                                     height: 44,
+                                    background: t.logoBg,
                                     border: `1px solid ${project.color}33`,
                                 }}
                             >
                                 {project.logo ? (
-                                    <img src={project.logo} alt={project.name} className="w-full h-full object-contain" />
+                                    <img
+                                        src={project.logo}
+                                        alt={project.name}
+                                        className="w-full h-full object-contain"
+                                        onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.insertAdjacentHTML('afterend', '<span style="font-size:20px">📦</span>'); }}
+                                    />
                                 ) : (
                                     project.icon
                                 )}
                             </div>
                             <div className="flex-1 min-w-0">
-                                <h3 className="text-sm font-bold leading-tight" style={{ color: "#111" }}>{project.name}</h3>
+                                <h3 className="text-sm font-bold leading-tight" style={{ color: t.title }}>{project.name}</h3>
                                 <span
                                     className="text-xs px-2 py-0.5 rounded-full mt-1 inline-block"
                                     style={{ background: `${project.color}18`, color: project.color, border: `1px solid ${project.color}33` }}
@@ -90,7 +119,7 @@ export default function ProjectsApp() {
                         </div>
 
                         {/* Description */}
-                        <p className="text-xs leading-relaxed flex-1 mb-3" style={{ color: "#555" }}>
+                        <p className="text-xs leading-relaxed flex-1 mb-3" style={{ color: t.desc }}>
                             {project.description}
                         </p>
 
@@ -98,7 +127,7 @@ export default function ProjectsApp() {
                         <div className="flex flex-wrap gap-1.5 mb-3">
                             {project.stack.map((s) => (
                                 <span key={s} className="text-xs px-1.5 py-0.5 rounded font-mono"
-                                    style={{ background: "#f0f0f0", color: "#555", border: "1px solid #e0e0e0" }}>
+                                    style={{ background: t.pillBg, color: t.pillText, border: `1px solid ${t.pillBorder}` }}>
                                     {s}
                                 </span>
                             ))}

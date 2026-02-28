@@ -1,30 +1,47 @@
 import { useState, useRef } from "react";
 
+const ICON_W = 80;
+const ICON_H = 104; // 60px icon + label + padding (approximate)
+const TASKBAR_H = 48;
+const SNAP = 16;
+const DRAG_THRESHOLD = 5; // px — below this is a click, not a drag
+
 export default function DesktopIcon({ icon, label, onDoubleClick, style }) {
     const [clicking, setClicking] = useState(false);
     const [pos, setPos] = useState({ x: 0, y: 0 });
     const dragging = useRef(false);
+    const didDrag = useRef(false);
+    const startPos = useRef({ x: 0, y: 0 });
     const offset = useRef({ x: 0, y: 0 });
-
-    const handleDoubleClick = (e) => {
-        e.stopPropagation();
-        setClicking(true);
-        setTimeout(() => {
-            setClicking(false);
-            onDoubleClick?.();
-        }, 250);
-    };
+    const buttonRef = useRef(null);
+    const naturalPos = useRef(null);
 
     const handleMouseDown = (e) => {
         e.stopPropagation();
         dragging.current = true;
+        didDrag.current = false;
+        startPos.current = { x: e.clientX, y: e.clientY };
+
+        // Capture natural screen position once per drag session
+        if (buttonRef.current) {
+            const rect = buttonRef.current.getBoundingClientRect();
+            naturalPos.current = { x: rect.left - pos.x, y: rect.top - pos.y };
+        }
         offset.current = { x: e.clientX - pos.x, y: e.clientY - pos.y };
 
         const handleMouseMove = (mouseMoveEvent) => {
             if (dragging.current) {
+                const dx = mouseMoveEvent.clientX - startPos.current.x;
+                const dy = mouseMoveEvent.clientY - startPos.current.y;
+                if (Math.abs(dx) > DRAG_THRESHOLD || Math.abs(dy) > DRAG_THRESHOLD) {
+                    didDrag.current = true;
+                }
+                const rawX = mouseMoveEvent.clientX - offset.current.x;
+                const rawY = mouseMoveEvent.clientY - offset.current.y;
+                const nat = naturalPos.current || { x: 0, y: 0 };
                 setPos({
-                    x: mouseMoveEvent.clientX - offset.current.x,
-                    y: mouseMoveEvent.clientY - offset.current.y,
+                    x: Math.max(-nat.x, Math.min(window.innerWidth - nat.x - ICON_W, rawX)),
+                    y: Math.max(-nat.y, Math.min(window.innerHeight - nat.y - ICON_H - TASKBAR_H, rawY)),
                 });
             }
         };
@@ -33,6 +50,21 @@ export default function DesktopIcon({ icon, label, onDoubleClick, style }) {
             dragging.current = false;
             window.removeEventListener("mousemove", handleMouseMove);
             window.removeEventListener("mouseup", handleMouseUp);
+
+            if (!didDrag.current) {
+                // Treat as a click — open the app
+                setClicking(true);
+                setTimeout(() => {
+                    setClicking(false);
+                    onDoubleClick?.();
+                }, 200);
+            } else {
+                // Snap to nearest 16px grid on release
+                setPos(p => ({
+                    x: Math.round(p.x / SNAP) * SNAP,
+                    y: Math.round(p.y / SNAP) * SNAP,
+                }));
+            }
         };
 
         window.addEventListener("mousemove", handleMouseMove);
@@ -41,8 +73,9 @@ export default function DesktopIcon({ icon, label, onDoubleClick, style }) {
 
     return (
         <button
+            ref={buttonRef}
             onMouseDown={handleMouseDown}
-            onDoubleClick={handleDoubleClick}
+            onDragStart={(e) => e.preventDefault()}
             className="flex flex-col items-center gap-1.5 p-2 rounded-lg transition-all group focus:outline-none"
             style={{
                 width: 80,
@@ -52,7 +85,8 @@ export default function DesktopIcon({ icon, label, onDoubleClick, style }) {
                 cursor: dragging.current ? "grabbing" : "pointer",
                 ...style,
             }}
-            title={`Double-click to open ${label}`}
+            aria-label={`Open ${label}`}
+            title={`Click to open ${label}`}
         >
             {/* Icon */}
             <div
@@ -85,10 +119,11 @@ export default function DesktopIcon({ icon, label, onDoubleClick, style }) {
             <span
                 className="text-center text-xs leading-tight font-medium px-1 py-0.5 rounded"
                 style={{
-                    color: "rgba(255,255,255,0.9)",
-                    textShadow: "0 1px 4px rgba(0,0,0,0.9), 0 0 8px rgba(0,0,0,0.7)",
+                    color: "rgba(255,255,255,0.95)",
+                    textShadow: "0 0 4px rgba(0,0,0,1), 0 2px 8px rgba(0,0,0,0.95), 0 4px 16px rgba(0,0,0,0.8)",
+                    WebkitTextStroke: "0.3px rgba(0,0,0,0.5)",
                     backdropFilter: "blur(4px)",
-                    background: "rgba(0,0,0,0.1)",
+                    background: "rgba(0,0,0,0.25)",
                     maxWidth: 76,
                     wordBreak: "break-word",
                     fontSize: 11,
