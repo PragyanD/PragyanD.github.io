@@ -45,7 +45,7 @@ export default function TerminalApp() {
 
         switch (base) {
             case 'help':
-                output = 'Available commands:\n  ls · pwd · cat · cd · echo · date · uname\n  whoami · neofetch · history · clear\n  sudo · win · hack · make';
+                output = 'Available commands:\n  ls · pwd · cat · cd · echo · date · uname\n  whoami · neofetch · history · clear\n  git · npm · rm · curl · python\n  sudo · win · hack · make';
                 break;
             case 'ls':
                 output = Object.keys(FILES).join('  ');
@@ -109,6 +109,58 @@ export default function TerminalApp() {
                 } else {
                     output = 'Command not found. Did you try turning it off and on again?';
                 }
+                break;
+            case 'git': {
+                const sub = args[0];
+                if (sub === 'blame') {
+                    output = [
+                        'commit a1b2c3d4 (HEAD -> main, origin/main)',
+                        'Author: Unknown Developer <definitely-not-me@dev.null>',
+                        'Date:   3 years, 2 months ago',
+                        '',
+                        '    src/everything.js: I have no idea why this works.',
+                        '                       Do NOT touch it. Seriously.',
+                        '',
+                        'Blame: frontend → backend → PM → intern → gravity → cosmic rays',
+                    ].join('\n');
+                } else if (sub === 'status') {
+                    output = 'On branch main\nYour branch is ahead of schedule by 3 sprints.\n\nnothing to commit, life is clean.';
+                } else if (sub === 'commit') {
+                    output = '✓ Committed to excellence.\n(but not to git — no changes staged)';
+                } else if (sub === 'push') {
+                    output = 'error: failed to push some refs\nreason: stakeholders have rejected your changes.';
+                } else {
+                    output = `git: '${sub || ''}' is not a git command. See 'git --help'.\n\nDid you mean: git gud`;
+                }
+                break;
+            }
+            case 'npm': {
+                const sub = args[0];
+                if (sub === 'install' || sub === 'i') {
+                    output = 'npm warn: found 847,293 packages\nnpm warn: 23,847 have vulnerabilities\nnpm warn: 1 is sentient\n\nadded 847,293 packages in 11m\n\n✓ Done. node_modules is now 2.3 GB.';
+                } else if (sub === 'audit') {
+                    output = 'found 0 vulnerabilities\n(the real vulnerability is us, the developers)';
+                } else if (sub === 'run' && args[1] === 'dev') {
+                    output = '▲ Next.js 14.0.0\n- Local: http://localhost:3000\n\nReady in 2.4s ✓';
+                } else {
+                    output = `npm ERR! Unknown command: "${sub || ''}"`;
+                }
+                break;
+            }
+            case 'rm':
+                if ((args.includes('-rf') || args.includes('-r')) &&
+                    (args.includes('/') || args.includes('*') || args.includes('.'))) {
+                    output = '🔥 Deleting everything...\n\n  [===                    ] 12%\n\nJust kidding. Root access denied.\nThis incident has been reported (it hasn\'t).';
+                } else {
+                    output = `rm: cannot remove '${args[0] || '?'}': Permission denied`;
+                }
+                break;
+            case 'curl':
+                output = 'No. (we respect privacy here)';
+                break;
+            case 'python':
+            case 'python3':
+                output = 'Python 3.12.0 (PDOS build, Mar  1 2026)\n>>>\nActually I can\'t run Python. But I believe in you.';
                 break;
             case '':
                 return;

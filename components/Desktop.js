@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import Window from "./Window";
 import Taskbar from "./Taskbar";
 import StartMenu from "./StartMenu";
@@ -37,7 +37,7 @@ const WALLPAPERS = [
     { id: 'slate', label: 'Slate', value: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)" },
 ];
 
-export default function Desktop() {
+export default function Desktop({ onRestart }) {
     const [startOpen, setStartOpen] = useState(false);
     const [contextMenu, setContextMenu] = useState({ visible: false, x: 0, y: 0 });
     const [spotlightOpen, setSpotlightOpen] = useState(false);
@@ -56,6 +56,8 @@ export default function Desktop() {
         }
         return false;
     });
+    const [wallpaperPos, setWallpaperPos] = useState({ x: 50, y: 50 });
+    const rafRef = useRef(null);
     const [toasts, setToasts] = useState([]);
 
     const addToast = useCallback((message, type = 'info') => {
@@ -74,6 +76,10 @@ export default function Desktop() {
         activeWindows, allRunning,
         openApp, closeApp, minimizeApp, focusApp,
     } = useWindowManager(useCallback(() => setStartOpen(false), []));
+
+    // Expose focusOrder to keyboard handler via ref so the handler closure stays stable
+    const focusOrderRef = useRef(null);
+    focusOrderRef.current = focusOrder;
 
     useEffect(() => {
         const hasSeenTip = localStorage.getItem('spotlight_tip_seen');
@@ -97,6 +103,17 @@ export default function Desktop() {
             if (e.key === 'Escape') {
                 setSpotlightOpen(false);
             }
+            const topWindow = focusOrderRef.current?.at(-1);
+            if (topWindow) {
+                if ((e.metaKey || e.ctrlKey) && e.key === 'w') {
+                    e.preventDefault();
+                    closeApp(topWindow);
+                }
+                if ((e.metaKey || e.ctrlKey) && e.key === 'm') {
+                    e.preventDefault();
+                    minimizeApp(topWindow);
+                }
+            }
         };
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
@@ -116,14 +133,27 @@ export default function Desktop() {
     const activeWallpaper = WALLPAPERS.find(w => w.id === wallpaper) || WALLPAPERS[0];
     const isImageWallpaper = activeWallpaper.value.startsWith('url(');
 
+    const handleMouseMove = useCallback((e) => {
+        if (!isImageWallpaper) return;
+        if (rafRef.current) return;
+        rafRef.current = requestAnimationFrame(() => {
+            setWallpaperPos({
+                x: 50 + (e.clientX / window.innerWidth  - 0.5) * -3,
+                y: 50 + (e.clientY / window.innerHeight - 0.5) * -3,
+            });
+            rafRef.current = null;
+        });
+    }, [isImageWallpaper]);
+
     return (
         <div
             className="fixed inset-0 overflow-hidden"
             style={{
                 background: isImageWallpaper
-                    ? `${activeWallpaper.value} center / cover no-repeat`
+                    ? `${activeWallpaper.value} ${wallpaperPos.x.toFixed(2)}% ${wallpaperPos.y.toFixed(2)}% / cover no-repeat`
                     : activeWallpaper.value,
             }}
+            onMouseMove={handleMouseMove}
             onContextMenu={handleContextMenu}
             onClick={() => { closeContextMenu(); setWallpaperPickerOpen(false); }}
         >
@@ -226,6 +256,7 @@ export default function Desktop() {
                 open={startOpen}
                 onClose={() => setStartOpen(false)}
                 onOpenApp={openApp}
+                onRestart={onRestart}
             />
 
             {/* System Status Widget */}

@@ -56,12 +56,23 @@ export default function BootSequence({ onComplete }) {
 
     return (
         <div className="fixed inset-0 z-[1000] bg-black text-[#aaaaaa] font-mono p-10 flex flex-col items-start justify-start select-none cursor-none">
+            {/* CRT scanlines */}
+            <div className="absolute inset-0 pointer-events-none z-10" style={{
+                background: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px)",
+                mixBlendMode: "overlay",
+            }} />
+            {/* Vignette */}
+            <div className="absolute inset-0 pointer-events-none z-10" style={{
+                background: "radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.6) 100%)",
+            }} />
+
             {phase === 'bios' && (
                 <div className="w-full">
                     {lines.map((line, i) => (
-                        <div key={i} className="mb-1 leading-tight text-sm uppercase">{line}</div>
+                        <div key={i} className="mb-1 leading-tight text-sm uppercase">
+                            {line}{i === lines.length - 1 && <span className="animate-pulse">_</span>}
+                        </div>
                     ))}
-                    <div className="mt-4 animate-pulse">_</div>
                 </div>
             )}
 

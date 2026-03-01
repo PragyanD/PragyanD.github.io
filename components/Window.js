@@ -22,7 +22,7 @@ function Window({
     const [maximized, setMaximized] = useState(false);
     const [pos, setPos] = useState(() => {
         try {
-            const saved = sessionStorage.getItem(`window_state_${id}`);
+            const saved = localStorage.getItem(`window_state_${id}`);
             if (saved) { const s = JSON.parse(saved); return s.pos; }
         } catch (_) { /* ignore */ }
         return {
@@ -32,11 +32,14 @@ function Window({
     });
     const [size, setSize] = useState(() => {
         try {
-            const saved = sessionStorage.getItem(`window_state_${id}`);
+            const saved = localStorage.getItem(`window_state_${id}`);
             if (saved) { const s = JSON.parse(saved); return s.size; }
         } catch (_) { /* ignore */ }
         return { w: initialWidth, h: initialHeight };
     });
+
+    const [titleMenu, setTitleMenu] = useState(null); // { x, y } | null
+    const [pinned, setPinned] = useState(false);       // Always on Top
 
     const dragging = useRef(false);
     const [isDragging, setIsDragging] = useState(false);
@@ -150,7 +153,7 @@ function Window({
             if (dragging.current || resizing.current) {
                 setPos(p => {
                     setSize(s => {
-                        try { sessionStorage.setItem(`window_state_${id}`, JSON.stringify({ pos: p, size: s })); } catch (_) { /* ignore */ }
+                        try { localStorage.setItem(`window_state_${id}`, JSON.stringify({ pos: p, size: s })); } catch (_) { /* ignore */ }
                         return s;
                     });
                     return p;
@@ -184,13 +187,15 @@ function Window({
         onFocus?.(id);
     };
 
+    const effectiveZIndex = pinned ? 9998 : zIndex;
+
     const style = maximized
-        ? { left: 0, top: 0, width: "100%", height: "calc(100vh - 48px)", zIndex }
+        ? { left: 0, top: 0, width: "100%", height: "calc(100vh - 48px)", zIndex: effectiveZIndex }
         : snapped === 'left'
-            ? { left: 0, top: 0, width: "50%", height: "calc(100vh - 48px)", zIndex }
+            ? { left: 0, top: 0, width: "50%", height: "calc(100vh - 48px)", zIndex: effectiveZIndex }
             : snapped === 'right'
-                ? { left: "50%", top: 0, width: "50%", height: "calc(100vh - 48px)", zIndex }
-                : { left: pos.x, top: pos.y, width: size.w, height: size.h, zIndex };
+                ? { left: "50%", top: 0, width: "50%", height: "calc(100vh - 48px)", zIndex: effectiveZIndex }
+                : { left: pos.x, top: pos.y, width: size.w, height: size.h, zIndex: effectiveZIndex };
 
     // Only play the windowOpen animation on a true first-open, NOT on restore-from-minimized.
     // If we always added "window-open", removing "win-restore" at the end of the restore timeout
@@ -200,6 +205,19 @@ function Window({
 
     const animClass = isClosing ? "win-close" : isMinimizing ? "win-minimize" : isRestoring ? "win-restore" : "";
     const openClass = playOpenAnim ? "window-open" : "";
+
+    const titleMenuItems = [
+        { label: 'Close',                        action: () => { onClose?.(id); setTitleMenu(null); } },
+        { label: 'Minimize',                     action: () => { onMinimize?.(id); setTitleMenu(null); } },
+        { label: maximized ? 'Restore' : 'Maximize', action: () => { toggleMaximize(); setTitleMenu(null); } },
+        null,
+        { label: pinned ? '✓ Always on Top' : 'Always on Top', action: () => { setPinned(p => !p); setTitleMenu(null); } },
+        { label: 'Reset Size', action: () => {
+            setPos({ x: initialX ?? 100, y: initialY ?? 60 });
+            setSize({ w: initialWidth, h: initialHeight });
+            setTitleMenu(null);
+        }},
+    ];
 
     return (
         <div
@@ -222,7 +240,7 @@ function Window({
                 transition: "box-shadow 0.2s ease, border-color 0.2s ease",
                 pointerEvents: (isMinimizing || isClosing) ? "none" : "auto",
             }}
-            onMouseDown={() => onFocus?.(id)}
+            onMouseDown={() => { if (titleMenu) setTitleMenu(null); onFocus?.(id); }}
         >
             {/* Title Bar */}
             <div
@@ -234,6 +252,7 @@ function Window({
                     borderBottom: "1px solid rgba(255,255,255,0.12)",
                 }}
                 onMouseDown={onMouseDownTitle}
+                onContextMenu={(e) => { e.preventDefault(); e.stopPropagation(); setTitleMenu({ x: e.clientX, y: e.clientY }); }}
             >
                 {/* Traffic Lights */}
                 <div className="flex items-center gap-1.5 win-control" style={{ filter: focused ? "none" : "saturate(0) opacity(0.4)" }}>
@@ -314,6 +333,37 @@ function Window({
                         transition: 'left 0.1s ease',
                     }}
                 />,
+                document.body
+            )}
+
+            {/* Title-bar context menu */}
+            {titleMenu && typeof document !== 'undefined' && createPortal(
+                <div
+                    className="fixed z-[9999] flex flex-col p-1 rounded-xl shadow-2xl"
+                    style={{
+                        left: titleMenu.x,
+                        top: titleMenu.y,
+                        minWidth: 160,
+                        background: "rgba(20,20,32,0.92)",
+                        backdropFilter: "blur(32px)",
+                        border: "1px solid rgba(255,255,255,0.12)",
+                        boxShadow: "0 8px 32px rgba(0,0,0,0.6)",
+                    }}
+                    onMouseLeave={() => setTitleMenu(null)}
+                    onContextMenu={e => e.preventDefault()}
+                    onMouseDown={e => e.stopPropagation()}
+                >
+                    {titleMenuItems.map((item, i) => item === null
+                        ? <div key={i} className="h-px my-1 mx-2 bg-white/10" />
+                        : <button
+                            key={i}
+                            onClick={item.action}
+                            className="text-left px-3 py-1.5 text-xs text-white/80 hover:bg-white/10 rounded-lg transition-colors w-full"
+                          >
+                            {item.label}
+                          </button>
+                    )}
+                </div>,
                 document.body
             )}
         </div>

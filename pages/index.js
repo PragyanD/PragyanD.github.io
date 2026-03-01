@@ -18,6 +18,18 @@ export default function Home() {
     sessionStorage.setItem("pdos_booted", "true");
   };
 
+  const handleRestart = () => {
+    // Clear layout state so the session starts fresh
+    const layoutKeys = ['pdos_open_windows', 'pdos_pill_order'];
+    layoutKeys.forEach(k => localStorage.removeItem(k));
+    // Clear all window position/size entries
+    Object.keys(localStorage)
+      .filter(k => k.startsWith('window_state_'))
+      .forEach(k => localStorage.removeItem(k));
+    sessionStorage.removeItem("pdos_booted");
+    setBooting(true);
+  };
+
   return (
     <>
       <Head>
@@ -25,7 +37,7 @@ export default function Home() {
         <meta name="description" content="Pragyan Das — Software Engineer. Interactive desktop portfolio." />
         <link rel="icon" href="/favicon.png" />
       </Head>
-      {booting ? <BootSequence onComplete={handleBootComplete} /> : <Desktop />}
+      {booting ? <BootSequence onComplete={handleBootComplete} /> : <Desktop onRestart={handleRestart} />}
     </>
   );
 }

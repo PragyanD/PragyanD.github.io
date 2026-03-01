@@ -1,17 +1,26 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 
 /**
  * Manages open/minimized/focus state for all desktop windows.
  * @param {Function} onOpen - side effect called at the start of openApp (e.g. close start menu)
  */
 export default function useWindowManager(onOpen) {
-    const [openWindows, setOpenWindows] = useState([]);
+    const [openWindows, setOpenWindows] = useState(() => {
+        try {
+            const s = localStorage.getItem('pdos_open_windows');
+            return s ? JSON.parse(s) : [];
+        } catch { return []; }
+    });
     const [minimizedWindows, setMinimizedWindows] = useState([]);
     const [focusOrder, setFocusOrder] = useState([]);
     const [minimizing, setMinimizing] = useState(null);
     const [restoring, setRestoring] = useState(null);
     const [closing, setClosing] = useState(new Set());
     const closingTimers = useRef({});
+
+    useEffect(() => {
+        try { localStorage.setItem('pdos_open_windows', JSON.stringify(openWindows)); } catch {}
+    }, [openWindows]);
 
     const openApp = useCallback((appId) => {
         onOpen?.();

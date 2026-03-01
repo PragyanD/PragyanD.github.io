@@ -5,7 +5,7 @@ const SEARCH_ITEMS = APPS_CONFIG.map(app => ({
     id: app.id,
     name: app.spotlightName,
     type: 'app',
-    icon: app.spotlightEmoji,
+    iconSrc: app.iconSrc,
     keywords: app.spotlightKeywords,
 }));
 
@@ -54,7 +54,7 @@ export default function Spotlight({ isOpen, onClose, onOpenApp }) {
                 onClick={e => e.stopPropagation()}
             >
                 <div className="p-5 flex items-center gap-4 border-b border-white/5">
-                    <span className="text-2xl opacity-40">🔍</span>
+                    <svg className="w-5 h-5 opacity-40 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path strokeLinecap="round" d="M21 21l-4.35-4.35"/></svg>
                     <input
                         ref={inputRef}
                         type="text"
@@ -87,8 +87,8 @@ export default function Spotlight({ isOpen, onClose, onOpenApp }) {
                                     onClick={() => { onOpenApp(item.id); onClose(); }}
                                     onMouseEnter={() => setSelectedIndex(index)}
                                 >
-                                    <div className="w-10 h-10 flex items-center justify-center text-xl bg-white/5 rounded-lg border border-white/5">
-                                        {item.icon}
+                                    <div className="w-10 h-10 flex items-center justify-center bg-white/5 rounded-lg border border-white/5 overflow-hidden p-1.5">
+                                        <img src={item.iconSrc} alt={item.name} className="w-full h-full object-contain" />
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <p className="text-sm font-medium text-white/90">{item.name}</p>

@@ -136,7 +136,16 @@ export default function Taskbar({ openWindows, minimizedWindows, onStartClick, s
     }, [openWindows]);
 
     // --- Pill ordering + drag-to-reorder ---
-    const [pillOrder, setPillOrder] = useState([]);
+    const [pillOrder, setPillOrder] = useState(() => {
+        try {
+            const pillArr = JSON.parse(localStorage.getItem('pdos_pill_order') || '[]');
+            const winArr  = JSON.parse(localStorage.getItem('pdos_open_windows') || '[]');
+            // Keep saved pill order, then append any open windows not yet in it
+            const filtered = pillArr.filter(id => winArr.includes(id));
+            const extra    = winArr.filter(id => !filtered.includes(id));
+            return [...filtered, ...extra];
+        } catch { return []; }
+    });
     const [dragId, setDragId] = useState(null);
     const [dragInsertIdx, setDragInsertIdx] = useState(null);
     const pillContainerRef = useRef(null);
@@ -265,6 +274,7 @@ export default function Taskbar({ openWindows, minimizedWindows, onStartClick, s
                 setPillOrder(prev => {
                     const without = prev.filter(id => id !== appId);
                     without.splice(Math.min(finalIdx, without.length), 0, appId);
+                    try { localStorage.setItem('pdos_pill_order', JSON.stringify(without)); } catch {}
                     return without;
                 });
             }
@@ -321,7 +331,7 @@ export default function Taskbar({ openWindows, minimizedWindows, onStartClick, s
             {/* Running App Pills */}
             <div
                 ref={pillContainerRef}
-                className="flex items-center gap-1 px-2 flex-1"
+                className="flex items-center px-2 flex-1"
                 style={{ userSelect: "none" }}
             >
                 {displayOrder.map((appId) => {
@@ -331,40 +341,58 @@ export default function Taskbar({ openWindows, minimizedWindows, onStartClick, s
                     const isDragged = dragId === appId;
 
                     return (
-                        <button
+                        // Collapsing wrapper — animates layout space away on close.
+                        // overflow:hidden + max-width/marginRight → 0 removes the pill's
+                        // layout contribution (transform-only animations cannot do this).
+                        // overflow:visible when not closing lets drag elevation overflow.
+                        <div
                             key={appId}
                             data-pill-id={appId}
-                            onMouseDown={(e) => handlePillMouseDown(e, appId)}
-                            aria-label={`${meta.label} — ${isMin ? "minimized" : "open"}`}
-                            className={`${isClosingPill ? "pill-disappear" : "pill-appear"} flex items-center gap-1.5 px-3 py-1 rounded text-xs`}
                             style={{
-                                background: isMin ? "rgba(255,255,255,0.05)" : "rgba(0,120,212,0.2)",
-                                color: isMin ? "rgba(255,255,255,0.5)" : "rgba(255,255,255,0.85)",
-                                border: isMin ? "1px solid rgba(255,255,255,0.07)" : "1px solid rgba(0,120,212,0.4)",
-                                height: 32,
+                                display: "flex",
                                 flexShrink: 0,
-                                opacity: isDragged ? 0.45 : 1,
-                                transform: isDragged ? "scale(1.07) translateY(-4px)" : "none",
-                                boxShadow: isDragged ? "0 8px 24px rgba(0,0,0,0.5)" : "none",
-                                cursor: isDragged ? "grabbing" : dragId ? "default" : "grab",
-                                transition: isDragged
-                                    ? "transform 0.1s ease, opacity 0.1s ease, box-shadow 0.1s ease"
-                                    : "background 0.15s ease, color 0.15s ease, transform 0.15s ease, opacity 0.15s ease",
-                                zIndex: isDragged ? 10 : "auto",
-                                position: "relative",
-                            }}
-                            onMouseEnter={(e) => {
-                                if (!isClosingPill && !isDragged && !dragId)
-                                    e.currentTarget.style.background = "rgba(0,120,212,0.3)";
-                            }}
-                            onMouseLeave={(e) => {
-                                if (!isClosingPill && !isDragged)
-                                    e.currentTarget.style.background = isMin ? "rgba(255,255,255,0.05)" : "rgba(0,120,212,0.2)";
+                                overflow: isClosingPill ? "hidden" : "visible",
+                                maxWidth: isClosingPill ? 0 : 300,
+                                marginRight: isClosingPill ? 0 : 4,
+                                opacity: isClosingPill ? 0 : 1,
+                                transition: isClosingPill
+                                    ? "max-width 0.15s ease-in, margin-right 0.15s ease-in, opacity 0.12s ease-in"
+                                    : "none",
                             }}
                         >
-                            <div className="w-4 h-4 flex items-center justify-center flex-shrink-0">{meta.icon}</div>
-                            <span>{meta.label}</span>
-                        </button>
+                            <button
+                                onMouseDown={(e) => handlePillMouseDown(e, appId)}
+                                aria-label={`${meta.label} — ${isMin ? "minimized" : "open"}`}
+                                className="pill-appear flex items-center gap-1.5 px-3 py-1 rounded text-xs"
+                                style={{
+                                    background: isMin ? "rgba(255,255,255,0.05)" : "rgba(0,120,212,0.2)",
+                                    color: isMin ? "rgba(255,255,255,0.5)" : "rgba(255,255,255,0.85)",
+                                    border: isMin ? "1px solid rgba(255,255,255,0.07)" : "1px solid rgba(0,120,212,0.4)",
+                                    height: 32,
+                                    flexShrink: 0,
+                                    opacity: isDragged ? 0.45 : 1,
+                                    transform: isDragged ? "scale(1.07) translateY(-4px)" : "none",
+                                    boxShadow: isDragged ? "0 8px 24px rgba(0,0,0,0.5)" : "none",
+                                    cursor: isDragged ? "grabbing" : dragId ? "default" : "grab",
+                                    transition: isDragged
+                                        ? "transform 0.1s ease, opacity 0.1s ease, box-shadow 0.1s ease"
+                                        : "background 0.15s ease, color 0.15s ease, transform 0.15s ease, opacity 0.15s ease",
+                                    zIndex: isDragged ? 10 : "auto",
+                                    position: "relative",
+                                }}
+                                onMouseEnter={(e) => {
+                                    if (!isDragged && !dragId)
+                                        e.currentTarget.style.background = "rgba(0,120,212,0.3)";
+                                }}
+                                onMouseLeave={(e) => {
+                                    if (!isDragged)
+                                        e.currentTarget.style.background = isMin ? "rgba(255,255,255,0.05)" : "rgba(0,120,212,0.2)";
+                                }}
+                            >
+                                <div className="w-4 h-4 flex items-center justify-center flex-shrink-0">{meta.icon}</div>
+                                <span>{meta.label}</span>
+                            </button>
+                        </div>
                     );
                 })}
             </div>
