@@ -74,6 +74,12 @@ export default function AboutApp({ darkTheme = false }) {
 
             {/* Bio */}
             <div className="px-8 py-6">
+                {/* Status indicator */}
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs mb-4"
+                     style={{ background: 'rgba(52, 199, 89, 0.15)', border: '1px solid rgba(52,199,89,0.3)' }}>
+                    <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+                    <span className="text-green-400 font-medium">Open to opportunities · Remote or Hybrid</span>
+                </div>
                 <p className="text-sm leading-relaxed" style={{ color: t.bioText }}>
                     I&apos;m a software engineer drawn to systems where the margin for error is genuinely small.
                     I graduated from UW-Madison and have shipped production code across broadcast infrastructure,
