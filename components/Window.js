@@ -47,6 +47,12 @@ function Window({
     const offset = useRef({ x: 0, y: 0 });
     const prevState = useRef(null);
 
+    const posRef = useRef(pos);
+    const sizeRef = useRef(size);
+
+    useEffect(() => { posRef.current = pos; }, [pos]);
+    useEffect(() => { sizeRef.current = size; }, [size]);
+
     const onMouseDownTitle = useCallback((e) => {
         if (maximized) return;
         if (e.target.closest(".win-control")) return;
@@ -151,13 +157,12 @@ function Window({
 
         const onMouseUp = () => {
             if (dragging.current || resizing.current) {
-                setPos(p => {
-                    setSize(s => {
-                        try { localStorage.setItem(`window_state_${id}`, JSON.stringify({ pos: p, size: s })); } catch (_) { /* ignore */ }
-                        return s;
-                    });
-                    return p;
-                });
+                try {
+                    localStorage.setItem(
+                        `window_state_${id}`,
+                        JSON.stringify({ pos: posRef.current, size: sizeRef.current })
+                    );
+                } catch (_) { /* ignore */ }
             }
             dragging.current = false;
             setIsDragging(false);
