@@ -109,6 +109,22 @@ export default function AboutApp({ darkTheme = false }) {
                     </div>
                 ))}
             </div>
+
+            {/* Certifications */}
+            <div className="px-8 pb-8">
+                <div className="mt-4">
+                    <h3 className="text-xs font-semibold text-white/50 uppercase tracking-widest mb-2">Certifications</h3>
+                    <div className="flex items-center gap-3 p-3 rounded-xl" style={{ background: 'rgba(255,153,0,0.1)', border: '1px solid rgba(255,153,0,0.25)' }}>
+                        <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(255,153,0,0.2)' }}>
+                            <span className="text-sm font-bold" style={{ color: '#FF9900' }}>AWS</span>
+                        </div>
+                        <div>
+                            <p className="text-xs font-semibold text-white/90">AWS Certified Cloud Practitioner</p>
+                            <p className="text-[10px] text-white/50">Amazon Web Services · 2024</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }
