@@ -20,18 +20,22 @@ export default function BootSequence({ onComplete }) {
     const [phase, setPhase] = useState('bios');
 
     useEffect(() => {
+        let cancelled = false;
         let currentIdx = 0;
+        let timerId;
         const addLine = () => {
+            if (cancelled) return;
             if (currentIdx < BOOT_LOG.length) {
                 const entry = BOOT_LOG[currentIdx];
                 currentIdx++;
                 setLines(prev => [...prev, entry.text]);
-                setTimeout(addLine, entry.delay);
+                timerId = setTimeout(addLine, entry.delay);
             } else {
-                setTimeout(() => setPhase('loading'), 500);
+                timerId = setTimeout(() => { if (!cancelled) setPhase('loading'); }, 500);
             }
         };
-        addLine();
+        timerId = setTimeout(addLine, 0);
+        return () => { cancelled = true; clearTimeout(timerId); };
     }, []);
 
     useEffect(() => {
