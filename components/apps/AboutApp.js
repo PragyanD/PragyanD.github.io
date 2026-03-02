@@ -85,9 +85,13 @@ export default function AboutApp({ darkTheme = false }) {
                     I graduated from UW-Madison and have shipped production code across broadcast infrastructure,
                     distributed ML platforms, and graph databases. Most recently, my time has been spent in
                     broadcast, working on everything from encryption to low-latency video pipelines, where a
-                    dropped frame or a bad decrypt is a real problem, not a hypothetical one. I work best on
-                    teams that take the craft seriously, and I&apos;m currently looking for my next chance to
-                    build something that matters.
+                    dropped frame or a bad decrypt is a real problem, not a hypothetical one. I led the
+                    encryption module design for DTV&apos;s BISS implementation, driving architecture decisions
+                    and coordinating with QA to cut the verification cycle significantly. Before that, I
+                    defined the ML pipeline architecture for Synkriom&apos;s candidate matching system, owning
+                    the end-to-end design from data ingestion through model serving. I work best on teams
+                    that take the craft seriously, and I&apos;m currently looking for my next chance to build
+                    something that matters.
                 </p>
             </div>
 
