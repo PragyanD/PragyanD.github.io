@@ -227,3 +227,18 @@ body {
   font-family: 'burtons';
   src: url('../public/Burtons.otf');
 }
+
+/* Keyboard focus styles — WCAG 2.1 AA */
+:focus-visible {
+  outline: 2px solid var(--os-accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+[role="button"]:focus-visible {
+  outline: 2px solid var(--os-accent);
+  outline-offset: 2px;
+}
