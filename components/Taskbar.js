@@ -379,6 +379,7 @@ export default function Taskbar({ openWindows, minimizedWindows, onStartClick, s
                                         : "background 0.15s ease, color 0.15s ease, transform 0.15s ease, opacity 0.15s ease",
                                     zIndex: isDragged ? 10 : "auto",
                                     position: "relative",
+                                    willChange: isDragged ? "transform" : "auto",
                                 }}
                                 onMouseEnter={(e) => {
                                     if (!isDragged && !dragId)
