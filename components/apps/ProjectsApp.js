@@ -148,6 +148,40 @@ export default function ProjectsApp({ darkTheme = false }) {
                     </div>
                 ))}
             </div>
+
+            {/* GitHub Repositories */}
+            <div className="mt-6 px-0 pb-4">
+                <h3 className="text-xs font-semibold text-white/50 uppercase tracking-widest mb-3">On GitHub</h3>
+                <div className="grid grid-cols-2 gap-2">
+                    {[
+                        { name: 'PragyanD.github.io', desc: 'This portfolio — desktop OS built with Next.js & React', lang: 'JavaScript' },
+                        { name: 'scene-recognition', desc: 'CNN-based scene recognition achieving 93% accuracy', lang: 'Python' },
+                    ].map(repo => (
+                        <a
+                            key={repo.name}
+                            href={`https://github.com/PragyanD/${repo.name}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-3 rounded-xl transition-colors"
+                            style={{ border: '1px solid rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.03)' }}
+                            onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.18)'}
+                            onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'}
+                        >
+                            <p className="text-xs font-semibold text-white/90 truncate">{repo.name}</p>
+                            <p className="text-[10px] text-white/50 mt-1 leading-tight line-clamp-2">{repo.desc}</p>
+                            <p className="text-[10px] text-white/35 mt-2">● {repo.lang}</p>
+                        </a>
+                    ))}
+                </div>
+                <a
+                    href="https://github.com/PragyanD"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block mt-3 text-center text-xs text-blue-400 hover:text-blue-300 transition-colors"
+                >
+                    View all repositories →
+                </a>
+            </div>
         </div>
     );
 }
