@@ -289,10 +289,10 @@ export default function Desktop({ onRestart }) {
                     onClick={e => e.stopPropagation()}
                 >
                     <div className="flex items-center justify-between mb-4">
-                        <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Master Volume</span>
+                        <span className="text-xs font-bold text-white/40 uppercase tracking-widest">Master Volume</span>
                         <button
                             onClick={() => setIsPlaying(!isPlaying)}
-                            className="text-[10px] px-2 py-0.5 rounded border border-white/10 text-white/60 hover:bg-white/5"
+                            className="text-xs px-2 py-0.5 rounded border border-white/10 text-white/60 hover:bg-white/5"
                         >
                             {isPlaying ? 'PAUSE' : 'PLAY'}
                         </button>
@@ -309,9 +309,9 @@ export default function Desktop({ onRestart }) {
                             className="flex-1 accent-blue-500 h-1 bg-white/10 rounded-lg appearance-none cursor-pointer"
                         />
                         <span className="text-sm opacity-40">🔊</span>
-                        <span className="text-[10px] text-white/50 w-7 text-right tabular-nums">{Math.round(volume * 100)}%</span>
+                        <span className="text-xs text-white/50 w-7 text-right tabular-nums">{Math.round(volume * 100)}%</span>
                     </div>
-                    <div className="mt-3 text-[10px] text-blue-400 font-mono text-center">
+                    <div className="mt-3 text-xs text-blue-400 font-mono text-center">
                         SomaFM Fluid · Chillhop — 128kbps
                     </div>
                 </div>
