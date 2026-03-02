@@ -67,6 +67,13 @@ export default function useWindowManager(onOpen) {
         }
     }, [minimizedWindows, openApp]);
 
+    // Clean up all pending close-animation timers on unmount
+    useEffect(() => {
+        return () => {
+            Object.values(closingTimers.current).forEach(clearTimeout);
+        };
+    }, []);
+
     // Windows to render: open + not minimized, plus windows animating out
     const activeWindows = [
         ...new Set([
