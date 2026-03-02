@@ -34,10 +34,10 @@ function Calendar({ onClose }) {
     return (
         <div
             data-calendar
-            className="fixed z-[200] rounded-2xl shadow-2xl"
+            className="absolute z-[200] rounded-2xl shadow-2xl"
             style={{
-                bottom: 56,
-                right: 8,
+                bottom: "calc(100% + 8px)",
+                right: 0,
                 width: 220,
                 background: "rgba(18,18,30,0.96)",
                 backdropFilter: "blur(40px)",
@@ -94,7 +94,7 @@ function Clock() {
     const timeStr = `${fmt(h12)}:${fmt(time.getMinutes())} ${ampm}`;
     const dateStr = time.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
     return (
-        <>
+        <div className="relative h-full">
             <button
                 data-calendar
                 onClick={() => setCalOpen(v => !v)}
@@ -105,7 +105,7 @@ function Clock() {
                 <span className="text-xs" style={{ color: "rgba(255,255,255,0.55)", fontSize: "10px" }}>{dateStr}</span>
             </button>
             {calOpen && <Calendar onClose={() => setCalOpen(false)} />}
-        </>
+        </div>
     );
 }
 
