@@ -205,7 +205,7 @@ export default function TerminalApp() {
             onClick={() => document.getElementById('terminal-input').focus()}
         >
             {history.map((line, i) => (
-                <pre key={i} className={`m-0 font-mono whitespace-pre${line.type === 'input' ? ' text-white font-bold' : ''}`}>
+                <pre key={i} className={`m-0 font-mono whitespace-pre-wrap break-words${line.type === 'input' ? ' text-white font-bold' : ''}`}>
                     {line.content}
                 </pre>
             ))}
@@ -216,10 +216,15 @@ export default function TerminalApp() {
                     autoFocus
                     autoComplete="off"
                     spellCheck="false"
-                    className="flex-1 bg-transparent border-none outline-none text-[#cccccc]"
+                    className="flex-1 bg-transparent border-none outline-none text-[#cccccc] caret-transparent"
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={handleKeyDown}
+                />
+                <span
+                    className="inline-block w-[2px] h-[14px] bg-green-400 ml-0.5 align-middle"
+                    style={{ animation: 'blink 1s step-end infinite' }}
+                    aria-hidden="true"
                 />
             </div>
         </div>
