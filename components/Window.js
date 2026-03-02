@@ -316,8 +316,10 @@ function Window({
                     <div onMouseDown={(e) => onMouseDownResize(e, 'nw')} className="absolute top-0 left-0 w-3 h-3 cursor-nwse-resize z-50" />
                     <div onMouseDown={(e) => onMouseDownResize(e, 'ne')} className="absolute top-0 right-0 w-3 h-3 cursor-nesw-resize z-50" />
                     <div onMouseDown={(e) => onMouseDownResize(e, 'sw')} className="absolute bottom-0 left-0 w-3 h-3 cursor-nesw-resize z-50" />
-                    <div onMouseDown={(e) => onMouseDownResize(e, 'se')} className="absolute bottom-0 right-0 w-4 h-4 cursor-nwse-resize z-50 flex items-end justify-end p-0.5 group">
-                        <div className="w-1.5 h-1.5 border-r-2 border-b-2 border-gray-400 opacity-[0.25] group-hover:opacity-75 transition-opacity duration-150 pointer-events-none" />
+                    <div onMouseDown={(e) => onMouseDownResize(e, 'se')} className="absolute bottom-0 right-0 w-5 h-5 cursor-nwse-resize z-50 flex items-end justify-end p-1 opacity-40 hover:opacity-70 transition-opacity duration-150">
+                        <svg width="8" height="8" viewBox="0 0 8 8" fill="none" aria-hidden="true">
+                            <path d="M1 7L7 1M4 7L7 4M7 7" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+                        </svg>
                     </div>
                 </>
             )}
