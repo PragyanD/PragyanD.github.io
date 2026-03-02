@@ -358,6 +358,8 @@ export default function Desktop({ onRestart }) {
                                         addToast(`Wallpaper changed to ${w.label}`, 'success');
                                     }}
                                     className="flex flex-col items-center gap-1.5 group"
+                                    aria-pressed={wallpaper === w.id}
+                                    aria-label={w.label + (wallpaper === w.id ? ' (selected)' : '')}
                                 >
                                     <div
                                         className="rounded-lg w-full aspect-video transition-all"
@@ -365,8 +367,8 @@ export default function Desktop({ onRestart }) {
                                             background: w.value.startsWith('url(')
                                                 ? `${w.value} center / cover no-repeat`
                                                 : w.value,
-                                            outline: wallpaper === w.id ? '2px solid #0078d4' : '2px solid transparent',
-                                            outlineOffset: 2,
+                                            outline: wallpaper === w.id ? '3px solid #0078d4' : '2px solid transparent',
+                                            outlineOffset: '2px',
                                         }}
                                     />
                                     <span className="text-[9px] text-white/50 group-hover:text-white/80 transition-colors">{w.label}</span>
