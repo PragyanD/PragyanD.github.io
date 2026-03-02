@@ -1,4 +1,8 @@
+import { useState } from "react";
+
 export default function ResumeApp() {
+    const [pdfFailed, setPdfFailed] = useState(false);
+
     const handleDownload = async (e) => {
         e.preventDefault();
         try {
@@ -45,12 +49,27 @@ export default function ResumeApp() {
             </div>
             {/* PDF Viewer */}
             <div className="flex-1 overflow-hidden">
-                <iframe
-                    src="/Pragyans_Resume.pdf"
-                    className="w-full h-full"
-                    style={{ border: "none", display: "block" }}
-                    title="Pragyan Das Resume"
-                />
+                {pdfFailed ? (
+                    <div className="flex flex-col items-center justify-center h-full gap-4 text-white/60">
+                        <p className="text-sm">Could not load PDF preview.</p>
+                        <a
+                            href="/Pragyans_Resume.pdf"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="px-4 py-2 rounded-lg text-sm bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+                        >
+                            Open PDF directly
+                        </a>
+                    </div>
+                ) : (
+                    <iframe
+                        src="/Pragyans_Resume.pdf"
+                        className="w-full h-full"
+                        style={{ border: "none", display: "block" }}
+                        title="Pragyan Das Resume"
+                        onError={() => setPdfFailed(true)}
+                    />
+                )}
             </div>
         </div>
     );
