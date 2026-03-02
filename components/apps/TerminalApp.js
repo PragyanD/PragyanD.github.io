@@ -26,6 +26,7 @@ export default function TerminalApp() {
     const [cmdHistory, setCmdHistory] = useState([]);
     const [historyIdx, setHistoryIdx] = useState(-1);
     const containerRef = useRef(null);
+    const cmdHistoryRef = useRef([]);
 
     useEffect(() => {
         if (containerRef.current) {
@@ -38,7 +39,7 @@ export default function TerminalApp() {
         if (!fullCmd) return;
         const [base, ...args] = fullCmd.toLowerCase().split(' ');
 
-        setCmdHistory(prev => [fullCmd, ...prev]);
+        setCmdHistory(prev => { const next = [fullCmd, ...prev]; cmdHistoryRef.current = next; return next; });
         setHistoryIdx(-1);
 
         let output = '';
@@ -192,7 +193,7 @@ export default function TerminalApp() {
             e.preventDefault();
             const next = Math.max(historyIdx - 1, -1);
             setHistoryIdx(next);
-            setInput(next === -1 ? '' : cmdHistory[next] ?? '');
+            setInput(next === -1 ? '' : cmdHistoryRef.current[next] ?? '');
         }
     };
 
