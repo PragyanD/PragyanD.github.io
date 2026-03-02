@@ -41,7 +41,9 @@ export default function AboutApp({ darkTheme = false }) {
                         width: 90,
                         height: 90,
                         border: "3px solid rgba(0,120,212,0.8)",
-                        boxShadow: "0 0 24px rgba(0,120,212,0.5)",
+                        boxShadow: darkTheme
+                            ? "0 0 24px rgba(0,120,212,0.5)"
+                            : "0 0 12px rgba(0,120,212,0.2)",
                     }}
                 >
                     <Image src={profilePic} alt="Pragyan Das" width={90} height={90} style={{ objectFit: "cover" }} />
