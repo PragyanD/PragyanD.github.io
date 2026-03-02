@@ -109,7 +109,7 @@ function Clock() {
     );
 }
 
-export default function Taskbar({ openWindows, minimizedWindows, onStartClick, startOpen, onRestoreWindow, onVolumeClick }) {
+export default function Taskbar({ openWindows, minimizedWindows, onStartClick, startOpen, onRestoreWindow, onOpenApp, onVolumeClick }) {
     const [closingPills, setClosingPills] = useState(new Set());
     const prevOpenWindows = useRef(openWindows);
 
