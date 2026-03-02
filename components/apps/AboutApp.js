@@ -80,6 +80,21 @@ export default function AboutApp({ darkTheme = false }) {
                     <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
                     <span className="text-green-400 font-medium">Open to opportunities · Remote or Hybrid</span>
                 </div>
+                {/* Impact metrics */}
+                <div className="grid grid-cols-2 gap-2 my-4">
+                    {[
+                        { value: '93%', label: 'Model accuracy' },
+                        { value: '<100ms', label: 'Video pipeline latency' },
+                        { value: '40%', label: 'QA cycle reduction' },
+                        { value: '15%', label: 'Matching improvement' },
+                    ].map(({ value, label }) => (
+                        <div key={label} className="p-3 rounded-xl text-center"
+                             style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                            <p className="text-base font-bold text-blue-400">{value}</p>
+                            <p className="text-[10px] text-white/50 mt-0.5">{label}</p>
+                        </div>
+                    ))}
+                </div>
                 <p className="text-sm leading-relaxed" style={{ color: t.bioText }}>
                     I&apos;m a software engineer drawn to systems where the margin for error is genuinely small.
                     I graduated from UW-Madison and have shipped production code across broadcast infrastructure,
