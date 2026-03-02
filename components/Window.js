@@ -260,7 +260,7 @@ function Window({
                 onContextMenu={(e) => { e.preventDefault(); e.stopPropagation(); setTitleMenu({ x: e.clientX, y: e.clientY }); }}
             >
                 {/* Traffic Lights */}
-                <div className="flex items-center gap-1.5 win-control" style={{ filter: focused ? "none" : "saturate(0) opacity(0.4)" }}>
+                <div role="group" aria-label="Window controls" className="flex items-center gap-1.5 win-control" style={{ filter: focused ? "none" : "saturate(0) opacity(0.4)" }}>
                     <button
                         onClick={(e) => { e.stopPropagation(); onClose?.(id); }}
                         className="w-3 h-3 rounded-full flex items-center justify-center group transition-all"
@@ -346,6 +346,7 @@ function Window({
             {/* Title-bar context menu */}
             {titleMenu && typeof document !== 'undefined' && createPortal(
                 <div
+                    role="menu"
                     className="fixed z-[9999] flex flex-col p-1 rounded-xl shadow-2xl"
                     style={{
                         left: titleMenu.x,
@@ -364,6 +365,7 @@ function Window({
                         ? <div key={i} className="h-px my-1 mx-2 bg-white/10" />
                         : <button
                             key={i}
+                            role="menuitem"
                             onClick={item.action}
                             className="text-left px-3 py-1.5 text-xs text-white/80 hover:bg-white/10 rounded-lg transition-colors w-full"
                           >
