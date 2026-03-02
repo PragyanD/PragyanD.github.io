@@ -93,6 +93,10 @@ export default function AboutApp({ darkTheme = false }) {
                     that take the craft seriously, and I&apos;m currently looking for my next chance to build
                     something that matters.
                 </p>
+                <p className="text-xs mt-3 leading-relaxed" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                    Note: Post-graduation (Jan–Mar 2023): Focused on open-source contributions and systems
+                    study while preparing for industry roles before joining Synkriom in April 2023.
+                </p>
             </div>
 
             {/* Skills grid */}
