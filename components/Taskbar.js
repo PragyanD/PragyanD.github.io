@@ -48,9 +48,9 @@ function Calendar({ onClose }) {
         >
             {/* Month nav */}
             <div className="flex items-center justify-between mb-3">
-                <button onClick={prevMonth} className="w-6 h-6 flex items-center justify-center rounded hover:bg-white/10 transition-colors text-xs" style={{ color: "rgba(255,255,255,0.6)" }}>‹</button>
+                <button onClick={prevMonth} aria-label="Previous month" className="w-6 h-6 flex items-center justify-center rounded hover:bg-white/10 transition-colors text-xs" style={{ color: "rgba(255,255,255,0.6)" }}>‹</button>
                 <span className="text-xs font-semibold" style={{ color: "rgba(255,255,255,0.85)" }}>{MONTHS[view.month]} {view.year}</span>
-                <button onClick={nextMonth} className="w-6 h-6 flex items-center justify-center rounded hover:bg-white/10 transition-colors text-xs" style={{ color: "rgba(255,255,255,0.6)" }}>›</button>
+                <button onClick={nextMonth} aria-label="Next month" className="w-6 h-6 flex items-center justify-center rounded hover:bg-white/10 transition-colors text-xs" style={{ color: "rgba(255,255,255,0.6)" }}>›</button>
             </div>
 
             {/* Day headers */}
