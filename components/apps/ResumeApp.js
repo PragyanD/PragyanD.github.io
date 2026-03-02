@@ -7,7 +7,7 @@ export default function ResumeApp() {
             const url = window.URL.createObjectURL(blob);
             const link = document.createElement("a");
             link.href = url;
-            link.setAttribute("download", "/Pragyans_Resume.pdf");
+            link.setAttribute("download", "Pragyans_Resume.pdf");
             document.body.appendChild(link);
             link.click();
             link.parentNode.removeChild(link);
