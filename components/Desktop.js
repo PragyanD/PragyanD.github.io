@@ -84,13 +84,18 @@ export default function Desktop({ onRestart }) {
     useEffect(() => {
         const hasSeenTip = localStorage.getItem('spotlight_tip_seen');
         if (!hasSeenTip) {
-            setTimeout(() => {
+            let innerTimer;
+            const outerTimer = setTimeout(() => {
                 setShowSpotlightTip(true);
-                setTimeout(() => {
+                innerTimer = setTimeout(() => {
                     setShowSpotlightTip(false);
                     localStorage.setItem('spotlight_tip_seen', 'true');
                 }, 8000);
             }, 3000);
+            return () => {
+                clearTimeout(outerTimer);
+                clearTimeout(innerTimer);
+            };
         }
     }, []);
 
