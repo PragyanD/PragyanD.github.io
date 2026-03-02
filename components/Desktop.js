@@ -127,7 +127,11 @@ export default function Desktop({ onRestart }) {
     const handleContextMenu = useCallback((e) => {
         if (e.target.closest(".window-open") || e.target.closest("#start-button") || e.target.closest(".taskbar")) return;
         e.preventDefault();
-        setContextMenu({ visible: true, x: e.clientX, y: e.clientY });
+        const MENU_WIDTH = 180;
+        const MENU_HEIGHT = 200; // approximate
+        const x = Math.min(e.clientX, window.innerWidth - MENU_WIDTH - 8);
+        const y = Math.min(e.clientY, window.innerHeight - MENU_HEIGHT - 8);
+        setContextMenu({ visible: true, x, y });
         setStartOpen(false);
     }, []);
 
