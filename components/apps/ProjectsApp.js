@@ -6,6 +6,8 @@ const PROJECTS = [
         description: "CNN-based scene classifier achieving 93% accuracy on MiniPlaces dataset. Optimized via hyperparameter tuning, data augmentation, batch normalization, and learning rate scheduling.",
         highlight: "Machine Learning",
         color: "#6366f1",
+        github: "https://github.com/PragyanD/scene-recognition",
+        demo: null,
         links: [],
     },
     {
@@ -15,7 +17,9 @@ const PROJECTS = [
         description: "Multipurpose Discord bot for server admin, music playback, and user verification. Streams audio from YouTube via YTDL + FFmpeg for real-time audio processing.",
         highlight: "Distributed Systems",
         color: "#5865f2",
-        links: [{ label: "GitHub", href: "https://github.com/PragyanD" }],
+        github: null,
+        demo: null,
+        links: [],
     },
     {
         name: "BISS Encryption (TSDuck)",
@@ -24,6 +28,8 @@ const PROJECTS = [
         description: "Developed a proprietary patch for DTV Innovations which added support for BISS-1/E/CA encryption for real-time video scrambling.",
         highlight: "Multimedia Encryption",
         color: "#f59e0b",
+        github: null,
+        demo: null,
         links: [],
     },
     {
@@ -33,6 +39,19 @@ const PROJECTS = [
         description: "Contributed to Apache AGE graph database extension for PostgreSQL. Implemented Cypher query parsing, graph traversal, and mitigated SQL injection vulnerabilities.",
         highlight: "Graph Databases",
         color: "#10b981",
+        github: null,
+        demo: null,
+        links: [],
+    },
+    {
+        name: "Portfolio — This Website",
+        logo: "https://pragyand.github.io/favicon.ico",
+        stack: ["Next.js", "React", "Tailwind CSS"],
+        description: "Interactive portfolio styled as a desktop OS, complete with a boot sequence, windowed apps, and a dark theme. Built with Next.js and deployed via GitHub Pages.",
+        highlight: "Web Development",
+        color: "#38bdf8",
+        github: "https://github.com/PragyanD/PragyanD.github.io",
+        demo: "https://pragyand.github.io",
         links: [],
     },
 ];
@@ -143,6 +162,27 @@ export default function ProjectsApp({ darkTheme = false }) {
                                         ↗ {link.label}
                                     </a>
                                 ))}
+                            </div>
+                        )}
+
+                        {/* GitHub / Demo links */}
+                        {(project.github || project.demo) && (
+                            <div className="flex gap-2 mt-3">
+                                {project.github && (
+                                    <a href={project.github} target="_blank" rel="noopener noreferrer"
+                                       className="text-[10px] px-2 py-1 rounded-lg transition-colors"
+                                       style={{ border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.7)' }}
+                                       onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.35)'}
+                                       onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)'}>
+                                        GitHub →
+                                    </a>
+                                )}
+                                {project.demo && (
+                                    <a href={project.demo} target="_blank" rel="noopener noreferrer"
+                                       className="text-[10px] px-2 py-1 rounded-lg text-white bg-blue-600/80 hover:bg-blue-600 transition-colors">
+                                        Live Demo →
+                                    </a>
+                                )}
                             </div>
                         )}
                     </div>
