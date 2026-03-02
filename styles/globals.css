@@ -10,7 +10,7 @@
   --os-window-bg: #f3f3f3;
   --os-border: rgba(255, 255, 255, 0.1);
   --os-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 4px 16px rgba(0, 0, 0, 0.4);
-  --os-font: 'Pixelify Sans', 'Segoe UI', system-ui, sans-serif;
+  --os-font: 'Space Grotesk', 'Segoe UI', system-ui, sans-serif;
 
   /* Blur tiers */
   --blur-icon: blur(8px);

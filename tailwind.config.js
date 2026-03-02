@@ -10,6 +10,7 @@ module.exports = {
       fontFamily: {
         burtons: "burtons",
         inter: ["Inter", "Segoe UI", "system-ui", "sans-serif"],
+        grotesk: ["Space Grotesk", "Segoe UI", "system-ui", "sans-serif"],
       },
       colors: {
         "os-accent": "#0078d4",
