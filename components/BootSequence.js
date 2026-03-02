@@ -66,12 +66,12 @@ export default function BootSequence({ onComplete }) {
         <div className="fixed inset-0 z-[1000] bg-black text-[#aaaaaa] font-mono p-10 flex flex-col items-start justify-start select-none cursor-none">
             {/* CRT scanlines */}
             <div className="absolute inset-0 pointer-events-none z-10" style={{
-                background: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px)",
+                background: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px)",
                 mixBlendMode: "overlay",
             }} />
             {/* Vignette */}
             <div className="absolute inset-0 pointer-events-none z-10" style={{
-                background: "radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.6) 100%)",
+                background: "radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.35) 100%)",
             }} />
 
             {phase === 'bios' && (
