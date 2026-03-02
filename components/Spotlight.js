@@ -64,7 +64,7 @@ export default function Spotlight({ isOpen, onClose, onOpenApp }) {
                         aria-expanded={filtered.length > 0}
                         aria-controls="spotlight-listbox"
                         aria-autocomplete="list"
-                        className="flex-1 bg-transparent border-none outline-none text-xl text-white/90 placeholder:text-white/20"
+                        className="flex-1 bg-transparent border-none outline-none text-xl text-white/90 placeholder:text-white/40"
                         value={query}
                         onChange={e => { setQuery(e.target.value); setSelectedIndex(0); }}
                         onKeyDown={handleKeyDown}
