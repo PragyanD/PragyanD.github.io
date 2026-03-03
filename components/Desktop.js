@@ -23,7 +23,7 @@ const APPS = Object.fromEntries(
     }])
 );
 
-const DESKTOP_ICONS = APPS_CONFIG.map(app => ({
+const DESKTOP_ICONS = APPS_CONFIG.filter(app => !app.noDesktopIcon).map(app => ({
     id: app.id,
     icon: renderDesktopIcon(app),
     label: app.label,
@@ -243,6 +243,25 @@ export default function Desktop({ onRestart }) {
                     />
                 ))}
             </div>
+
+            {/* Games Easter Egg Button */}
+            <button
+                onClick={() => openApp('games_hub')}
+                aria-label="Open Games"
+                className="absolute flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all hover:scale-105 active:scale-95"
+                style={{
+                    top: 16,
+                    right: 16,
+                    zIndex: 10,
+                    background: "rgba(255,255,255,0.1)",
+                    border: "1px solid rgba(255,255,255,0.18)",
+                    backdropFilter: "blur(16px)",
+                    color: "rgba(255,255,255,0.8)",
+                    boxShadow: "0 2px 12px rgba(0,0,0,0.3)",
+                }}
+            >
+                🎮 Games
+            </button>
 
             {/* Windows */}
             {activeWindows.map((appId) => {
