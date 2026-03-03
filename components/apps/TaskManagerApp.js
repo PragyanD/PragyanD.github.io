@@ -87,25 +87,39 @@ const SKILLS_PERF = [
     { name: "System Design", value: 50 },
 ];
 
+function getUptime() {
+    const start = new Date("2022-12-15");
+    const now = new Date();
+    const diff = now - start;
+    const years = Math.floor(diff / (1000 * 60 * 60 * 24 * 365));
+    const months = Math.floor((diff % (1000 * 60 * 60 * 24 * 365)) / (1000 * 60 * 60 * 24 * 30));
+    const days = Math.floor((diff % (1000 * 60 * 60 * 24 * 30)) / (1000 * 60 * 60 * 24));
+    return `${years}y ${months}m ${days}d`;
+}
+
 function CpuBar({ label, value, darkTheme }) {
     const [displayed, setDisplayed] = useState(0);
     const [width, setWidth] = useState(0);
 
     useEffect(() => {
         setWidth(0);
-        const timeout = setTimeout(() => setWidth(value), 50);
-        let startTimestamp = null;
-        const duration = 1000;
-        const step = (timestamp) => {
-            if (!startTimestamp) startTimestamp = timestamp;
-            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-            setDisplayed(Math.floor(progress * value));
-            if (progress < 1) window.requestAnimationFrame(step);
-        };
-        window.requestAnimationFrame(step);
+        setDisplayed(0);
+        let rafId;
+        const timeout = setTimeout(() => {
+            setWidth(value);
+            let startTimestamp = null;
+            const duration = 1000;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                setDisplayed(Math.floor(progress * value));
+                if (progress < 1) rafId = window.requestAnimationFrame(step);
+            };
+            rafId = window.requestAnimationFrame(step);
+        }, 50);
         return () => {
             clearTimeout(timeout);
-            setDisplayed(0);
+            if (rafId) cancelAnimationFrame(rafId);
         };
     }, [value]);
 
@@ -171,6 +185,7 @@ export default function TaskManagerApp({ darkTheme = false }) {
         headerText: "rgba(255,255,255,0.6)",
         rowEven: "rgba(255,255,255,0.02)",
         rowOdd: "rgba(255,255,255,0.04)",
+        rowHover: "rgba(255,255,255,0.07)",
         rowSelected: "rgba(0,120,212,0.15)",
         rowBorder: "rgba(255,255,255,0.05)",
         logoBg: "rgba(255,255,255,0.08)",
@@ -205,6 +220,7 @@ export default function TaskManagerApp({ darkTheme = false }) {
         headerText: "#444",
         rowEven: "#fff",
         rowOdd: "#fafafa",
+        rowHover: "#ebebeb",
         rowSelected: "rgba(0,120,212,0.1)",
         rowBorder: "#eee",
         logoBg: "white",
@@ -283,17 +299,25 @@ export default function TaskManagerApp({ darkTheme = false }) {
                         {EXPERIENCES.map((exp, i) => (
                             <div key={i}>
                                 <div
-                                    className="grid items-center px-3 py-3 cursor-pointer transition-all"
+                                    className="grid items-center px-3 py-3 cursor-pointer"
                                     style={{
                                         gridTemplateColumns: "1fr 90px 90px 110px 140px",
                                         background: selected === i ? t.rowSelected : i % 2 === 0 ? t.rowEven : t.rowOdd,
                                         borderBottom: `1px solid ${t.rowBorder}`,
+                                        transition: "background 0.1s ease",
                                     }}
                                     onClick={() => setSelected(selected === i ? null : i)}
+                                    onMouseEnter={e => { if (selected !== i) e.currentTarget.style.background = t.rowHover; }}
+                                    onMouseLeave={e => { if (selected !== i) e.currentTarget.style.background = i % 2 === 0 ? t.rowEven : t.rowOdd; }}
                                 >
                                     <div className="flex items-center gap-3">
                                         <div className="w-10 h-10 flex items-center justify-center rounded shrink-0 p-1" style={{ background: t.logoBg, border: `1px solid ${t.logoBorder}` }}>
-                                            <img src={exp.logo} alt="" className="max-w-full max-h-full object-contain" />
+                                            <img
+                                                src={exp.logo}
+                                                alt=""
+                                                className="max-w-full max-h-full object-contain"
+                                                onError={e => { e.target.style.display = "none"; }}
+                                            />
                                         </div>
                                         <div>
                                             <p className="text-xs font-semibold" style={{ color: t.name }}>{exp.name}</p>
@@ -314,7 +338,13 @@ export default function TaskManagerApp({ darkTheme = false }) {
                                         </span>
                                     </div>
                                 </div>
-                                {selected === i && (
+
+                                {/* Animated expand panel */}
+                                <div style={{
+                                    maxHeight: selected === i ? 400 : 0,
+                                    overflow: "hidden",
+                                    transition: "max-height 0.25s ease",
+                                }}>
                                     <div className="px-8 py-4 border-l-2" style={{ background: t.expandBg, borderLeftColor: exp.color, borderBottom: `1px solid ${t.expandBorder}` }}>
                                         <div className="flex items-center gap-2 mb-3">
                                             <p className="text-xs font-semibold" style={{ color: t.expandTitle }}>📍 {exp.location}</p>
@@ -329,30 +359,38 @@ export default function TaskManagerApp({ darkTheme = false }) {
                                         </div>
                                         <ul className="space-y-1.5">
                                             {exp.description.map((d, j) => (
-                                                <li key={j} className="flex gap-2 text-xs" style={{ color: t.expandText }}>
+                                                <li key={j} className="flex gap-2 text-xs" style={{ color: t.expandText, fontFamily: "system-ui, sans-serif" }}>
                                                     <span style={{ color: exp.color, flexShrink: 0 }}>▸</span>
                                                     <span>{d}</span>
                                                 </li>
                                             ))}
                                         </ul>
                                     </div>
-                                )}
+                                </div>
                             </div>
                         ))}
 
                         <div key="edu">
                             <div
-                                className="grid items-center px-3 py-3 cursor-pointer transition-all"
+                                className="grid items-center px-3 py-3 cursor-pointer"
                                 style={{
                                     gridTemplateColumns: "1fr 90px 90px 110px 140px",
                                     background: eduExpanded ? t.rowSelected : t.rowEven,
                                     borderBottom: `1px solid ${t.rowBorder}`,
+                                    transition: "background 0.1s ease",
                                 }}
                                 onClick={() => setEduExpanded(!eduExpanded)}
+                                onMouseEnter={e => { if (!eduExpanded) e.currentTarget.style.background = t.rowHover; }}
+                                onMouseLeave={e => { if (!eduExpanded) e.currentTarget.style.background = t.rowEven; }}
                             >
                                 <div className="flex items-center gap-3">
                                     <div className="w-10 h-10 flex items-center justify-center rounded shrink-0 p-1" style={{ background: t.logoBg, border: `1px solid ${t.logoBorder}` }}>
-                                        <img src={EDUCATION.logo} alt="" className="max-w-full max-h-full object-contain" />
+                                        <img
+                                            src={EDUCATION.logo}
+                                            alt=""
+                                            className="max-w-full max-h-full object-contain"
+                                            onError={e => { e.target.style.display = "none"; }}
+                                        />
                                     </div>
                                     <div>
                                         <p className="text-xs font-semibold" style={{ color: t.name }}>{EDUCATION.name}</p>
@@ -373,19 +411,25 @@ export default function TaskManagerApp({ darkTheme = false }) {
                                     </span>
                                 </div>
                             </div>
-                            {eduExpanded && (
+
+                            {/* Animated expand panel */}
+                            <div style={{
+                                maxHeight: eduExpanded ? 400 : 0,
+                                overflow: "hidden",
+                                transition: "max-height 0.25s ease",
+                            }}>
                                 <div className="px-8 py-4 border-l-2" style={{ background: t.expandBg, borderLeftColor: EDUCATION.color, borderBottom: `1px solid ${t.expandBorder}` }}>
                                     <p className="text-xs font-semibold mb-2" style={{ color: t.expandTitle }}>🎓 Key Courses:</p>
                                     <ul className="grid grid-cols-2 gap-x-4 gap-y-1">
                                         {EDUCATION.courses.map((course, j) => (
-                                            <li key={j} className="flex gap-2 text-xs" style={{ color: t.expandText }}>
+                                            <li key={j} className="flex gap-2 text-xs" style={{ color: t.expandText, fontFamily: "system-ui, sans-serif" }}>
                                                 <span style={{ color: EDUCATION.color, flexShrink: 0 }}>•</span>
                                                 <span>{course}</span>
                                             </li>
                                         ))}
                                     </ul>
                                 </div>
-                            )}
+                            </div>
                         </div>
                     </div>
 
@@ -394,7 +438,7 @@ export default function TaskManagerApp({ darkTheme = false }) {
                         className="flex items-center justify-between px-4 py-1.5 flex-shrink-0 text-xs"
                         style={{ background: t.statusBarBg, borderTop: `1px solid ${t.statusBarBorder}`, color: t.statusBarText }}
                     >
-                        <span>4 processes ({EXPERIENCES.length} roles + 1 education)</span>
+                        <span>{EXPERIENCES.length + 1} processes ({EXPERIENCES.length} roles + 1 education)</span>
                         <span>Click a row to expand details</span>
                     </div>
                 </div>
@@ -420,16 +464,18 @@ export default function TaskManagerApp({ darkTheme = false }) {
             {/* ── DETAILS TAB ── */}
             {tab === "details" && (
                 <div className="flex-1 overflow-y-auto os-scroll p-4">
+                    <p className="text-xs font-semibold mb-3" style={{ color: t.detailLabel, textTransform: "uppercase", letterSpacing: "0.07em" }}>
+                        System Information
+                    </p>
                     <div className="grid grid-cols-2 gap-3">
                         {[
-                            { label: "Full Name", value: "Pragyan Das" },
-                            { label: "GitHub", value: "github.com/PragyanD" },
-                            { label: "LinkedIn", value: "linkedin.com/in/daspragyan" },
-                            { label: "Education", value: "UW-Madison, B.S. Computer Science" },
-                            { label: "Graduation", value: "December 2022" },
-                            { label: "Languages", value: "Python, C, C++, JavaScript, Java, SQL, Bash" },
-                            { label: "Tools", value: "Git, Linux, Docker, AWS, FFmpeg" },
-                            { label: "Frameworks", value: "React.js, Node.js, Flask, PyTorch, TensorFlow" },
+                            { label: "OS", value: "PDOS 2.0.26-release" },
+                            { label: "Architecture", value: "Full-Stack · Systems" },
+                            { label: "Uptime", value: getUptime() },
+                            { label: "Base", value: "UW-Madison, B.S. Computer Science" },
+                            { label: "Logged in since", value: "December 2022" },
+                            { label: "Available for", value: "Full-time · Remote or Hybrid" },
+                            { label: "Location", value: "Bengaluru, India" },
                             { label: "Certifications", value: "AWS Certified Cloud Practitioner" },
                         ].map(({ label, value }) => (
                             <div key={label} className="p-3 rounded" style={{ background: t.detailCardBg, border: `1px solid ${t.detailCardBorder}` }}>
@@ -437,6 +483,30 @@ export default function TaskManagerApp({ darkTheme = false }) {
                                 <p className="text-xs" style={{ color: t.detailValue }}>{value}</p>
                             </div>
                         ))}
+                        <a
+                            href="https://github.com/PragyanD"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-3 rounded block"
+                            style={{ background: t.detailCardBg, border: `1px solid ${t.detailCardBorder}`, textDecoration: "none", transition: "border-color 0.15s ease" }}
+                            onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(0,120,212,0.5)"; }}
+                            onMouseLeave={e => { e.currentTarget.style.borderColor = t.detailCardBorder; }}
+                        >
+                            <p className="text-xs font-semibold mb-0.5" style={{ color: t.detailLabel }}>GitHub</p>
+                            <p className="text-xs" style={{ color: "#0078d4" }}>github.com/PragyanD ↗</p>
+                        </a>
+                        <a
+                            href="https://www.linkedin.com/in/daspragyan"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-3 rounded block"
+                            style={{ background: t.detailCardBg, border: `1px solid ${t.detailCardBorder}`, textDecoration: "none", transition: "border-color 0.15s ease" }}
+                            onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(0,120,212,0.5)"; }}
+                            onMouseLeave={e => { e.currentTarget.style.borderColor = t.detailCardBorder; }}
+                        >
+                            <p className="text-xs font-semibold mb-0.5" style={{ color: t.detailLabel }}>LinkedIn</p>
+                            <p className="text-xs" style={{ color: "#0078d4" }}>linkedin.com/in/daspragyan ↗</p>
+                        </a>
                     </div>
                 </div>
             )}
