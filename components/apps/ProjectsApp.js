@@ -45,7 +45,7 @@ const PROJECTS = [
     },
     {
         name: "Portfolio — This Website",
-        logo: "https://pragyand.github.io/favicon.ico",
+        logo: "/favicon.png",
         stack: ["Next.js", "React", "Tailwind CSS"],
         description: "Interactive portfolio styled as a desktop OS, complete with a boot sequence, windowed apps, and a dark theme. Built with Next.js and deployed via GitHub Pages.",
         highlight: "Web Development",
