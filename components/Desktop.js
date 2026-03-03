@@ -23,7 +23,13 @@ const APPS = Object.fromEntries(
     }])
 );
 
-const DESKTOP_ICONS = APPS_CONFIG.filter(app => !app.noDesktopIcon).map(app => ({
+const LEFT_ICONS = APPS_CONFIG.filter(app => !app.rightColumn && !app.noDesktopIcon).map(app => ({
+    id: app.id,
+    icon: renderDesktopIcon(app),
+    label: app.label,
+}));
+
+const RIGHT_ICONS = APPS_CONFIG.filter(app => app.rightColumn).map(app => ({
     id: app.id,
     icon: renderDesktopIcon(app),
     label: app.label,
@@ -229,12 +235,12 @@ export default function Desktop({ onRestart }) {
                 style={{ background: "rgba(0,0,0,0.15)" }}
             />
 
-            {/* Desktop Icons — left column */}
+            {/* Desktop Icons — left column (work apps) */}
             <div
                 className="absolute top-6 left-6 flex flex-col gap-2"
                 style={{ zIndex: 10 }}
             >
-                {DESKTOP_ICONS.map(({ id, icon, label }) => (
+                {LEFT_ICONS.map(({ id, icon, label }) => (
                     <DesktopIcon
                         key={id}
                         icon={icon}
@@ -244,24 +250,20 @@ export default function Desktop({ onRestart }) {
                 ))}
             </div>
 
-            {/* Games Easter Egg Button */}
-            <button
-                onClick={() => openApp('games_hub')}
-                aria-label="Open Games"
-                className="absolute flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all hover:scale-105 active:scale-95"
-                style={{
-                    top: 16,
-                    right: 16,
-                    zIndex: 10,
-                    background: "rgba(255,255,255,0.1)",
-                    border: "1px solid rgba(255,255,255,0.18)",
-                    backdropFilter: "blur(16px)",
-                    color: "rgba(255,255,255,0.8)",
-                    boxShadow: "0 2px 12px rgba(0,0,0,0.3)",
-                }}
+            {/* Desktop Icons — right column (utilities) */}
+            <div
+                className="absolute top-6 right-6 flex flex-col gap-2"
+                style={{ zIndex: 10 }}
             >
-                🎮 Games
-            </button>
+                {RIGHT_ICONS.map(({ id, icon, label }) => (
+                    <DesktopIcon
+                        key={id}
+                        icon={icon}
+                        label={label}
+                        onDoubleClick={() => openApp(id)}
+                    />
+                ))}
+            </div>
 
             {/* Windows */}
             {activeWindows.map((appId) => {
