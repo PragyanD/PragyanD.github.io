@@ -1,20 +1,23 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 function slideRow(row) {
     const cells = row.filter(Boolean);
     const merged = [];
+    let scoreGain = 0;
     let skip = false;
     for (let i = 0; i < cells.length; i++) {
         if (skip) { skip = false; continue; }
         if (i + 1 < cells.length && cells[i] === cells[i + 1]) {
-            merged.push(cells[i] * 2);
+            const val = cells[i] * 2;
+            merged.push(val);
+            scoreGain += val;
             skip = true;
         } else {
             merged.push(cells[i]);
         }
     }
     while (merged.length < 4) merged.push(0);
-    return merged;
+    return { row: merged, score: scoreGain };
 }
 
 function transpose(board) {
@@ -27,16 +30,18 @@ function applyMove(board, dir) {
     let b = [...board];
     if (dir === 'up' || dir === 'down') b = transpose(b);
     const rows = [];
+    let totalScore = 0;
     for (let r = 0; r < 4; r++) {
         let row = b.slice(r * 4, r * 4 + 4);
         if (dir === 'right' || dir === 'down') row = row.reverse();
-        row = slideRow(row);
-        if (dir === 'right' || dir === 'down') row = row.reverse();
-        rows.push(row);
+        const { row: merged, score } = slideRow(row);
+        totalScore += score;
+        if (dir === 'right' || dir === 'down') merged.reverse();
+        rows.push(merged);
     }
     b = rows.flat();
     if (dir === 'up' || dir === 'down') b = transpose(b);
-    return b;
+    return { board: b, score: totalScore };
 }
 
 function addTile(board) {
@@ -93,28 +98,33 @@ export default function Game2048({ darkTheme }) {
     });
     const [won, setWon] = useState(false);
     const [lost, setLost] = useState(false);
+    const boardRef = useRef(null);
 
     const bg = darkTheme ? '#0a0a1e' : '#f7f8fb';
 
-    const handleMove = useCallback((dir) => {
-        setBoard(prev => {
-            const next = applyMove(prev, dir);
-            if (next.join() === prev.join()) return prev;
-            const delta = next.reduce((a, v) => a + v, 0) - prev.reduce((a, v) => a + v, 0);
-            setScore(s => {
-                const newS = s + delta;
-                setBest(b => {
-                    const nb = Math.max(b, newS);
-                    try { localStorage.setItem('pdos_2048_best', String(nb)); } catch {}
-                    return nb;
-                });
-                return newS;
-            });
-            if (next.includes(2048)) setWon(true);
-            const withTile = addTile(next);
-            if (isStuck(withTile)) setLost(true);
-            return withTile;
+    useEffect(() => { boardRef.current = board; }, [board]);
+
+    useEffect(() => {
+        if (score <= 0) return;
+        setBest(b => {
+            if (score > b) {
+                try { localStorage.setItem('pdos_2048_best', String(score)); } catch {}
+                return score;
+            }
+            return b;
         });
+    }, [score]);
+
+    const handleMove = useCallback((dir) => {
+        const prev = boardRef.current;
+        if (!prev) return;
+        const { board: next, score: gained } = applyMove(prev, dir);
+        if (next.join() === prev.join()) return;
+        if (next.includes(2048)) setWon(true);
+        const withTile = addTile(next);
+        if (isStuck(withTile)) setLost(true);
+        setBoard(withTile);
+        if (gained > 0) setScore(s => s + gained);
     }, []);
 
     useEffect(() => {
@@ -126,7 +136,7 @@ export default function Game2048({ darkTheme }) {
         return () => window.removeEventListener('keydown', handler);
     }, [handleMove]);
 
-    const reset = () => { setBoard(initBoard()); setScore(0); setWon(false); setLost(false); };
+    const reset = () => { const b = initBoard(); boardRef.current = b; setBoard(b); setScore(0); setWon(false); setLost(false); };
 
     return (
         <div className="w-full h-full flex flex-col items-center justify-center gap-4 select-none" style={{ background: bg }}>

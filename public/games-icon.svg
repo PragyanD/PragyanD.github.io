@@ -1,0 +1,53 @@
+<svg width="72" height="72" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="gamesBg" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#6C3FC5"></stop>
+              <stop offset="100%" stop-color="#2D1060"></stop>
+            </linearGradient>
+            <linearGradient id="gamesShine" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="rgba(255,255,255,0.4)"></stop>
+              <stop offset="55%" stop-color="rgba(255,255,255,0)"></stop>
+            </linearGradient>
+            <linearGradient id="ctrlBody" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#4A4A5A"></stop>
+              <stop offset="100%" stop-color="#2A2A38"></stop>
+            </linearGradient>
+            <clipPath id="gcClip"><rect width="72" height="72" rx="16" ry="16"></rect></clipPath>
+          </defs>
+          <rect width="72" height="72" rx="16" fill="url(#gamesBg)"></rect>
+
+          <!-- Stars in background -->
+          <circle cx="12" cy="10" r="1" fill="white" opacity="0.5"></circle>
+          <circle cx="60" cy="15" r="0.8" fill="white" opacity="0.4"></circle>
+          <circle cx="55" cy="8" r="1.2" fill="white" opacity="0.6"></circle>
+          <circle cx="18" cy="60" r="0.9" fill="white" opacity="0.35"></circle>
+          <circle cx="62" cy="58" r="1" fill="white" opacity="0.45"></circle>
+
+          <!-- Controller body -->
+          <path d="M14 33 Q14 26 22 26 L30 26 Q33 20 36 20 Q39 20 42 26 L50 26 Q58 26 58 33 L58 44 Q58 50 52 52 Q47 54 44 50 L42 48 L30 48 L28 50 Q25 54 20 52 Q14 50 14 44 Z" fill="url(#ctrlBody)"></path>
+          <!-- Controller shine -->
+          <path d="M14 33 Q14 26 22 26 L30 26 Q33 20 36 20 Q39 20 42 26 L50 26 Q58 26 58 33 L58 36 Q55 28 50 28 L42 28 Q39 22 36 22 Q33 22 30 28 L22 28 Q17 28 14 36 Z" fill="rgba(255,255,255,0.08)"></path>
+
+          <!-- D-pad (left side) -->
+          <rect x="21" y="34" width="5" height="11" rx="1.5" fill="#555568"></rect>
+          <rect x="18" y="37" width="11" height="5" rx="1.5" fill="#555568"></rect>
+
+          <!-- ABXY buttons (right side) -->
+          <circle cx="49" cy="35" r="2.8" fill="#E74C3C"></circle><!-- Y/top red -->
+          <circle cx="45" cy="39" r="2.8" fill="#3498DB"></circle><!-- X/left blue -->
+          <circle cx="53" cy="39" r="2.8" fill="#F39C12"></circle><!-- B/right yellow -->
+          <circle cx="49" cy="43" r="2.8" fill="#2ECC71"></circle><!-- A/bottom green -->
+
+          <!-- Center buttons -->
+          <rect x="31" y="37" width="5" height="3" rx="1.5" fill="#444458"></rect>
+          <rect x="36" y="37" width="5" height="3" rx="1.5" fill="#6C3FC5"></rect>
+
+          <!-- Analog stick indicators -->
+          <circle cx="24" cy="46" r="4" fill="#3A3A4A"></circle>
+          <circle cx="24" cy="46" r="2.5" fill="#444458"></circle>
+          <circle cx="48" cy="46" r="4" fill="#3A3A4A"></circle>
+          <circle cx="48" cy="46" r="2.5" fill="#444458"></circle>
+
+          <rect width="72" height="36" rx="16" fill="url(#gamesShine)" clip-path="url(#gcClip)"></rect>
+          <rect width="72" height="72" rx="16" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1"></rect>
+        </svg>

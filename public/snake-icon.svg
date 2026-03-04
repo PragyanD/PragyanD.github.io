@@ -1,0 +1,63 @@
+<svg width="72" height="72" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="snakeBg" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#0D2B0D"></stop>
+              <stop offset="100%" stop-color="#050F05"></stop>
+            </linearGradient>
+            <linearGradient id="snakeShine" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="rgba(255,255,255,0.3)"></stop>
+              <stop offset="55%" stop-color="rgba(255,255,255,0)"></stop>
+            </linearGradient>
+            <linearGradient id="snakeBodyGrad" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#4ADE4A"></stop>
+              <stop offset="100%" stop-color="#1A8A1A"></stop>
+            </linearGradient>
+            <clipPath id="snakeClip"><rect width="72" height="72" rx="16" ry="16"></rect></clipPath>
+          </defs>
+          <rect width="72" height="72" rx="16" fill="url(#snakeBg)"></rect>
+
+          <!-- Subtle grid -->
+          <line x1="12" y1="0" x2="12" y2="72" stroke="rgba(255,255,255,0.04)" stroke-width="1"></line>
+          <line x1="24" y1="0" x2="24" y2="72" stroke="rgba(255,255,255,0.04)" stroke-width="1"></line>
+          <line x1="36" y1="0" x2="36" y2="72" stroke="rgba(255,255,255,0.04)" stroke-width="1"></line>
+          <line x1="48" y1="0" x2="48" y2="72" stroke="rgba(255,255,255,0.04)" stroke-width="1"></line>
+          <line x1="60" y1="0" x2="60" y2="72" stroke="rgba(255,255,255,0.04)" stroke-width="1"></line>
+          <line x1="0" y1="12" x2="72" y2="12" stroke="rgba(255,255,255,0.04)" stroke-width="1"></line>
+          <line x1="0" y1="24" x2="72" y2="24" stroke="rgba(255,255,255,0.04)" stroke-width="1"></line>
+          <line x1="0" y1="36" x2="72" y2="36" stroke="rgba(255,255,255,0.04)" stroke-width="1"></line>
+          <line x1="0" y1="48" x2="72" y2="48" stroke="rgba(255,255,255,0.04)" stroke-width="1"></line>
+          <line x1="0" y1="60" x2="72" y2="60" stroke="rgba(255,255,255,0.04)" stroke-width="1"></line>
+
+          <!-- Snake body segments — winding S-shape, each a rounded square -->
+          <!-- Tail (fading) -->
+          <rect x="50" y="55" width="10" height="10" rx="3" fill="#1A6A1A" opacity="0.6"></rect>
+          <rect x="50" y="43" width="10" height="10" rx="3" fill="#228822" opacity="0.7"></rect>
+          <rect x="50" y="31" width="10" height="10" rx="3" fill="#2A9A2A" opacity="0.8"></rect>
+          <rect x="38" y="31" width="10" height="10" rx="3" fill="#33AA33" opacity="0.85"></rect>
+          <rect x="26" y="31" width="10" height="10" rx="3" fill="#3ABB3A" opacity="0.9"></rect>
+          <rect x="14" y="31" width="10" height="10" rx="3" fill="#44CC44"></rect>
+          <rect x="14" y="19" width="10" height="10" rx="3" fill="#4ADE4A"></rect>
+          <rect x="26" y="19" width="10" height="10" rx="3" fill="#4ADE4A"></rect>
+          <rect x="38" y="19" width="10" height="10" rx="3" fill="#4ADE4A"></rect>
+          <!-- Head -->
+          <rect x="50" y="19" width="10" height="10" rx="3" fill="url(#snakeBodyGrad)"></rect>
+          <!-- Eyes on head -->
+          <circle cx="56" cy="22" r="1.5" fill="white"></circle>
+          <circle cx="56" cy="22" r="0.8" fill="#111"></circle>
+          <!-- Tongue -->
+          <line x1="60" y1="24" x2="64" y2="23" stroke="#FF4444" stroke-width="1.5" stroke-linecap="round"></line>
+          <line x1="64" y1="23" x2="66" y2="21" stroke="#FF4444" stroke-width="1.2" stroke-linecap="round"></line>
+          <line x1="64" y1="23" x2="66" y2="25" stroke="#FF4444" stroke-width="1.2" stroke-linecap="round"></line>
+
+          <!-- Apple / food -->
+          <circle cx="26" cy="55" r="6" fill="#E74C3C"></circle>
+          <circle cx="26" cy="55" r="6" fill="none" stroke="#C0392B" stroke-width="1"></circle>
+          <ellipse cx="23" cy="51" rx="2" ry="3" fill="rgba(255,255,255,0.2)" transform="rotate(-20 23 51)"></ellipse>
+          <!-- Stem -->
+          <path d="M26 49 Q28 45 30 46" stroke="#5D4037" stroke-width="1.5" fill="none" stroke-linecap="round"></path>
+          <!-- Leaf -->
+          <ellipse cx="29" cy="45.5" rx="3" ry="1.5" fill="#2ECC71" transform="rotate(-30 29 45)"></ellipse>
+
+          <rect width="72" height="36" rx="16" fill="url(#snakeShine)" clip-path="url(#snakeClip)"></rect>
+          <rect width="72" height="72" rx="16" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1"></rect>
+        </svg>

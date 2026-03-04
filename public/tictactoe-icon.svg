@@ -1,0 +1,50 @@
+<svg width="72" height="72" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="tttBg" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#1A1A2E"></stop>
+              <stop offset="100%" stop-color="#0A0A18"></stop>
+            </linearGradient>
+            <linearGradient id="tttShine" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="rgba(255,255,255,0.3)"></stop>
+              <stop offset="55%" stop-color="rgba(255,255,255,0)"></stop>
+            </linearGradient>
+            <clipPath id="tttClip"><rect width="72" height="72" rx="16" ry="16"></rect></clipPath>
+          </defs>
+          <rect width="72" height="72" rx="16" fill="url(#tttBg)"></rect>
+
+          <!-- Grid lines — glowing white -->
+          <line x1="27" y1="12" x2="27" y2="60" stroke="rgba(255,255,255,0.7)" stroke-width="2.5" stroke-linecap="round"></line>
+          <line x1="45" y1="12" x2="45" y2="60" stroke="rgba(255,255,255,0.7)" stroke-width="2.5" stroke-linecap="round"></line>
+          <line x1="12" y1="27" x2="60" y2="27" stroke="rgba(255,255,255,0.7)" stroke-width="2.5" stroke-linecap="round"></line>
+          <line x1="12" y1="45" x2="60" y2="45" stroke="rgba(255,255,255,0.7)" stroke-width="2.5" stroke-linecap="round"></line>
+
+          <!-- O — top left, glowing red -->
+          <circle cx="18" cy="18" r="5.5" fill="none" stroke="#FF4444" stroke-width="2.8" stroke-linecap="round"></circle>
+
+          <!-- X — top middle, glowing blue -->
+          <line x1="32" y1="13" x2="40" y2="21" stroke="#4488FF" stroke-width="2.8" stroke-linecap="round"></line>
+          <line x1="40" y1="13" x2="32" y2="21" stroke="#4488FF" stroke-width="2.8" stroke-linecap="round"></line>
+
+          <!-- O — top right -->
+          <circle cx="54" cy="18" r="5.5" fill="none" stroke="#FF4444" stroke-width="2.8"></circle>
+
+          <!-- X — middle left -->
+          <line x1="13" y1="31" x2="21" y2="39" stroke="#4488FF" stroke-width="2.8" stroke-linecap="round"></line>
+          <line x1="21" y1="31" x2="13" y2="39" stroke="#4488FF" stroke-width="2.8" stroke-linecap="round"></line>
+
+          <!-- O — center, bigger, glowing -->
+          <circle cx="36" cy="36" r="6" fill="none" stroke="#FF4444" stroke-width="3"></circle>
+          <circle cx="36" cy="36" r="6" fill="none" stroke="#FF6666" stroke-width="1" opacity="0.5"></circle>
+
+          <!-- X — middle right -->
+          <line x1="49" y1="31" x2="57" y2="39" stroke="#4488FF" stroke-width="2.8" stroke-linecap="round"></line>
+          <line x1="57" y1="31" x2="49" y2="39" stroke="#4488FF" stroke-width="2.8" stroke-linecap="round"></line>
+
+          <!-- bottom row empty -->
+
+          <!-- Winning diagonal line through O's -->
+          <line x1="18" y1="18" x2="54" y2="54" stroke="#FF4444" stroke-width="2.5" stroke-linecap="round" opacity="0.7"></line>
+
+          <rect width="72" height="36" rx="16" fill="url(#tttShine)" clip-path="url(#tttClip)"></rect>
+          <rect width="72" height="72" rx="16" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1"></rect>
+        </svg>

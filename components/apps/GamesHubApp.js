@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import TicTacToeGame  from './games/TicTacToeGame';
+import TicTacToeGame from './games/TicTacToeGame';
 import MinesweeperGame from './games/MinesweeperGame';
-import SnakeGame      from './games/SnakeGame';
-import Game2048       from './games/Game2048';
-import ConwayGame     from './games/ConwayGame';
+import SnakeGame from './games/SnakeGame';
+import Game2048 from './games/Game2048';
+import ConwayGame from './games/ConwayGame';
 
 const GAMES = [
     {
@@ -56,11 +56,11 @@ const GAMES = [
 export default function GamesHubApp({ darkTheme = false }) {
     const [activeGame, setActiveGame] = useState(null);
 
-    const bg         = darkTheme ? '#0a0a1e' : '#f7f8fb';
-    const cardBg     = darkTheme ? 'rgba(255,255,255,0.05)' : '#fff';
+    const bg = darkTheme ? '#0a0a1e' : '#f7f8fb';
+    const cardBg = darkTheme ? 'rgba(255,255,255,0.05)' : '#fff';
     const headingColor = darkTheme ? 'rgba(255,255,255,0.45)' : '#999';
     const titleColor = darkTheme ? '#fff' : '#111';
-    const subColor   = darkTheme ? 'rgba(255,255,255,0.45)' : '#888';
+    const subColor = darkTheme ? 'rgba(255,255,255,0.45)' : '#888';
     const cardShadow = darkTheme ? '0 1px 4px rgba(0,0,0,0.3)' : '0 1px 4px rgba(0,0,0,0.06)';
 
     if (activeGame) {
@@ -77,7 +77,7 @@ export default function GamesHubApp({ darkTheme = false }) {
                         className="flex items-center gap-1.5 text-xs px-3 py-1 rounded-lg transition-all hover:scale-105"
                         style={{
                             background: darkTheme ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
-                            color:      darkTheme ? 'rgba(255,255,255,0.65)' : '#444',
+                            color: darkTheme ? 'rgba(255,255,255,0.65)' : '#444',
                             border: `1px solid ${darkTheme ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)'}`,
                         }}
                     >
@@ -99,13 +99,10 @@ export default function GamesHubApp({ darkTheme = false }) {
         <div className="w-full h-full overflow-y-auto os-scroll" style={{ background: bg }}>
             {/* Header */}
             <div className="px-8 pt-8 pb-4">
-                <h2 className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: headingColor }}>
-                    Easter Egg
-                </h2>
-                <h1 className="text-2xl font-bold" style={{ color: titleColor }}>🎮 Games</h1>
-                <p className="text-sm mt-1" style={{ color: subColor }}>
-                    You found the hidden games. Congratulations, explorer.
-                </p>
+                <h1 className="text-2xl font-bold flex items-center gap-2" style={{ color: titleColor }}>
+                    <img src="/icon_games.svg" alt="Games" className="w-7 h-7" draggable={false} />
+                    Games
+                </h1>
             </div>
 
             {/* Game cards */}
@@ -124,11 +121,11 @@ export default function GamesHubApp({ darkTheme = false }) {
                         }}
                         onMouseEnter={e => {
                             e.currentTarget.style.borderColor = `${game.color}66`;
-                            e.currentTarget.style.boxShadow  = `0 8px 24px ${game.color}22`;
+                            e.currentTarget.style.boxShadow = `0 8px 24px ${game.color}22`;
                         }}
                         onMouseLeave={e => {
                             e.currentTarget.style.borderColor = `${game.color}33`;
-                            e.currentTarget.style.boxShadow  = cardShadow;
+                            e.currentTarget.style.boxShadow = cardShadow;
                         }}
                     >
                         <img src={game.iconSrc} alt={game.name} className="w-10 h-10 mb-3" draggable={false} />
