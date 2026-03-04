@@ -1,12 +1,45 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40">
-  <rect width="40" height="40" rx="8" fill="#1a1a2e"/>
-  <rect x="4"  y="4"  width="9" height="9" rx="2" fill="rgba(168,85,247,0.12)"/>
-  <rect x="15" y="4"  width="9" height="9" rx="2" fill="#a855f7"/>
-  <rect x="26" y="4"  width="9" height="9" rx="2" fill="rgba(168,85,247,0.12)"/>
-  <rect x="4"  y="15" width="9" height="9" rx="2" fill="rgba(168,85,247,0.12)"/>
-  <rect x="15" y="15" width="9" height="9" rx="2" fill="rgba(168,85,247,0.12)"/>
-  <rect x="26" y="15" width="9" height="9" rx="2" fill="#a855f7"/>
-  <rect x="4"  y="26" width="9" height="9" rx="2" fill="#a855f7"/>
-  <rect x="15" y="26" width="9" height="9" rx="2" fill="#a855f7"/>
-  <rect x="26" y="26" width="9" height="9" rx="2" fill="#a855f7"/>
+<svg width="72" height="72" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="conwayBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0A1628"/>
+      <stop offset="100%" stop-color="#030810"/>
+    </linearGradient>
+    <linearGradient id="conwayShine" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.25)"/>
+      <stop offset="55%" stop-color="rgba(255,255,255,0)"/>
+    </linearGradient>
+    <clipPath id="conwayClip"><rect width="72" height="72" rx="16" ry="16"/></clipPath>
+  </defs>
+  <rect width="72" height="72" rx="16" fill="url(#conwayBg)"/>
+  <line x1="9"  y1="0"  x2="9"  y2="72" stroke="rgba(0,255,100,0.07)" stroke-width="1"/>
+  <line x1="18" y1="0"  x2="18" y2="72" stroke="rgba(0,255,100,0.07)" stroke-width="1"/>
+  <line x1="27" y1="0"  x2="27" y2="72" stroke="rgba(0,255,100,0.07)" stroke-width="1"/>
+  <line x1="36" y1="0"  x2="36" y2="72" stroke="rgba(0,255,100,0.07)" stroke-width="1"/>
+  <line x1="45" y1="0"  x2="45" y2="72" stroke="rgba(0,255,100,0.07)" stroke-width="1"/>
+  <line x1="54" y1="0"  x2="54" y2="72" stroke="rgba(0,255,100,0.07)" stroke-width="1"/>
+  <line x1="63" y1="0"  x2="63" y2="72" stroke="rgba(0,255,100,0.07)" stroke-width="1"/>
+  <line x1="0"  y1="9"  x2="72" y2="9"  stroke="rgba(0,255,100,0.07)" stroke-width="1"/>
+  <line x1="0"  y1="18" x2="72" y2="18" stroke="rgba(0,255,100,0.07)" stroke-width="1"/>
+  <line x1="0"  y1="27" x2="72" y2="27" stroke="rgba(0,255,100,0.07)" stroke-width="1"/>
+  <line x1="0"  y1="36" x2="72" y2="36" stroke="rgba(0,255,100,0.07)" stroke-width="1"/>
+  <line x1="0"  y1="45" x2="72" y2="45" stroke="rgba(0,255,100,0.07)" stroke-width="1"/>
+  <line x1="0"  y1="54" x2="72" y2="54" stroke="rgba(0,255,100,0.07)" stroke-width="1"/>
+  <line x1="0"  y1="63" x2="72" y2="63" stroke="rgba(0,255,100,0.07)" stroke-width="1"/>
+  <rect x="28" y="19" width="7" height="7" rx="1.5" fill="#00FF64" opacity="0.9"/>
+  <rect x="37" y="28" width="7" height="7" rx="1.5" fill="#00FF64" opacity="0.9"/>
+  <rect x="19" y="37" width="7" height="7" rx="1.5" fill="#00FF64" opacity="0.9"/>
+  <rect x="28" y="37" width="7" height="7" rx="1.5" fill="#00FF64" opacity="0.9"/>
+  <rect x="37" y="37" width="7" height="7" rx="1.5" fill="#00FF64" opacity="0.9"/>
+  <circle cx="31" cy="22" r="8" fill="#00FF64" opacity="0.12"/>
+  <circle cx="40" cy="31" r="8" fill="#00FF64" opacity="0.12"/>
+  <circle cx="22" cy="40" r="8" fill="#00FF64" opacity="0.12"/>
+  <circle cx="31" cy="40" r="8" fill="#00FF64" opacity="0.15"/>
+  <circle cx="40" cy="40" r="8" fill="#00FF64" opacity="0.12"/>
+  <rect x="10" y="10" width="7" height="7" rx="1.5" fill="#00FF64" opacity="0.25"/>
+  <rect x="55" y="19" width="7" height="7" rx="1.5" fill="#00FF64" opacity="0.2"/>
+  <rect x="46" y="55" width="7" height="7" rx="1.5" fill="#00FF64" opacity="0.2"/>
+  <rect x="10" y="55" width="7" height="7" rx="1.5" fill="#00FF64" opacity="0.18"/>
+  <rect x="55" y="46" width="7" height="7" rx="1.5" fill="#00FF64" opacity="0.22"/>
+  <rect width="72" height="36" rx="16" fill="url(#conwayShine)" clip-path="url(#conwayClip)"/>
+  <rect width="72" height="72" rx="16" fill="none" stroke="rgba(0,255,100,0.2)" stroke-width="1"/>
 </svg>

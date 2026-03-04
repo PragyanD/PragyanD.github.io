@@ -1,12 +1,31 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40">
-  <rect width="40" height="40" rx="8" fill="#1a1a2e"/>
-  <line x1="14" y1="4"  x2="14" y2="36" stroke="#0078d4" stroke-width="1.5"/>
-  <line x1="26" y1="4"  x2="26" y2="36" stroke="#0078d4" stroke-width="1.5"/>
-  <line x1="4"  y1="14" x2="36" y2="14" stroke="#0078d4" stroke-width="1.5"/>
-  <line x1="4"  y1="26" x2="36" y2="26" stroke="#0078d4" stroke-width="1.5"/>
-  <line x1="6"  y1="6"  x2="12" y2="12" stroke="#0078d4" stroke-width="2" stroke-linecap="round"/>
-  <line x1="12" y1="6"  x2="6"  y2="12" stroke="#0078d4" stroke-width="2" stroke-linecap="round"/>
-  <circle cx="20" cy="20" r="4" fill="none" stroke="#ff453a" stroke-width="2"/>
-  <line x1="28" y1="28" x2="34" y2="34" stroke="#0078d4" stroke-width="2" stroke-linecap="round"/>
-  <line x1="34" y1="28" x2="28" y2="34" stroke="#0078d4" stroke-width="2" stroke-linecap="round"/>
+<svg width="72" height="72" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="tttBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1A1A2E"/>
+      <stop offset="100%" stop-color="#0A0A18"/>
+    </linearGradient>
+    <linearGradient id="tttShine" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.3)"/>
+      <stop offset="55%" stop-color="rgba(255,255,255,0)"/>
+    </linearGradient>
+    <clipPath id="tttClip"><rect width="72" height="72" rx="16" ry="16"/></clipPath>
+  </defs>
+  <rect width="72" height="72" rx="16" fill="url(#tttBg)"/>
+  <line x1="27" y1="12" x2="27" y2="60" stroke="rgba(255,255,255,0.7)" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="45" y1="12" x2="45" y2="60" stroke="rgba(255,255,255,0.7)" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="12" y1="27" x2="60" y2="27" stroke="rgba(255,255,255,0.7)" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="12" y1="45" x2="60" y2="45" stroke="rgba(255,255,255,0.7)" stroke-width="2.5" stroke-linecap="round"/>
+  <circle cx="18" cy="18" r="5.5" fill="none" stroke="#FF4444" stroke-width="2.8" stroke-linecap="round"/>
+  <line x1="32" y1="13" x2="40" y2="21" stroke="#4488FF" stroke-width="2.8" stroke-linecap="round"/>
+  <line x1="40" y1="13" x2="32" y2="21" stroke="#4488FF" stroke-width="2.8" stroke-linecap="round"/>
+  <circle cx="54" cy="18" r="5.5" fill="none" stroke="#FF4444" stroke-width="2.8"/>
+  <line x1="13" y1="31" x2="21" y2="39" stroke="#4488FF" stroke-width="2.8" stroke-linecap="round"/>
+  <line x1="21" y1="31" x2="13" y2="39" stroke="#4488FF" stroke-width="2.8" stroke-linecap="round"/>
+  <circle cx="36" cy="36" r="6" fill="none" stroke="#FF4444" stroke-width="3"/>
+  <circle cx="36" cy="36" r="6" fill="none" stroke="#FF6666" stroke-width="1" opacity="0.5"/>
+  <line x1="49" y1="31" x2="57" y2="39" stroke="#4488FF" stroke-width="2.8" stroke-linecap="round"/>
+  <line x1="57" y1="31" x2="49" y2="39" stroke="#4488FF" stroke-width="2.8" stroke-linecap="round"/>
+  <line x1="18" y1="18" x2="54" y2="54" stroke="#FF4444" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
+  <rect width="72" height="36" rx="16" fill="url(#tttShine)" clip-path="url(#tttClip)"/>
+  <rect width="72" height="72" rx="16" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
 </svg>
