@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 const ROWS = 28, COLS = 40, CELL = 14;
 
@@ -23,7 +23,7 @@ const PRESETS = {
     Clear: () => emptyGrid(),
     Glider: () => {
         const g = emptyGrid();
-        [[1,0],[2,1],[0,2],[1,2],[2,2]].forEach(([r,c]) => { g[r * COLS + c] = true; });
+        [[0,1],[1,2],[2,0],[2,1],[2,2]].forEach(([r,c]) => { g[r * COLS + c] = true; });
         return g;
     },
     Blinker: () => {
@@ -51,13 +51,20 @@ export default function ConwayGame({ darkTheme }) {
     const [running, setRunning] = useState(false);
     const [gen,     setGen]     = useState(0);
     const [speed,   setSpeed]   = useState(150);
+    const [maxPop, setMaxPop] = useState(0);
+    const drawingRef = useRef(null); // null | 'draw' | 'erase'
 
     const bg = darkTheme ? '#0a0a1e' : '#f7f8fb';
 
     useEffect(() => {
         if (!running) return;
         const id = setInterval(() => {
-            setGrid(prev => nextGen(prev));
+            setGrid(prev => {
+                const next = nextGen(prev);
+                const pop = next.filter(Boolean).length;
+                setMaxPop(m => Math.max(m, pop));
+                return next;
+            });
             setGen(g => g + 1);
         }, speed);
         return () => clearInterval(id);
@@ -85,7 +92,11 @@ export default function ConwayGame({ darkTheme }) {
                 <button
                     onClick={() => { setGrid(g => nextGen(g)); setGen(n => n + 1); }}
                     className="px-3 py-1 rounded-lg text-xs transition-all hover:scale-105"
-                    style={{ background: 'rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.12)' }}
+                    style={{
+                        background: darkTheme ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)',
+                        color:      darkTheme ? 'rgba(255,255,255,0.6)'  : '#444',
+                        border: `1px solid ${darkTheme ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)'}`,
+                    }}
                 >
                     Step
                 </button>
@@ -93,7 +104,11 @@ export default function ConwayGame({ darkTheme }) {
                     value={speed}
                     onChange={e => setSpeed(Number(e.target.value))}
                     className="px-2 py-1 rounded-lg text-xs"
-                    style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.6)' }}
+                    style={{
+                        background: darkTheme ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)',
+                        border: `1px solid ${darkTheme ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.12)'}`,
+                        color:   darkTheme ? 'rgba(255,255,255,0.6)' : '#444',
+                    }}
                 >
                     <option value={400}>Slow</option>
                     <option value={150}>Normal</option>
@@ -102,31 +117,47 @@ export default function ConwayGame({ darkTheme }) {
                 {Object.keys(PRESETS).map(name => (
                     <button
                         key={name}
-                        onClick={() => { setGrid(PRESETS[name]()); setGen(0); setRunning(false); }}
+                        onClick={() => { setGrid(PRESETS[name]()); setGen(0); setRunning(false); setMaxPop(0); }}
                         className="px-2 py-1 rounded-lg text-xs transition-all hover:scale-105"
                         style={{ background: 'rgba(0,120,212,0.1)', color: '#0078d4', border: '1px solid rgba(0,120,212,0.25)' }}
                     >
                         {name}
                     </button>
                 ))}
-                <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.25)' }}>Gen {gen}</span>
+                <span className="text-[10px]" style={{ color: darkTheme ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.35)' }}>
+                    Gen {gen}{maxPop > 0 ? ` · Peak ${maxPop}` : ''}
+                </span>
             </div>
 
             {/* Grid */}
-            <div style={{
-                display: 'grid',
-                gridTemplateColumns: `repeat(${COLS}, ${CELL}px)`,
-                gap: 1,
-                background: 'rgba(0,0,0,0.3)',
-                padding: 4,
-                borderRadius: 8,
-                border: '1px solid rgba(255,255,255,0.08)',
-                cursor: 'crosshair',
-            }}>
+            <div
+                style={{
+                    display: 'grid',
+                    gridTemplateColumns: `repeat(${COLS}, ${CELL}px)`,
+                    gap: 1,
+                    background: 'rgba(0,0,0,0.3)',
+                    padding: 4,
+                    borderRadius: 8,
+                    border: '1px solid rgba(255,255,255,0.08)',
+                    cursor: 'crosshair',
+                    userSelect: 'none',
+                }}
+                onMouseLeave={() => { drawingRef.current = null; }}
+                onMouseUp={() => { drawingRef.current = null; }}
+            >
                 {grid.map((alive, i) => (
                     <div
                         key={i}
-                        onClick={() => toggleCell(i)}
+                        onMouseDown={(e) => {
+                            const mode = grid[i] ? 'erase' : 'draw';
+                            drawingRef.current = mode;
+                            toggleCell(i);
+                            e.preventDefault();
+                        }}
+                        onMouseEnter={() => {
+                            if (drawingRef.current === null) return;
+                            setGrid(prev => prev.map((v, j) => j === i ? (drawingRef.current === 'draw') : v));
+                        }}
                         style={{
                             width: CELL, height: CELL,
                             background: alive ? '#0078d4' : 'rgba(255,255,255,0.03)',
@@ -136,7 +167,7 @@ export default function ConwayGame({ darkTheme }) {
                     />
                 ))}
             </div>
-            <p className="text-[10px]" style={{ color: 'rgba(255,255,255,0.25)' }}>Click cells to draw · Press Play to simulate</p>
+            <p className="text-[10px]" style={{ color: darkTheme ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.35)' }}>Click or drag cells to draw · Press Play to simulate</p>
         </div>
     );
 }
