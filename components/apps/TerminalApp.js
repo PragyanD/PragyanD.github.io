@@ -23,9 +23,11 @@ export default function TerminalApp() {
         { type: 'output', content: 'Type "help" to see available commands.' },
     ]);
     const [input, setInput] = useState('');
+    const [caret, setCaret] = useState(0);
     const [cmdHistory, setCmdHistory] = useState([]);
     const [historyIdx, setHistoryIdx] = useState(-1);
     const containerRef = useRef(null);
+    const inputRef = useRef(null);
     const cmdHistoryRef = useRef([]);
 
     useEffect(() => {
@@ -177,23 +179,34 @@ export default function TerminalApp() {
         ]);
     };
 
+    const syncCaret = () => {
+        requestAnimationFrame(() => {
+            if (inputRef.current) setCaret(inputRef.current.selectionStart ?? 0);
+        });
+    };
+
     const handleKeyDown = (e) => {
         if (e.key === 'Enter') {
             handleCommand(input);
             setInput('');
+            setCaret(0);
         } else if (e.key === 'ArrowUp') {
             e.preventDefault();
             setCmdHistory(prev => {
                 const next = Math.min(historyIdx + 1, prev.length - 1);
                 setHistoryIdx(next);
-                if (prev[next] !== undefined) setInput(prev[next]);
+                if (prev[next] !== undefined) { setInput(prev[next]); setCaret(prev[next].length); }
                 return prev;
             });
         } else if (e.key === 'ArrowDown') {
             e.preventDefault();
             const next = Math.max(historyIdx - 1, -1);
             setHistoryIdx(next);
-            setInput(next === -1 ? '' : cmdHistoryRef.current[next] ?? '');
+            const val = next === -1 ? '' : (cmdHistoryRef.current[next] ?? '');
+            setInput(val);
+            setCaret(val.length);
+        } else {
+            syncCaret();
         }
     };
 
@@ -202,30 +215,39 @@ export default function TerminalApp() {
             ref={containerRef}
             className="w-full h-full bg-[#0c0c0c] text-[#cccccc] font-mono p-4 overflow-y-auto overflow-x-auto os-scroll"
             style={{ fontSize: '13px', lineHeight: '1.5' }}
-            onClick={() => document.getElementById('terminal-input').focus()}
+            onClick={() => inputRef.current?.focus()}
         >
             {history.map((line, i) => (
                 <pre key={i} className={`m-0 font-mono whitespace-pre-wrap break-words${line.type === 'input' ? ' text-white font-bold' : ''}`}>
                     {line.content}
                 </pre>
             ))}
-            <div className="flex gap-2">
-                <span className="text-[#3fc05e] font-bold">pragyan@os:~$</span>
-                <input
-                    id="terminal-input"
-                    autoFocus
-                    autoComplete="off"
-                    spellCheck="false"
-                    className="flex-1 bg-transparent border-none outline-none text-[#cccccc] caret-transparent"
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                />
-                <span
-                    className="inline-block w-[2px] h-[14px] bg-green-400 ml-0.5 align-middle"
-                    style={{ animation: 'blink 1s step-end infinite' }}
-                    aria-hidden="true"
-                />
+            <div className="flex gap-2 items-center">
+                <span className="text-[#3fc05e] font-bold flex-shrink-0">pragyan@os:~$</span>
+                <div className="relative flex-1">
+                    {/* Invisible real input — handles all keyboard/selection events */}
+                    <input
+                        ref={inputRef}
+                        autoFocus
+                        autoComplete="off"
+                        spellCheck="false"
+                        className="absolute inset-0 opacity-0 w-full cursor-default"
+                        value={input}
+                        onChange={(e) => { setInput(e.target.value); setCaret(e.target.selectionStart ?? 0); }}
+                        onKeyDown={handleKeyDown}
+                        onKeyUp={syncCaret}
+                        onSelect={syncCaret}
+                        onClick={syncCaret}
+                    />
+                    {/* Visual text with cursor at caret position */}
+                    <span className="whitespace-pre text-[#cccccc]">{input.slice(0, caret)}</span>
+                    <span
+                        className="inline-block w-[7px] h-[14px] bg-green-400 align-middle"
+                        style={{ animation: 'blink 1s step-end infinite' }}
+                        aria-hidden="true"
+                    />
+                    <span className="whitespace-pre text-[#cccccc]">{input.slice(caret)}</span>
+                </div>
             </div>
         </div>
     );
