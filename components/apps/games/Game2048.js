@@ -48,6 +48,21 @@ function addTile(board) {
     return next;
 }
 
+function isStuck(board) {
+    if (board.includes(0)) return false;
+    for (let r = 0; r < 4; r++) {
+        for (let c = 0; c < 3; c++) {
+            if (board[r * 4 + c] === board[r * 4 + c + 1]) return false;
+        }
+    }
+    for (let r = 0; r < 3; r++) {
+        for (let c = 0; c < 4; c++) {
+            if (board[r * 4 + c] === board[(r + 1) * 4 + c]) return false;
+        }
+    }
+    return true;
+}
+
 function initBoard() {
     let b = Array(16).fill(0);
     b = addTile(b);
@@ -77,6 +92,7 @@ export default function Game2048({ darkTheme }) {
         try { return parseInt(localStorage.getItem('pdos_2048_best') || '0'); } catch { return 0; }
     });
     const [won, setWon] = useState(false);
+    const [lost, setLost] = useState(false);
 
     const bg = darkTheme ? '#0a0a1e' : '#f7f8fb';
 
@@ -95,7 +111,9 @@ export default function Game2048({ darkTheme }) {
                 return newS;
             });
             if (next.includes(2048)) setWon(true);
-            return addTile(next);
+            const withTile = addTile(next);
+            if (isStuck(withTile)) setLost(true);
+            return withTile;
         });
     }, []);
 
@@ -108,7 +126,7 @@ export default function Game2048({ darkTheme }) {
         return () => window.removeEventListener('keydown', handler);
     }, [handleMove]);
 
-    const reset = () => { setBoard(initBoard()); setScore(0); setWon(false); };
+    const reset = () => { setBoard(initBoard()); setScore(0); setWon(false); setLost(false); };
 
     return (
         <div className="w-full h-full flex flex-col items-center justify-center gap-4 select-none" style={{ background: bg }}>
@@ -124,13 +142,18 @@ export default function Game2048({ darkTheme }) {
                 <button
                     onClick={reset}
                     className="px-4 py-1.5 rounded-lg text-xs font-medium transition-all hover:scale-105"
-                    style={{ background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.7)', border: '1px solid rgba(255,255,255,0.12)' }}
+                    style={{
+                        background: darkTheme ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
+                        color:      darkTheme ? 'rgba(255,255,255,0.7)'  : '#444',
+                        border: `1px solid ${darkTheme ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)'}`,
+                    }}
                 >
                     New
                 </button>
             </div>
 
-            {won && <p className="text-xs font-bold" style={{ color: '#febc2e' }}>🎉 You reached 2048!</p>}
+            {won  && <p className="text-xs font-bold" style={{ color: '#febc2e' }}>🎉 You reached 2048!</p>}
+            {lost && <p className="text-xs font-bold" style={{ color: '#ff453a' }}>😵 No moves left — game over!</p>}
 
             <div style={{
                 display: 'grid',
