@@ -70,7 +70,11 @@ export default function GamesHubApp({ darkTheme = false }) {
                     <button
                         onClick={() => setActiveGame(null)}
                         className="flex items-center gap-1.5 text-xs px-3 py-1 rounded-lg transition-all hover:scale-105"
-                        style={{ background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.65)', border: '1px solid rgba(255,255,255,0.12)' }}
+                        style={{
+                            background: darkTheme ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
+                            color:      darkTheme ? 'rgba(255,255,255,0.65)' : '#444',
+                            border: `1px solid ${darkTheme ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)'}`,
+                        }}
                     >
                         ← Back
                     </button>
