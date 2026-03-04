@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 
 const ROWS = 9, COLS = 9, MINES = 10;
 
@@ -54,6 +54,10 @@ export default function MinesweeperGame({ darkTheme }) {
     const [phase, setPhase] = useState('idle');
     const [flags, setFlags] = useState(0);
     const [time, setTime] = useState(0);
+    const [bestTime, setBestTime] = useState(() => {
+        try { return parseInt(localStorage.getItem('pdos_ms_best_time') || '0'); } catch { return 0; }
+    });
+    const timeRef = useRef(0);
 
     const bg = darkTheme ? '#0a0a1e' : '#f7f8fb';
     const cellBg = darkTheme ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.07)';
@@ -62,7 +66,11 @@ export default function MinesweeperGame({ darkTheme }) {
 
     useEffect(() => {
         if (phase !== 'playing') return;
-        const id = setInterval(() => setTime(t => t + 1), 1000);
+        const id = setInterval(() => setTime(t => {
+            const n = t + 1;
+            timeRef.current = n;
+            return n;
+        }), 1000);
         return () => clearInterval(id);
     }, [phase]);
 
@@ -84,7 +92,15 @@ export default function MinesweeperGame({ darkTheme }) {
         const next = floodReveal(board, idx);
         const won = next.every(c => c.mine || c.revealed);
         setCells(next);
-        if (won) setPhase('won');
+        if (won) {
+            setPhase('won');
+            const t = timeRef.current;
+            setBestTime(prev => {
+                const save = (prev === 0 || t < prev) ? t : prev;
+                try { localStorage.setItem('pdos_ms_best_time', String(save)); } catch {}
+                return save;
+            });
+        }
     }, [cells, phase]);
 
     const handleFlag = useCallback((e, idx) => {
@@ -113,6 +129,9 @@ export default function MinesweeperGame({ darkTheme }) {
                     {phase === 'won' ? '😎' : phase === 'lost' ? '😵' : '🙂'}
                 </button>
                 <span className="font-mono text-sm font-bold" style={{ color: '#0078d4' }}>⏱ {fmt(time)}</span>
+                {bestTime > 0 && (
+                    <span className="font-mono text-xs font-bold" style={{ color: '#34c759' }}>🏆 {fmt(bestTime)}</span>
+                )}
             </div>
 
             {/* Grid */}
@@ -143,7 +162,7 @@ export default function MinesweeperGame({ darkTheme }) {
                 </p>
             )}
             {phase === 'idle' && (
-                <p className="text-[10px]" style={{ color: 'rgba(255,255,255,0.3)' }}>Click any cell to start · Right-click to flag</p>
+                <p className="text-[10px]" style={{ color: darkTheme ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.35)' }}>Click any cell to start · Right-click to flag</p>
             )}
         </div>
     );
