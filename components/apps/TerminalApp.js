@@ -1,5 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
 
+const COMMANDS = [
+    'cat', 'cd', 'clear', 'curl', 'date', 'echo', 'git', 'hack', 'help',
+    'history', 'ls', 'make', 'neofetch', 'npm', 'python', 'python3',
+    'pwd', 'rm', 'sudo', 'uname', 'whoami', 'win',
+];
+
 const FILES = {
     'bio.txt': 'I am Pragyan, a Software Engineer passionate about building cool desktop simulations.',
     'projects.lnk': 'Pointing to: Scene Recognition AI, Proton Bot, BISS Encryption, Apache AGE.',
@@ -25,10 +31,11 @@ export default function TerminalApp() {
     const [input, setInput] = useState('');
     const [caret, setCaret] = useState(0);
     const [cmdHistory, setCmdHistory] = useState([]);
-    const [historyIdx, setHistoryIdx] = useState(-1);
     const containerRef = useRef(null);
     const inputRef = useRef(null);
     const cmdHistoryRef = useRef([]);
+    const historyIdxRef = useRef(-1);
+    const tabRef = useRef({ candidates: [], idx: -1, prefix: '' });
 
     useEffect(() => {
         if (containerRef.current) {
@@ -42,7 +49,7 @@ export default function TerminalApp() {
         const [base, ...args] = fullCmd.toLowerCase().split(' ');
 
         setCmdHistory(prev => { const next = [fullCmd, ...prev]; cmdHistoryRef.current = next; return next; });
-        setHistoryIdx(-1);
+        historyIdxRef.current = -1;
 
         let output = '';
 
@@ -186,22 +193,50 @@ export default function TerminalApp() {
     };
 
     const handleKeyDown = (e) => {
+        if (e.key === 'Tab') {
+            e.preventDefault();
+            const words = input.split(' ');
+            const completing = words[words.length - 1];
+            const linePrefix = words.slice(0, -1).join(' ');
+            const isFirstWord = words.length === 1;
+
+            // Build candidate list (only recompute if not already cycling)
+            const tab = tabRef.current;
+            if (tab.candidates.length === 0 || tab.prefix !== completing) {
+                const pool = isFirstWord ? COMMANDS : Object.keys(FILES);
+                const matches = pool.filter(c => c.startsWith(completing));
+                if (matches.length === 0) return;
+                tab.candidates = matches;
+                tab.idx = -1;
+                tab.prefix = completing;
+            }
+
+            tab.idx = (tab.idx + 1) % tab.candidates.length;
+            const completed = tab.candidates[tab.idx];
+            const newInput = linePrefix ? `${linePrefix} ${completed}` : completed;
+            setInput(newInput);
+            setCaret(newInput.length);
+            return;
+        }
+
+        // Any non-Tab key resets tab cycling
+        tabRef.current = { candidates: [], idx: -1, prefix: '' };
+
         if (e.key === 'Enter') {
             handleCommand(input);
             setInput('');
             setCaret(0);
+            historyIdxRef.current = -1;
         } else if (e.key === 'ArrowUp') {
             e.preventDefault();
-            setCmdHistory(prev => {
-                const next = Math.min(historyIdx + 1, prev.length - 1);
-                setHistoryIdx(next);
-                if (prev[next] !== undefined) { setInput(prev[next]); setCaret(prev[next].length); }
-                return prev;
-            });
+            const hist = cmdHistoryRef.current;
+            const next = Math.min(historyIdxRef.current + 1, hist.length - 1);
+            historyIdxRef.current = next;
+            if (hist[next] !== undefined) { setInput(hist[next]); setCaret(hist[next].length); }
         } else if (e.key === 'ArrowDown') {
             e.preventDefault();
-            const next = Math.max(historyIdx - 1, -1);
-            setHistoryIdx(next);
+            const next = Math.max(historyIdxRef.current - 1, -1);
+            historyIdxRef.current = next;
             const val = next === -1 ? '' : (cmdHistoryRef.current[next] ?? '');
             setInput(val);
             setCaret(val.length);
