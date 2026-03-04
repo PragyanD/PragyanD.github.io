@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 
-const ROWS = 20, COLS = 20, CELL = 22, TICK = 120;
+const ROWS = 18, COLS = 18, CELL = 22, TICK = 120;
 
 function randomFood(snake) {
     const occupied = new Set(snake.map(([r, c]) => `${r},${c}`));
@@ -12,8 +12,8 @@ function randomFood(snake) {
     return [r, c];
 }
 
-const INIT_SNAKE = [[10, 10], [10, 9], [10, 8]];
-const INIT_FOOD  = [5, 10];
+const INIT_SNAKE = [[9, 9], [9, 8], [9, 7]];
+const INIT_FOOD  = [3, 9];
 const INIT_DIR   = [0, 1];
 
 export default function SnakeGame({ darkTheme }) {
@@ -21,6 +21,9 @@ export default function SnakeGame({ darkTheme }) {
     const [food,  setFood]  = useState(INIT_FOOD);
     const [phase, setPhase] = useState('idle');
     const [score, setScore] = useState(0);
+    const [best, setBest] = useState(() => {
+        try { return parseInt(localStorage.getItem('pdos_snake_best') || '0'); } catch { return 0; }
+    });
 
     const snakeRef = useRef(INIT_SNAKE);
     const foodRef  = useRef(INIT_FOOD);
@@ -31,8 +34,8 @@ export default function SnakeGame({ darkTheme }) {
     const textColor = darkTheme ? 'rgba(255,255,255,0.85)' : '#222';
 
     const reset = useCallback(() => {
-        const s = [[10, 10], [10, 9], [10, 8]];
-        const f = [5, 10];
+        const s = [[9, 9], [9, 8], [9, 7]];
+        const f = [3, 9];
         setSnake(s); snakeRef.current = s;
         setFood(f);  foodRef.current  = f;
         dirRef.current = [0, 1];
@@ -86,7 +89,17 @@ export default function SnakeGame({ darkTheme }) {
             setSnake(newSnake);
 
             if (atFood) {
-                setScore(sc => sc + 1);
+                setScore(sc => {
+                    const n = sc + 1;
+                    setBest(b => {
+                        if (n > b) {
+                            try { localStorage.setItem('pdos_snake_best', String(n)); } catch {}
+                            return n;
+                        }
+                        return b;
+                    });
+                    return n;
+                });
                 const nf = randomFood(newSnake);
                 foodRef.current = nf;
                 setFood(nf);
@@ -103,7 +116,8 @@ export default function SnakeGame({ darkTheme }) {
         <div className="w-full h-full flex flex-col items-center justify-center gap-3 select-none" style={{ background: bg }}>
             <div className="flex items-center gap-4">
                 <p className="text-xs font-semibold" style={{ color: textColor }}>Score: {score}</p>
-                {phase === 'idle' && <p className="text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>Press any arrow key to start</p>}
+                {best > 0 && <p className="text-xs" style={{ color: darkTheme ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)' }}>Best: {best}</p>}
+                {phase === 'idle' && <p className="text-xs" style={{ color: darkTheme ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)' }}>Press any arrow key to start</p>}
                 {phase === 'dead' && <p className="text-xs" style={{ color: '#ff453a' }}>Game over! Press R to restart</p>}
             </div>
 
