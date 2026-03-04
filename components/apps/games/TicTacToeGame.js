@@ -46,6 +46,9 @@ export default function TicTacToeGame({ darkTheme }) {
     const [board, setBoard] = useState(Array(9).fill(null));
     const [xIsNext, setXIsNext] = useState(true);
     const [thinking, setThinking] = useState(false);
+    const [wins, setWins] = useState(() => {
+        try { return parseInt(localStorage.getItem('pdos_ttt_wins') || '0'); } catch { return 0; }
+    });
     const winner = checkWinner(board);
 
     const bg = darkTheme ? '#0a0a1e' : '#f7f8fb';
@@ -79,6 +82,16 @@ export default function TicTacToeGame({ darkTheme }) {
             return () => clearTimeout(t);
         }
     }, [xIsNext, board, winner]);
+
+    useEffect(() => {
+        if (winner === 'X') {
+            setWins(w => {
+                const n = w + 1;
+                try { localStorage.setItem('pdos_ttt_wins', String(n)); } catch {}
+                return n;
+            });
+        }
+    }, [winner]);
 
     const reset = () => { setBoard(Array(9).fill(null)); setXIsNext(true); setThinking(false); };
 
@@ -117,7 +130,10 @@ export default function TicTacToeGame({ darkTheme }) {
                 >
                     New Game
                 </button>
-                <p className="text-[10px]" style={{ color: subColor }}>CPU plays perfect minimax</p>
+                <div className="flex items-center gap-3">
+                    <p className="text-[10px]" style={{ color: subColor }}>CPU plays perfect minimax</p>
+                    {wins > 0 && <p className="text-[10px] font-semibold" style={{ color: '#34c759' }}>🏆 {wins} win{wins !== 1 ? 's' : ''}</p>}
+                </div>
             </div>
         </div>
     );
