@@ -54,7 +54,7 @@ export default function TicTacToeGame({ darkTheme }) {
     const bg = darkTheme ? '#0a0a1e' : '#f7f8fb';
     const cardBg = darkTheme ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
     const textColor = darkTheme ? 'rgba(255,255,255,0.85)' : '#222';
-    const subColor = darkTheme ? 'rgba(255,255,255,0.35)' : '#bbb';
+    const subColor = darkTheme ? 'rgba(255,255,255,0.35)' : '#888';
 
     const handleClick = useCallback((i) => {
         if (board[i] || winner || !xIsNext || thinking) return;
