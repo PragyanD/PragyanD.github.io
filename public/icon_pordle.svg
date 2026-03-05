@@ -1,0 +1,46 @@
+<svg width="72" height="72" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="wordleBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#121213"/>
+      <stop offset="100%" stop-color="#0a0a0b"/>
+    </linearGradient>
+    <linearGradient id="wordleShine" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.18)"/>
+      <stop offset="55%" stop-color="rgba(255,255,255,0)"/>
+    </linearGradient>
+    <clipPath id="wordleClip"><rect width="72" height="72" rx="16" ry="16"/></clipPath>
+  </defs>
+  <rect width="72" height="72" rx="16" fill="url(#wordleBg)"/>
+  <!-- Row 1: gray, gray, gray, gray, gray -->
+  <rect x="9"  y="9"  width="10" height="10" rx="2" fill="#3a3a3c"/>
+  <rect x="21" y="9"  width="10" height="10" rx="2" fill="#3a3a3c"/>
+  <rect x="33" y="9"  width="10" height="10" rx="2" fill="#3a3a3c"/>
+  <rect x="45" y="9"  width="10" height="10" rx="2" fill="#3a3a3c"/>
+  <rect x="57" y="9"  width="10" height="10" rx="2" fill="#3a3a3c"/>
+  <!-- Row 2: yellow, gray, green, gray, gray -->
+  <rect x="9"  y="21" width="10" height="10" rx="2" fill="#b59f3b"/>
+  <rect x="21" y="21" width="10" height="10" rx="2" fill="#3a3a3c"/>
+  <rect x="33" y="21" width="10" height="10" rx="2" fill="#538d4e"/>
+  <rect x="45" y="21" width="10" height="10" rx="2" fill="#3a3a3c"/>
+  <rect x="57" y="21" width="10" height="10" rx="2" fill="#3a3a3c"/>
+  <!-- Row 3: green, yellow, green, gray, gray -->
+  <rect x="9"  y="33" width="10" height="10" rx="2" fill="#538d4e"/>
+  <rect x="21" y="33" width="10" height="10" rx="2" fill="#b59f3b"/>
+  <rect x="33" y="33" width="10" height="10" rx="2" fill="#538d4e"/>
+  <rect x="45" y="33" width="10" height="10" rx="2" fill="#3a3a3c"/>
+  <rect x="57" y="33" width="10" height="10" rx="2" fill="#3a3a3c"/>
+  <!-- Row 4: green, green, green, green, green -->
+  <rect x="9"  y="45" width="10" height="10" rx="2" fill="#538d4e"/>
+  <rect x="21" y="45" width="10" height="10" rx="2" fill="#538d4e"/>
+  <rect x="33" y="45" width="10" height="10" rx="2" fill="#538d4e"/>
+  <rect x="45" y="45" width="10" height="10" rx="2" fill="#538d4e"/>
+  <rect x="57" y="45" width="10" height="10" rx="2" fill="#538d4e"/>
+  <!-- Row 5: empty -->
+  <rect x="9"  y="57" width="10" height="10" rx="2" fill="none" stroke="#3a3a3c" stroke-width="1.5"/>
+  <rect x="21" y="57" width="10" height="10" rx="2" fill="none" stroke="#3a3a3c" stroke-width="1.5"/>
+  <rect x="33" y="57" width="10" height="10" rx="2" fill="none" stroke="#3a3a3c" stroke-width="1.5"/>
+  <rect x="45" y="57" width="10" height="10" rx="2" fill="none" stroke="#3a3a3c" stroke-width="1.5"/>
+  <rect x="57" y="57" width="10" height="10" rx="2" fill="none" stroke="#3a3a3c" stroke-width="1.5"/>
+  <rect width="72" height="36" rx="16" fill="url(#wordleShine)" clip-path="url(#wordleClip)"/>
+  <rect width="72" height="72" rx="16" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+</svg>
