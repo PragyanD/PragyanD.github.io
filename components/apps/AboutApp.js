@@ -10,8 +10,9 @@ const SKILLS = [
 
 // L4 — Changed last color from "#ff453a" (danger red) to "#a855f7" (purple/indigo)
 const COLORS = ["#0078d4", "#34c759", "#febc2e", "#a855f7"];
+const LIGHT_TEXT_COLORS = ["#005fa3", "#1a7a30", "#8a6000", "#7e22ce"];
 
-export default function AboutApp({ darkTheme = false }) {
+export default function AboutApp({ darkTheme = false, onOpenApp }) {
     const t = darkTheme ? {
         containerBg: "#0a0a1e",
         heroBorder: "1px solid rgba(255,255,255,0.08)",
@@ -107,6 +108,17 @@ export default function AboutApp({ darkTheme = false }) {
                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
                             Email
                         </a>
+                        {onOpenApp && (
+                            <button
+                                aria-label="Open Task Manager"
+                                onClick={() => onOpenApp('taskmanager')}
+                                className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-md font-medium transition-all"
+                                style={{ background: t.btnGhost.bg, color: t.btnGhost.color, border: t.btnGhost.border }}>
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>
+                                Experiences
+                            </button>
+                        )}
+
                     </div>
                 </div>
             </div>
@@ -152,13 +164,13 @@ export default function AboutApp({ darkTheme = false }) {
                             onMouseLeave={(e) => { e.currentTarget.style.transform = ""; e.currentTarget.style.boxShadow = t.cardShadow; e.currentTarget.style.borderColor = `${COLORS[i]}33`; }}
                         >
                             {/* M9 — Change <p> category labels to <h3> */}
-                            <h3 className="text-xs font-semibold mb-2.5" style={{ color: COLORS[i], textTransform: "uppercase", letterSpacing: "0.07em" }}>
+                            <h3 className="text-xs font-semibold mb-2.5" style={{ color: darkTheme ? COLORS[i] : LIGHT_TEXT_COLORS[i], textTransform: "uppercase", letterSpacing: "0.07em" }}>
                                 {category}
                             </h3>
                             <div className="flex flex-wrap gap-1.5">
                                 {items.map((item) => (
                                     <span key={item} className="text-xs px-2 py-0.5 rounded-full"
-                                        style={{ background: `${COLORS[i]}18`, color: COLORS[i], border: `1px solid ${COLORS[i]}33` }}>
+                                        style={{ background: `${COLORS[i]}18`, color: darkTheme ? COLORS[i] : LIGHT_TEXT_COLORS[i], border: `1px solid ${COLORS[i]}33` }}>
                                         {item}
                                     </span>
                                 ))}

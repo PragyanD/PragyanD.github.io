@@ -4,8 +4,6 @@ import MinesweeperGame from './games/MinesweeperGame';
 import SnakeGame from './games/SnakeGame';
 import Game2048 from './games/Game2048';
 import ConwayGame from './games/ConwayGame';
-import PordleApp from './games/PordleApp';
-import FlappyApp from './games/FlappyApp';
 
 const GAMES = [
     {
@@ -52,24 +50,6 @@ const GAMES = [
         description: 'Draw cells and simulate life',
         color: '#a855f7',
         component: ConwayGame,
-    },
-    {
-        id: 'pordle',
-        name: 'Pordle',
-        emoji: '🟩',
-        iconSrc: '/icon_pordle.svg',
-        description: 'Wordle clone — guess the 5-letter word in 6 tries',
-        color: '#22c55e',
-        component: PordleApp,
-    },
-    {
-        id: 'flappy',
-        name: 'FlappyAI',
-        emoji: '🐦',
-        iconSrc: '/icon_flappy.svg',
-        description: 'Watch a NEAT neural network learn to play Flappy Bird',
-        color: '#facc15',
-        component: FlappyApp,
     },
 ];
 

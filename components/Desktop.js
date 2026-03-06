@@ -291,7 +291,7 @@ export default function Desktop({ onRestart }) {
                         focused={focusOrder.at(-1) === appId}
                     >
                         <ErrorBoundary key={appId}>
-                            <AppComponent darkTheme={darkTheme} />
+                            <AppComponent darkTheme={darkTheme} onOpenApp={openApp} />
                         </ErrorBoundary>
                     </Window>
                 );
