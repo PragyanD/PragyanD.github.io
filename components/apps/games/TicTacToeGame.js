@@ -13,16 +13,16 @@ function checkWinner(board) {
     return board.every(Boolean) ? 'draw' : null;
 }
 
-function minimax(board, isMax) {
+function minimax(board, isMax, depth = 0) {
     const w = checkWinner(board);
-    if (w === 'O') return 10;
-    if (w === 'X') return -10;
+    if (w === 'O') return 10 - depth;
+    if (w === 'X') return depth - 10;
     if (w === 'draw') return 0;
     const scores = [];
     for (let i = 0; i < 9; i++) {
         if (!board[i]) {
             board[i] = isMax ? 'O' : 'X';
-            scores.push(minimax(board, !isMax));
+            scores.push(minimax(board, !isMax, depth + 1));
             board[i] = null;
         }
     }
