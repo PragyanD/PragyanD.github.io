@@ -8,7 +8,7 @@ export default function useWindowManager(onOpen) {
     const [openWindows, setOpenWindows] = useState(() => {
         try {
             const s = localStorage.getItem('pdos_open_windows');
-            return s ? JSON.parse(s) : [];
+            return s ? [...new Set(JSON.parse(s))] : [];
         } catch { return []; }
     });
     const [minimizedWindows, setMinimizedWindows] = useState([]);

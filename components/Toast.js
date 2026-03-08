@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { memo, useEffect } from "react";
 
 /**
  * @param {{ toasts: Array<{id:number, message:string, type?:string}>, onDismiss: (id:number)=>void }} props
@@ -13,7 +13,7 @@ export default function Toast({ toasts, onDismiss }) {
     );
 }
 
-function ToastItem({ toast, onDismiss }) {
+const ToastItem = memo(function ToastItem({ toast, onDismiss }) {
     useEffect(() => {
         const timer = setTimeout(() => onDismiss(toast.id), 3000);
         return () => clearTimeout(timer);
@@ -42,4 +42,4 @@ function ToastItem({ toast, onDismiss }) {
             </button>
         </div>
     );
-}
+});

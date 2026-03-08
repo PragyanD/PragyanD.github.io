@@ -143,7 +143,7 @@ export default function Taskbar({ openWindows, minimizedWindows, onStartClick, s
             // Keep saved pill order, then append any open windows not yet in it
             const filtered = pillArr.filter(id => winArr.includes(id));
             const extra    = winArr.filter(id => !filtered.includes(id));
-            return [...filtered, ...extra];
+            return [...new Set([...filtered, ...extra])];
         } catch { return []; }
     });
     const [dragId, setDragId] = useState(null);

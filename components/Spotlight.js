@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { APPS_CONFIG } from '../lib/apps.config';
 
 const SEARCH_ITEMS = APPS_CONFIG.map(app => ({
@@ -14,10 +14,12 @@ export default function Spotlight({ isOpen, onClose, onOpenApp }) {
     const [selectedIndex, setSelectedIndex] = useState(0);
     const inputRef = useRef(null);
 
-    const filtered = SEARCH_ITEMS.filter(item =>
-        item.name.toLowerCase().includes(query.toLowerCase()) ||
-        item.keywords.toLowerCase().includes(query.toLowerCase())
-    );
+    const filtered = useMemo(() =>
+        SEARCH_ITEMS.filter(item =>
+            item.name.toLowerCase().includes(query.toLowerCase()) ||
+            item.keywords.toLowerCase().includes(query.toLowerCase())
+        ),
+    [query]);
 
     useEffect(() => {
         if (isOpen) {

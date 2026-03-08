@@ -3,15 +3,17 @@ import { useState, useEffect, useRef } from "react";
 function useSmoothedValue(target, speed = 0.06) {
     const [value, setValue] = useState(target);
     const current = useRef(target);
+    const frameRef = useRef(null);
     useEffect(() => {
-        const frame = requestAnimationFrame(function step() {
+        const step = () => {
             current.current += (target - current.current) * speed;
             setValue(Math.round(current.current));
             if (Math.abs(target - current.current) > 0.5) {
-                requestAnimationFrame(step);
+                frameRef.current = requestAnimationFrame(step);
             }
-        });
-        return () => cancelAnimationFrame(frame);
+        };
+        frameRef.current = requestAnimationFrame(step);
+        return () => cancelAnimationFrame(frameRef.current);
     }, [target, speed]);
     return value;
 }

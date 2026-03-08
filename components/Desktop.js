@@ -36,11 +36,11 @@ const RIGHT_ICONS = APPS_CONFIG.filter(app => app.rightColumn).map(app => ({
 }));
 
 const WALLPAPERS = [
-    { id: 'default', label: 'Default', value: "url('/wallpaper.jpg')" },
-    { id: 'midnight', label: 'Midnight', value: "linear-gradient(135deg, #0a0a1e 0%, #1a1a4e 50%, #0a0a2e 100%)" },
-    { id: 'aurora', label: 'Aurora', value: "linear-gradient(135deg, #0d1b2a 0%, #1b4332 40%, #081c15 100%)" },
-    { id: 'dusk', label: 'Dusk', value: "linear-gradient(135deg, #1a0533 0%, #4a1942 50%, #1a0a2e 100%)" },
-    { id: 'slate', label: 'Slate', value: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)" },
+    { id: 'default', label: 'Bliss', value: "url('/wallpaper_bliss.avif')" },
+    { id: 'hierapolis', label: 'Hierapolis', value: "url('/wallpaper_hierapolis.avif')" },
+    { id: 'mysore', label: 'Mysore', value: "url('/wallpaper_mysore.jpg')" },
+    { id: 'pamukkale', label: 'Pamukkale', value: "url('/wallpaper_pamukkale.avif')" },
+    { id: 'salkantay', label: 'Salkantay', value: "url('/wallpaper_salkantay.png')" },
 ];
 
 export default function Desktop({ onRestart }) {
@@ -62,8 +62,8 @@ export default function Desktop({ onRestart }) {
         }
         return false;
     });
-    const [wallpaperPos, setWallpaperPos] = useState({ x: 50, y: 50 });
     const rafRef = useRef(null);
+    const desktopRef = useRef(null);
     const [toasts, setToasts] = useState([]);
 
     const addToast = useCallback((message, type = 'info') => {
@@ -152,20 +152,23 @@ export default function Desktop({ onRestart }) {
         if (!isImageWallpaper) return;
         if (rafRef.current) return;
         rafRef.current = requestAnimationFrame(() => {
-            setWallpaperPos({
-                x: 50 + (e.clientX / window.innerWidth  - 0.5) * -3,
-                y: 50 + (e.clientY / window.innerHeight - 0.5) * -3,
-            });
+            const x = (50 + (e.clientX / window.innerWidth - 0.5) * -3).toFixed(2);
+            const y = (50 + (e.clientY / window.innerHeight - 0.5) * -3).toFixed(2);
+            if (desktopRef.current) {
+                desktopRef.current.style.background =
+                    `${activeWallpaper.value} ${x}% ${y}% / cover no-repeat`;
+            }
             rafRef.current = null;
         });
-    }, [isImageWallpaper]);
+    }, [isImageWallpaper, activeWallpaper.value]);
 
     return (
         <div
+            ref={desktopRef}
             className="fixed inset-0 overflow-hidden"
             style={{
                 background: isImageWallpaper
-                    ? `${activeWallpaper.value} ${wallpaperPos.x.toFixed(2)}% ${wallpaperPos.y.toFixed(2)}% / cover no-repeat`
+                    ? `${activeWallpaper.value} 50% 50% / cover no-repeat`
                     : activeWallpaper.value,
             }}
             onMouseMove={handleMouseMove}

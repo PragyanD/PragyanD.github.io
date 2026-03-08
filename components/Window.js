@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect, memo } from "react";
+import { useState, useRef, useCallback, useEffect, useMemo, memo } from "react";
 import { createPortal } from "react-dom";
 
 function Window({
@@ -58,10 +58,10 @@ function Window({
         if (e.target.closest(".win-control")) return;
         dragging.current = true;
         setIsDragging(true);
-        offset.current = { x: e.clientX - pos.x, y: e.clientY - pos.y };
+        offset.current = { x: e.clientX - posRef.current.x, y: e.clientY - posRef.current.y };
         onFocus?.(id);
         e.preventDefault();
-    }, [maximized, pos, id, onFocus]);
+    }, [maximized, id, onFocus]);
 
     const onMouseDownResize = useCallback((e, dir) => {
         if (maximized) return;
@@ -69,15 +69,15 @@ function Window({
         offset.current = {
             startX: e.clientX,
             startY: e.clientY,
-            startW: size.w,
-            startH: size.h,
-            startXPos: pos.x,
-            startYPos: pos.y
+            startW: sizeRef.current.w,
+            startH: sizeRef.current.h,
+            startXPos: posRef.current.x,
+            startYPos: posRef.current.y
         };
         onFocus?.(id);
         e.preventDefault();
         e.stopPropagation();
-    }, [maximized, size, pos, id, onFocus]);
+    }, [maximized, id, onFocus]);
 
     const [snapped, setSnapped] = useState(false); // 'left' | 'right' | false
     const [snapPreview, setSnapPreview] = useState(null); // 'left' | 'right' | null
@@ -192,6 +192,16 @@ function Window({
         onFocus?.(id);
     };
 
+    const boxShadow = useMemo(() =>
+        maximized || isMinimizing || snapped
+            ? "none"
+            : isDragging
+                ? "inset 0 1px 0 rgba(255,255,255,0.3), 0 0 32px rgba(0,120,212,0.3), 0 35px 100px rgba(0,0,0,0.55)"
+                : focused
+                    ? "inset 0 1px 0 rgba(255,255,255,0.3), 0 0 24px rgba(0,120,212,0.25), 0 24px 80px rgba(0,0,0,0.4)"
+                    : "inset 0 1px 0 rgba(255,255,255,0.08), 0 6px 20px rgba(0,0,0,0.18)",
+    [maximized, isMinimizing, snapped, isDragging, focused]);
+
     const effectiveZIndex = pinned ? 9998 : zIndex;
 
     const style = maximized
@@ -230,13 +240,7 @@ function Window({
             style={{
                 ...style,
                 borderRadius: (maximized || snapped) ? 0 : 12,
-                boxShadow: maximized || isMinimizing || snapped
-                    ? "none"
-                    : isDragging
-                        ? "inset 0 1px 0 rgba(255,255,255,0.3), 0 0 32px rgba(0,120,212,0.3), 0 35px 100px rgba(0,0,0,0.55)"
-                        : focused
-                            ? "inset 0 1px 0 rgba(255,255,255,0.3), 0 0 24px rgba(0,120,212,0.25), 0 24px 80px rgba(0,0,0,0.4)"
-                            : "inset 0 1px 0 rgba(255,255,255,0.08), 0 6px 20px rgba(0,0,0,0.18)",
+                boxShadow,
                 border: focused
                     ? "1px solid rgba(0,120,212,0.45)"
                     : "1px solid rgba(255,255,255,0.12)",
