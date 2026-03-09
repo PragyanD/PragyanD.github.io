@@ -223,11 +223,6 @@ body {
   color: #fff !important;
 }
 
-@font-face {
-  font-family: 'burtons';
-  src: url('../public/Burtons.otf');
-}
-
 /* Keyboard focus styles — WCAG 2.1 AA */
 :focus-visible {
   outline: 2px solid var(--os-accent);

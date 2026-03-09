@@ -135,7 +135,7 @@ export default function AboutApp({ darkTheme = false, onOpenApp }) {
                 {/* M2 — Add "About" section heading before bio */}
                 <h2 className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: t.certHeading }}>About</h2>
 
-                <p className="text-sm leading-relaxed" style={{ color: t.bioText, fontFamily: "'Geist', 'Space Grotesk', system-ui, sans-serif" }}>
+                <p className="text-sm leading-relaxed" style={{ color: t.bioText }}>
                     I&apos;m a software engineer drawn to systems where the margin for error is genuinely small.
                     I graduated from UW-Madison and have shipped production code across broadcast infrastructure,
                     distributed ML platforms, and graph databases. Most recently, my time has been spent in
