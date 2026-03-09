@@ -31,13 +31,13 @@ export default function StartMenu({ open, onClose, onOpenApp, onRestart }) {
             <div
                 className="start-menu-open fixed z-50 flex overflow-hidden"
                 style={{
-                    bottom: 52,
+                    bottom: 48,
                     left: 0,
                     width: 420,
                     height: 560,
                     borderRadius: "12px 12px 0 12px",
                     background: "rgba(18, 18, 32, 0.95)",
-                    backdropFilter: "blur(32px)",
+                    backdropFilter: "blur(40px)",
                     border: "1px solid rgba(255,255,255,0.1)",
                     boxShadow: "0 -8px 60px rgba(0,0,0,0.7)",
                 }}
