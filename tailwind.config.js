@@ -8,7 +8,6 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        burtons: "burtons",
         inter: ["Inter", "Segoe UI", "system-ui", "sans-serif"],
         grotesk: ["Space Grotesk", "Segoe UI", "system-ui", "sans-serif"],
       },
