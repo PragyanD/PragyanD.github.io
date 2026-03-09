@@ -293,7 +293,7 @@ export default function Taskbar({ openWindows, minimizedWindows, onStartClick, s
             className="taskbar fixed bottom-0 left-0 right-0 flex items-center z-50"
             style={{
                 height: 48,
-                background: "rgba(10, 10, 25, 0.4)",
+                background: "rgba(var(--taskbar-tint-r, 10), var(--taskbar-tint-g, 10), var(--taskbar-tint-b, 20), 0.88)",
                 backdropFilter: "blur(40px)",
                 borderTop: "1px solid rgba(255,255,255,0.15)",
                 boxShadow: "inset 0 1px 0 rgba(255,255,255,0.3), 0 -4px 30px rgba(0,0,0,0.3)",

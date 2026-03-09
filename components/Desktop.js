@@ -64,6 +64,7 @@ export default function Desktop({ onRestart }) {
     });
     const rafRef = useRef(null);
     const desktopRef = useRef(null);
+    const samplerCanvasRef = useRef(null);
     const [toasts, setToasts] = useState([]);
 
     const addToast = useCallback((message, type = 'info') => {
@@ -161,6 +162,43 @@ export default function Desktop({ onRestart }) {
             rafRef.current = null;
         });
     }, [isImageWallpaper, activeWallpaper.value]);
+
+    useEffect(() => {
+        if (!isImageWallpaper) {
+            document.documentElement.style.removeProperty('--taskbar-tint-r');
+            document.documentElement.style.removeProperty('--taskbar-tint-g');
+            document.documentElement.style.removeProperty('--taskbar-tint-b');
+            return;
+        }
+        const urlMatch = activeWallpaper.value.match(/url\(['"]?([^'")\s]+)['"]?\)/);
+        if (!urlMatch) return;
+        const img = new window.Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => {
+            const canvas = samplerCanvasRef.current;
+            if (!canvas) return;
+            const W = 80;
+            const srcY = Math.floor(img.naturalHeight * 0.8);
+            const srcH = img.naturalHeight - srcY;
+            const H = Math.max(1, Math.round(W * srcH / img.naturalWidth));
+            canvas.width = W;
+            canvas.height = H;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, srcY, img.naturalWidth, srcH, 0, 0, W, H);
+            const d = ctx.getImageData(0, 0, W, H).data;
+            let r = 0, g = 0, b = 0;
+            const n = W * H;
+            for (let i = 0; i < d.length; i += 4) { r += d[i]; g += d[i+1]; b += d[i+2]; }
+            const mix = 0.3;
+            const tr = Math.round((r/n) * mix + 10 * (1 - mix));
+            const tg = Math.round((g/n) * mix + 10 * (1 - mix));
+            const tb = Math.round((b/n) * mix + 20 * (1 - mix));
+            document.documentElement.style.setProperty('--taskbar-tint-r', tr);
+            document.documentElement.style.setProperty('--taskbar-tint-g', tg);
+            document.documentElement.style.setProperty('--taskbar-tint-b', tb);
+        };
+        img.src = urlMatch[1];
+    }, [activeWallpaper.value, isImageWallpaper]);
 
     return (
         <div
@@ -483,6 +521,9 @@ export default function Desktop({ onRestart }) {
 
             {/* Toast Notifications */}
             <Toast toasts={toasts} onDismiss={dismissToast} />
+
+            {/* Hidden canvas for wallpaper color sampling */}
+            <canvas ref={samplerCanvasRef} style={{ display: 'none' }} aria-hidden="true" />
         </div>
     );
 }
