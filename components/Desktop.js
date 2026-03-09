@@ -83,6 +83,7 @@ export default function Desktop({ onRestart }) {
         minimizedWindows, focusOrder, minimizing, restoring, closing,
         activeWindows, allRunning,
         openApp, closeApp, minimizeApp, focusApp,
+        maximizedWindows, toggleMaximize, sendToBack,
     } = useWindowManager(useCallback(() => setStartOpen(false), []));
 
     // Expose focusOrder to keyboard handler via ref so the handler closure stays stable
@@ -333,6 +334,8 @@ export default function Desktop({ onRestart }) {
                         isClosing={closing.has(appId)}
                         focused={focusOrder.at(-1) === appId}
                         themeColor={app.themeColor}
+                        maximized={maximizedWindows.has(appId)}
+                        onMaximize={() => toggleMaximize(appId)}
                     >
                         <ErrorBoundary key={appId}>
                             <AppComponent darkTheme={darkTheme} onOpenApp={openApp} />
@@ -356,11 +359,17 @@ export default function Desktop({ onRestart }) {
             <Taskbar
                 openWindows={allRunning}
                 minimizedWindows={minimizedWindows}
+                maximizedWindows={maximizedWindows}
                 onStartClick={() => setStartOpen((prev) => !prev)}
                 startOpen={startOpen}
                 onRestoreWindow={openApp}
                 onOpenApp={openApp}
                 onVolumeClick={() => setSoundOpen(prev => !prev)}
+                onCloseApp={closeApp}
+                onMinimizeApp={minimizeApp}
+                onMaximizeApp={toggleMaximize}
+                onBringToFront={focusApp}
+                onSendToBack={sendToBack}
             />
 
             {/* Volume Control Popup */}
