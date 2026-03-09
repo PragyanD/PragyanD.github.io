@@ -19,8 +19,9 @@ function Window({
     isClosing = false,
     focused = true,
     themeColor = '#0078d4',
+    maximized = false,
+    onMaximize,
 }) {
-    const [maximized, setMaximized] = useState(false);
     const [pos, setPos] = useState(() => {
         try {
             const saved = localStorage.getItem(`window_state_${id}`);
@@ -53,6 +54,19 @@ function Window({
 
     useEffect(() => { posRef.current = pos; }, [pos]);
     useEffect(() => { sizeRef.current = size; }, [size]);
+
+    const prevMaximizedRef = useRef(maximized);
+    useEffect(() => {
+        const was = prevMaximizedRef.current;
+        prevMaximizedRef.current = maximized;
+        if (maximized && !was && !prevState.current) {
+            prevState.current = { pos: { ...posRef.current }, size: { ...sizeRef.current } };
+        } else if (!maximized && was && prevState.current) {
+            setPos(prevState.current.pos);
+            setSize(prevState.current.size);
+            prevState.current = null;
+        }
+    }, [maximized]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const onMouseDownTitle = useCallback((e) => {
         if (maximized) return;
@@ -179,19 +193,19 @@ function Window({
         };
     }, [size, snapped]);
 
-    const toggleMaximize = () => {
+    const toggleMaximize = useCallback(() => {
         if (!maximized) {
-            prevState.current = { pos: { ...pos }, size: { ...size } };
-            setMaximized(true);
+            prevState.current = { pos: { ...posRef.current }, size: { ...sizeRef.current } };
         } else {
             if (prevState.current) {
                 setPos(prevState.current.pos);
                 setSize(prevState.current.size);
+                prevState.current = null;
             }
-            setMaximized(false);
         }
+        onMaximize?.();
         onFocus?.(id);
-    };
+    }, [maximized, onMaximize, id, onFocus]);
 
     const boxShadow = useMemo(() => {
         if (maximized || isMinimizing || snapped) return "none";
