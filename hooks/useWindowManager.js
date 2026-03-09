@@ -16,6 +16,7 @@ export default function useWindowManager(onOpen) {
     const [minimizing, setMinimizing] = useState(null);
     const [restoring, setRestoring] = useState(null);
     const [closing, setClosing] = useState(new Set());
+    const [maximizedWindows, setMaximizedWindows] = useState(new Set());
     const closingTimers = useRef({});
 
     useEffect(() => {
@@ -47,8 +48,22 @@ export default function useWindowManager(onOpen) {
             setMinimizedWindows((prev) => prev.filter((id) => id !== appId));
             setFocusOrder((prev) => prev.filter((id) => id !== appId));
             setClosing(prev => { const next = new Set(prev); next.delete(appId); return next; });
+            setMaximizedWindows(prev => { const next = new Set(prev); next.delete(appId); return next; });
             delete closingTimers.current[appId];
         }, 190);
+    }, []);
+
+    const toggleMaximize = useCallback((appId) => {
+        setMaximizedWindows(prev => {
+            const next = new Set(prev);
+            if (next.has(appId)) next.delete(appId);
+            else next.add(appId);
+            return next;
+        });
+    }, []);
+
+    const sendToBack = useCallback((appId) => {
+        setFocusOrder(prev => [appId, ...prev.filter(id => id !== appId)]);
     }, []);
 
     const minimizeApp = useCallback((appId) => {
@@ -99,5 +114,8 @@ export default function useWindowManager(onOpen) {
         closeApp,
         minimizeApp,
         focusApp,
+        maximizedWindows,
+        toggleMaximize,
+        sendToBack,
     };
 }
