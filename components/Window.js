@@ -256,7 +256,7 @@ function Window({
                 className="flex items-center gap-2 px-3 flex-shrink-0 cursor-default transition-colors duration-200"
                 style={{
                     height: 38,
-                    background: focused ? "rgba(30, 30, 46, 0.25)" : "rgba(20, 20, 30, 0.15)",
+                    background: focused ? "rgba(0, 120, 212, 0.12)" : "rgba(10, 10, 20, 0.15)",
                     backdropFilter: "blur(20px)",
                     borderBottom: "1px solid rgba(255,255,255,0.12)",
                 }}
