@@ -313,6 +313,7 @@ export default function Taskbar({
     };
 
     return (
+        <>
         <div
             className="taskbar fixed bottom-0 left-0 right-0 flex items-center z-50"
             style={{
@@ -503,5 +504,6 @@ export default function Taskbar({
             </div>,
             document.body
         )}
+        </>
     );
 }
