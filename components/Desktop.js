@@ -199,6 +199,7 @@ export default function Desktop({ onRestart }) {
             document.documentElement.style.setProperty('--taskbar-tint-b', tb);
         };
         img.src = urlMatch[1];
+        return () => { img.onload = null; };
     }, [activeWallpaper.value, isImageWallpaper]);
 
     return (
