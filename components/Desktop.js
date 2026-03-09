@@ -424,7 +424,7 @@ export default function Desktop({ onRestart }) {
                 >
                     <div
                         className="rounded-2xl p-5 shadow-2xl border border-white/10"
-                        style={{ background: "rgba(18,18,30,0.95)", backdropFilter: "blur(40px)", width: 320 }}
+                        style={{ background: "rgba(18,18,30,0.95)", backdropFilter: "blur(40px)", width: 440 }}
                         onClick={e => e.stopPropagation()}
                     >
                         <p className="text-xs font-semibold text-white/40 uppercase tracking-widest mb-4">Choose Wallpaper</p>
