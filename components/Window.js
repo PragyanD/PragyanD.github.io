@@ -304,7 +304,7 @@ function Window({
             </div>
 
             {/* Content */}
-            <div className="flex-1 overflow-hidden relative" style={{ background: "#f3f3f3", fontFamily: "'JetBrains Mono', 'Courier New', monospace" }}>
+            <div className="flex-1 overflow-hidden relative" style={{ background: "#f3f3f3" }}>
                 {children}
             </div>
 
