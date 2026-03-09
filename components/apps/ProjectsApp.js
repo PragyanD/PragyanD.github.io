@@ -5,7 +5,7 @@ const PROJECTS = [
         stack: ["PyTorch", "Python", "Deep Learning"],
         description: "CNN-based scene classifier achieving 93% accuracy on MiniPlaces dataset. Optimized via hyperparameter tuning, data augmentation, batch normalization, and learning rate scheduling.",
         highlight: "Machine Learning",
-        color: "#6366f1",
+        color: "#a855f7",
         github: "https://github.com/PragyanD/scene-recognition",
         demo: null,
         links: [],
@@ -16,7 +16,7 @@ const PROJECTS = [
         stack: ["Node.js", "JavaScript", "FFmpeg", "YTDL"],
         description: "Multipurpose Discord bot for server admin, music playback, and user verification. Streams audio from YouTube via YTDL + FFmpeg for real-time audio processing.",
         highlight: "Distributed Systems",
-        color: "#5865f2",
+        color: "#38bdf8",
         github: null,
         demo: null,
         links: [],
@@ -27,7 +27,7 @@ const PROJECTS = [
         stack: ["C", "Bouncy Castle", "DVB/ETSI", "TSDuck"],
         description: "Developed a proprietary patch for DTV Innovations which added support for BISS-1/E/CA encryption for real-time video scrambling.",
         highlight: "Multimedia Encryption",
-        color: "#f59e0b",
+        color: "#34c759",
         github: null,
         demo: null,
         links: [],
@@ -38,7 +38,7 @@ const PROJECTS = [
         stack: ["C", "PostgreSQL", "Go", "Python"],
         description: "Contributed to Apache AGE graph database extension for PostgreSQL. Implemented Cypher query parsing, graph traversal, and mitigated SQL injection vulnerabilities.",
         highlight: "Graph Databases",
-        color: "#10b981",
+        color: "#0078d4",
         github: null,
         demo: null,
         links: [],
@@ -61,7 +61,7 @@ const PROJECTS = [
         stack: ["JavaScript", "NEAT", "HTML Canvas"],
         description: "NEAT algorithm that evolves a neural network to play Flappy Bird optimally. Goes from zero to perfect play in ~20 generations.",
         highlight: "Neuroevolution",
-        color: "#facc15",
+        color: "#a855f7",
         github: "https://github.com/PragyanD/FlappyAI",
         demo: null,
         links: [],
@@ -73,7 +73,7 @@ const PROJECTS = [
         stack: ["HTML", "CSS", "JavaScript"],
         description: "A faithful Wordle clone built with vanilla HTML/CSS/JS. Features daily words, color-coded feedback, and on-screen keyboard.",
         highlight: "Web Game",
-        color: "#22c55e",
+        color: "#0078d4",
         github: "https://github.com/PragyanD/Pordle",
         demo: "https://pragyand.github.io/Pordle/",
         links: [],
@@ -84,7 +84,7 @@ const PROJECTS = [
         stack: ["Python", "PyTorch", "CNN"],
         description: "CNN trained on handwritten digit recognition achieving high accuracy on the MNIST benchmark dataset.",
         highlight: "Machine Learning",
-        color: "#ef4444",
+        color: "#a855f7",
         github: "https://github.com/PragyanD/MNIST-Classifier",
         demo: null,
         links: [],
@@ -95,7 +95,7 @@ const PROJECTS = [
         stack: ["Flutter", "Dart"],
         description: "Cross-platform wellness tracking app built with Flutter. Tracks health metrics and provides personalized insights.",
         highlight: "Mobile App",
-        color: "#06b6d4",
+        color: "#38bdf8",
         github: "https://github.com/PragyanD/HealthSage",
         demo: null,
         links: [],
@@ -216,7 +216,7 @@ export default function ProjectsApp({ darkTheme = false }) {
                             <div className="flex gap-2 mt-3">
                                 {project.github && (
                                     <a href={project.github} target="_blank" rel="noopener noreferrer"
-                                       className="text-[10px] px-2 py-1 rounded-lg transition-colors"
+                                       className="text-xs px-2 py-1 rounded-lg transition-colors"
                                        style={{ border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.7)' }}
                                        onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.35)'}
                                        onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)'}>
@@ -225,7 +225,7 @@ export default function ProjectsApp({ darkTheme = false }) {
                                 )}
                                 {project.demo && (
                                     <a href={project.demo} target="_blank" rel="noopener noreferrer"
-                                       className="text-[10px] px-2 py-1 rounded-lg text-white bg-blue-600/80 hover:bg-blue-600 transition-colors">
+                                       className="text-xs px-2 py-1 rounded-lg text-white bg-blue-600/80 hover:bg-blue-600 transition-colors">
                                         Live Demo →
                                     </a>
                                 )}
@@ -254,8 +254,8 @@ export default function ProjectsApp({ darkTheme = false }) {
                             onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'}
                         >
                             <p className="text-xs font-semibold text-white/90 truncate">{repo.name}</p>
-                            <p className="text-[10px] text-white/50 mt-1 leading-tight line-clamp-2">{repo.desc}</p>
-                            <p className="text-[10px] text-white/35 mt-2">● {repo.lang}</p>
+                            <p className="text-xs text-white/50 mt-1 leading-tight line-clamp-2">{repo.desc}</p>
+                            <p className="text-xs text-white/35 mt-2">● {repo.lang}</p>
                         </a>
                     ))}
                 </div>

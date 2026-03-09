@@ -131,8 +131,8 @@ export default function TicTacToeGame({ darkTheme }) {
                     New Game
                 </button>
                 <div className="flex items-center gap-3">
-                    <p className="text-[10px]" style={{ color: subColor }}>CPU plays perfect minimax</p>
-                    {wins > 0 && <p className="text-[10px] font-semibold" style={{ color: '#34c759' }}>🏆 {wins} win{wins !== 1 ? 's' : ''}</p>}
+                    <p className="text-xs" style={{ color: subColor }}>CPU plays perfect minimax</p>
+                    {wins > 0 && <p className="text-xs font-semibold" style={{ color: '#34c759' }}>🏆 {wins} win{wins !== 1 ? 's' : ''}</p>}
                 </div>
             </div>
         </div>

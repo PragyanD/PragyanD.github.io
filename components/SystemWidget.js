@@ -69,13 +69,13 @@ export default function SystemWidget() {
                     style={{ color: "rgba(255,255,255,0.5)" }}
                 >
                     <span className="text-[11px]">⚙</span>
-                    <span className="text-[10px] font-mono font-semibold tracking-widest uppercase">SYS</span>
+                    <span className="text-xs font-mono font-semibold tracking-widest uppercase">SYS</span>
                     {!expanded && (
-                        <span className="text-[10px] font-mono ml-1" style={{ color: cpuColor }}>
+                        <span className="text-xs font-mono ml-1" style={{ color: cpuColor }}>
                             {cpu}%
                         </span>
                     )}
-                    <span className="ml-auto text-[9px] opacity-40">{expanded ? '▼' : '▲'}</span>
+                    <span className="ml-auto text-xs opacity-40">{expanded ? '▼' : '▲'}</span>
                 </button>
 
                 {/* Expanded panel */}
@@ -83,7 +83,7 @@ export default function SystemWidget() {
                     <div className="px-3 pb-3 space-y-2">
                         {/* CPU */}
                         <div>
-                            <div className="flex justify-between text-[9px] font-mono mb-0.5" style={{ color: "rgba(255,255,255,0.4)" }}>
+                            <div className="flex justify-between text-xs font-mono mb-0.5" style={{ color: "rgba(255,255,255,0.4)" }}>
                                 <span>CPU</span>
                                 <span style={{ color: cpuColor }}>{cpu}%</span>
                             </div>
@@ -96,7 +96,7 @@ export default function SystemWidget() {
                         </div>
                         {/* RAM */}
                         <div>
-                            <div className="flex justify-between text-[9px] font-mono mb-0.5" style={{ color: "rgba(255,255,255,0.4)" }}>
+                            <div className="flex justify-between text-xs font-mono mb-0.5" style={{ color: "rgba(255,255,255,0.4)" }}>
                                 <span>RAM</span>
                                 <span style={{ color: "#0078d4" }}>65%</span>
                             </div>
@@ -105,7 +105,7 @@ export default function SystemWidget() {
                             </div>
                         </div>
                         {/* Uptime */}
-                        <div className="flex justify-between text-[9px] font-mono" style={{ color: "rgba(255,255,255,0.3)" }}>
+                        <div className="flex justify-between text-xs font-mono" style={{ color: "rgba(255,255,255,0.3)" }}>
                             <span>UPTIME</span>
                             <span style={{ color: "rgba(255,255,255,0.6)" }}>{fmtUptime(uptime)}</span>
                         </div>

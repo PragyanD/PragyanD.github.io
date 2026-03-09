@@ -56,7 +56,7 @@ function Calendar({ onClose }) {
             {/* Day headers */}
             <div className="grid grid-cols-7 mb-1">
                 {DAYS.map(d => (
-                    <span key={d} className="text-center text-[9px] font-semibold py-0.5" style={{ color: "rgba(255,255,255,0.3)", letterSpacing: "0.04em" }}>{d}</span>
+                    <span key={d} className="text-center text-xs font-semibold py-0.5" style={{ color: "rgba(255,255,255,0.3)", letterSpacing: "0.04em" }}>{d}</span>
                 ))}
             </div>
 
@@ -102,7 +102,7 @@ function Clock() {
                 aria-label="Open calendar"
             >
                 <span className="text-xs font-medium" style={{ color: "rgba(255,255,255,0.9)" }}>{timeStr}</span>
-                <span className="text-xs" style={{ color: "rgba(255,255,255,0.55)", fontSize: "10px" }}>{dateStr}</span>
+                <span className="text-xs" style={{ color: "rgba(255,255,255,0.55)" }}>{dateStr}</span>
             </button>
             {calOpen && <Calendar onClose={() => setCalOpen(false)} />}
         </div>

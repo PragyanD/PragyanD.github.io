@@ -97,7 +97,7 @@ export default function TrashApp({ darkTheme = false }) {
                     <span style={{ fontSize: 14 }}>🗑️</span>
                     <span className="text-xs font-semibold" style={{ color: t.headerText }}>Trash</span>
                     {files.length > 0 && (
-                        <span className="text-[10px] px-1.5 py-0.5 rounded-full" style={{ background: "rgba(255,67,58,0.15)", color: "#ff453a", border: "1px solid rgba(255,67,58,0.3)" }}>
+                        <span className="text-xs px-1.5 py-0.5 rounded-full" style={{ background: "rgba(255,67,58,0.15)", color: "#ff453a", border: "1px solid rgba(255,67,58,0.3)" }}>
                             {files.length} items
                         </span>
                     )}
@@ -137,7 +137,7 @@ export default function TrashApp({ darkTheme = false }) {
             {/* Column headers */}
             {files.length > 0 && (
                 <div
-                    className="grid text-[10px] font-semibold px-4 py-1.5 flex-shrink-0"
+                    className="grid text-xs font-semibold px-4 py-1.5 flex-shrink-0"
                     style={{
                         gridTemplateColumns: "1fr 100px 160px",
                         background: t.colHeaderBg,
@@ -159,7 +159,7 @@ export default function TrashApp({ darkTheme = false }) {
                     <div className="flex-1 flex flex-col items-center justify-center gap-3">
                         <span style={{ fontSize: 48, opacity: 0.3 }}>🗑️</span>
                         <p className="text-sm font-medium" style={{ color: t.emptyText }}>Trash is empty</p>
-                        <p className="text-[10px]" style={{ color: t.emptySubText }}>
+                        <p className="text-xs" style={{ color: t.emptySubText }}>
                             (node_modules may have survived)
                         </p>
                     </div>
@@ -193,7 +193,7 @@ export default function TrashApp({ darkTheme = false }) {
                         ))}
 
                         <div className="px-4 py-4 text-center">
-                            <p className="text-[10px]" style={{ color: t.footerText }}>
+                            <p className="text-xs" style={{ color: t.footerText }}>
                                 Items in Trash will be deleted... eventually.
                             </p>
                         </div>
@@ -203,7 +203,7 @@ export default function TrashApp({ darkTheme = false }) {
 
             {/* Status bar */}
             <div
-                className="flex items-center justify-between px-4 py-1.5 flex-shrink-0 text-[10px]"
+                className="flex items-center justify-between px-4 py-1.5 flex-shrink-0 text-xs"
                 style={{ background: t.statusBarBg, borderTop: `1px solid ${t.statusBarBorder}`, color: t.statusBarText }}
             >
                 <span>{files.length} items</span>

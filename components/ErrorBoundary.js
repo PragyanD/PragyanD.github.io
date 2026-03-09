@@ -60,7 +60,7 @@ export default class ErrorBoundary extends Component {
                     {this.state.error?.message && (
                         <p style={{
                             marginTop: 32,
-                            fontSize: 10,
+                            fontSize: 12,
                             opacity: 0.45,
                             fontFamily: "'JetBrains Mono', monospace",
                             wordBreak: "break-all",
@@ -85,7 +85,7 @@ export default class ErrorBoundary extends Component {
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        fontSize: 9,
+                        fontSize: 12,
                         opacity: 0.5,
                         textAlign: "center",
                     }}>

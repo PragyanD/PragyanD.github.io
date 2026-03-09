@@ -162,7 +162,7 @@ export default function MinesweeperGame({ darkTheme }) {
                 </p>
             )}
             {phase === 'idle' && (
-                <p className="text-[10px]" style={{ color: darkTheme ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.35)' }}>Click any cell to start · Right-click to flag</p>
+                <p className="text-xs" style={{ color: darkTheme ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.35)' }}>Click any cell to start · Right-click to flag</p>
             )}
         </div>
     );

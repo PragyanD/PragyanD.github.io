@@ -321,7 +321,7 @@ export default function TaskManagerApp({ darkTheme = false }) {
                                         </div>
                                         <div>
                                             <p className="text-xs font-semibold" style={{ color: t.name }}>{exp.name}</p>
-                                            <p className="text-[10px]" style={{ color: t.subtitle }}>{exp.title}</p>
+                                            <p className="text-xs" style={{ color: t.subtitle }}>{exp.title}</p>
                                         </div>
                                     </div>
                                     <HardwareValue baseValue={exp.cpu} color={exp.color} darkTheme={darkTheme} />
@@ -394,7 +394,7 @@ export default function TaskManagerApp({ darkTheme = false }) {
                                     </div>
                                     <div>
                                         <p className="text-xs font-semibold" style={{ color: t.name }}>{EDUCATION.name}</p>
-                                        <p className="text-[10px]" style={{ color: t.subtitle }}>{EDUCATION.title}</p>
+                                        <p className="text-xs" style={{ color: t.subtitle }}>{EDUCATION.title}</p>
                                     </div>
                                 </div>
                                 <HardwareValue baseValue={EDUCATION.cpu} color={EDUCATION.color} darkTheme={darkTheme} />

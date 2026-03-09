@@ -98,7 +98,7 @@ export default function BootSequence({ onComplete }) {
                         />
                     </div>
 
-                    <div className="mt-6 text-[10px] text-white/30 uppercase tracking-widest font-light">
+                    <div className="mt-6 text-xs text-white/30 uppercase tracking-widest font-light">
                         Kernel v2.0.26-release
                     </div>
                 </div>

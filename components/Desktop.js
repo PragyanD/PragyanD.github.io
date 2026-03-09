@@ -451,7 +451,7 @@ export default function Desktop({ onRestart }) {
                                             outlineOffset: '2px',
                                         }}
                                     />
-                                    <span className="text-[9px] text-white/50 group-hover:text-white/80 transition-colors">{w.label}</span>
+                                    <span className="text-xs text-white/50 group-hover:text-white/80 transition-colors">{w.label}</span>
                                 </button>
                             ))}
                         </div>

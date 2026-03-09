@@ -142,11 +142,11 @@ export default function Game2048({ darkTheme }) {
         <div className="w-full h-full flex flex-col items-center justify-center gap-4 select-none" style={{ background: bg }}>
             <div className="flex items-center gap-3">
                 <div className="px-4 py-1.5 rounded-lg text-center" style={{ background: 'rgba(0,120,212,0.12)', border: '1px solid rgba(0,120,212,0.25)' }}>
-                    <p className="text-[10px] uppercase tracking-widest mb-0.5" style={{ color: darkTheme ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.45)' }}>Score</p>
+                    <p className="text-xs uppercase tracking-widest mb-0.5" style={{ color: darkTheme ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.45)' }}>Score</p>
                     <p className="text-base font-bold" style={{ color: '#0078d4' }}>{score}</p>
                 </div>
                 <div className="px-4 py-1.5 rounded-lg text-center" style={{ background: 'rgba(254,188,46,0.1)', border: '1px solid rgba(254,188,46,0.25)' }}>
-                    <p className="text-[10px] uppercase tracking-widest mb-0.5" style={{ color: darkTheme ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.45)' }}>Best</p>
+                    <p className="text-xs uppercase tracking-widest mb-0.5" style={{ color: darkTheme ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.45)' }}>Best</p>
                     <p className="text-base font-bold" style={{ color: '#febc2e' }}>{best}</p>
                 </div>
                 <button
@@ -192,7 +192,7 @@ export default function Game2048({ darkTheme }) {
                     );
                 })}
             </div>
-            <p className="text-[10px]" style={{ color: darkTheme ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.35)' }}>Arrow keys to play</p>
+            <p className="text-xs" style={{ color: darkTheme ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.35)' }}>Arrow keys to play</p>
         </div>
     );
 }

@@ -71,7 +71,7 @@ export default function Spotlight({ isOpen, onClose, onOpenApp }) {
                         onChange={e => { setQuery(e.target.value); setSelectedIndex(0); }}
                         onKeyDown={handleKeyDown}
                     />
-                    <div className="px-2 py-1 rounded-md bg-white/5 border border-white/10 text-[10px] text-white/40 font-mono">
+                    <div className="px-2 py-1 rounded-md bg-white/5 border border-white/10 text-xs text-white/40 font-mono">
                         ESC
                     </div>
                 </div>
@@ -94,10 +94,10 @@ export default function Spotlight({ isOpen, onClose, onOpenApp }) {
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <p className="text-sm font-medium text-white/90">{item.name}</p>
-                                        <p className="text-[10px] text-white/30 uppercase tracking-widest mt-0.5">{item.type}</p>
+                                        <p className="text-xs text-white/30 uppercase tracking-widest mt-0.5">{item.type}</p>
                                     </div>
                                     {index === selectedIndex && (
-                                        <span className="text-[10px] text-white/40 font-mono">ENTER</span>
+                                        <span className="text-xs text-white/40 font-mono">ENTER</span>
                                     )}
                                 </div>
                             ))}
@@ -110,7 +110,7 @@ export default function Spotlight({ isOpen, onClose, onOpenApp }) {
                 </div>
 
                 <div className="p-3 bg-black/20 border-t border-white/5 flex justify-between items-center px-5">
-                    <div className="flex gap-4 text-[10px] text-white/30">
+                    <div className="flex gap-4 text-xs text-white/30">
                         <span className="flex items-center gap-1"><kbd className="bg-white/5 px-1 rounded">↑↓</kbd> Navigate</span>
                         <span className="flex items-center gap-1"><kbd className="bg-white/5 px-1 rounded">Enter</kbd> Open</span>
                     </div>

@@ -35,7 +35,7 @@ const ToastItem = memo(function ToastItem({ toast, onDismiss }) {
             <span className="flex-1">{toast.message}</span>
             <button
                 onClick={() => onDismiss(toast.id)}
-                className="opacity-40 hover:opacity-100 transition-opacity text-[10px] pointer-events-auto"
+                className="opacity-40 hover:opacity-100 transition-opacity text-xs pointer-events-auto"
                 aria-label="Dismiss notification"
             >
                 ✕

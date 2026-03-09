@@ -124,7 +124,7 @@ export default function ConwayGame({ darkTheme }) {
                         {name}
                     </button>
                 ))}
-                <span className="text-[10px]" style={{ color: darkTheme ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.35)' }}>
+                <span className="text-xs" style={{ color: darkTheme ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.35)' }}>
                     Gen {gen}{maxPop > 0 ? ` · Peak ${maxPop}` : ''}
                 </span>
             </div>
@@ -167,7 +167,7 @@ export default function ConwayGame({ darkTheme }) {
                     />
                 ))}
             </div>
-            <p className="text-[10px]" style={{ color: darkTheme ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.35)' }}>Click or drag cells to draw · Press Play to simulate</p>
+            <p className="text-xs" style={{ color: darkTheme ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.35)' }}>Click or drag cells to draw · Press Play to simulate</p>
         </div>
     );
 }
