@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useMemo, useLayoutEffect } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import favicon from "../public/favicon.png";
 import { APPS_CONFIG, renderWindowIcon } from "../lib/apps.config";
@@ -109,9 +110,17 @@ function Clock() {
     );
 }
 
-export default function Taskbar({ openWindows, minimizedWindows, onStartClick, startOpen, onRestoreWindow, onOpenApp, onVolumeClick }) {
+export default function Taskbar({
+    openWindows, minimizedWindows, maximizedWindows,
+    onStartClick, startOpen,
+    onRestoreWindow, onOpenApp, onVolumeClick,
+    onCloseApp, onMinimizeApp, onMaximizeApp,
+    onBringToFront, onSendToBack,
+}) {
     const [closingPills, setClosingPills] = useState(new Set());
     const prevOpenWindows = useRef(openWindows);
+    const [pillMenu, setPillMenu] = useState(null); // { appId, x, y } | null
+    const pillMenuRef = useRef(null);
 
     useEffect(() => {
         const prev = prevOpenWindows.current;
@@ -134,6 +143,21 @@ export default function Taskbar({ openWindows, minimizedWindows, onStartClick, s
         }
         prevOpenWindows.current = openWindows;
     }, [openWindows]);
+
+    useEffect(() => {
+        if (!pillMenu) return;
+        const onKey = (e) => { if (e.key === 'Escape') setPillMenu(null); };
+        const onDown = (e) => {
+            if (pillMenuRef.current && !pillMenuRef.current.contains(e.target))
+                setPillMenu(null);
+        };
+        document.addEventListener('keydown', onKey);
+        document.addEventListener('mousedown', onDown);
+        return () => {
+            document.removeEventListener('keydown', onKey);
+            document.removeEventListener('mousedown', onDown);
+        };
+    }, [pillMenu]);
 
     // --- Pill ordering + drag-to-reorder ---
     const [pillOrder, setPillOrder] = useState(() => {
@@ -362,6 +386,11 @@ export default function Taskbar({ openWindows, minimizedWindows, onStartClick, s
                         >
                             <button
                                 onMouseDown={(e) => handlePillMouseDown(e, appId)}
+                                onContextMenu={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    setPillMenu({ appId, x: e.clientX, y: e.clientY });
+                                }}
                                 aria-label={`${meta.label} — ${isMin ? "minimized" : "open"}`}
                                 className="pill-appear flex items-center gap-1.5 px-3 py-1 rounded text-xs"
                                 style={{
@@ -412,5 +441,67 @@ export default function Taskbar({ openWindows, minimizedWindows, onStartClick, s
                 <Clock />
             </div>
         </div>
+
+        {/* Pill right-click context menu */}
+        {pillMenu && typeof document !== 'undefined' && createPortal(
+            <div
+                ref={pillMenuRef}
+                role="menu"
+                className="fixed flex flex-col p-1 rounded-xl shadow-2xl"
+                style={{
+                    left: Math.min(pillMenu.x, window.innerWidth - 164),
+                    bottom: 52,
+                    width: 156,
+                    zIndex: 9999,
+                    background: "rgba(18,18,30,0.96)",
+                    backdropFilter: "blur(40px)",
+                    border: "1px solid rgba(255,255,255,0.12)",
+                    boxShadow: "0 -4px 24px rgba(0,0,0,0.6), 0 8px 32px rgba(0,0,0,0.4)",
+                }}
+                onContextMenu={e => e.preventDefault()}
+                onMouseDown={e => e.stopPropagation()}
+            >
+                {minimizedWindows.includes(pillMenu.appId) ? (
+                    <button role="menuitem" className="text-left px-3 py-1.5 text-xs text-white/80 hover:bg-white/10 rounded-lg transition-colors w-full"
+                        onClick={() => { onRestoreWindow(pillMenu.appId); setPillMenu(null); }}>
+                        Restore
+                    </button>
+                ) : (
+                    <button role="menuitem" className="text-left px-3 py-1.5 text-xs text-white/80 hover:bg-white/10 rounded-lg transition-colors w-full"
+                        onClick={() => { onMinimizeApp(pillMenu.appId); setPillMenu(null); }}>
+                        Minimize
+                    </button>
+                )}
+                {!minimizedWindows.includes(pillMenu.appId) && (
+                    maximizedWindows?.has(pillMenu.appId) ? (
+                        <button role="menuitem" className="text-left px-3 py-1.5 text-xs text-white/80 hover:bg-white/10 rounded-lg transition-colors w-full"
+                            onClick={() => { onMaximizeApp(pillMenu.appId); setPillMenu(null); }}>
+                            Restore Down
+                        </button>
+                    ) : (
+                        <button role="menuitem" className="text-left px-3 py-1.5 text-xs text-white/80 hover:bg-white/10 rounded-lg transition-colors w-full"
+                            onClick={() => { onMaximizeApp(pillMenu.appId); setPillMenu(null); }}>
+                            Maximize
+                        </button>
+                    )
+                )}
+                <div className="h-px my-1 mx-2 bg-white/10" />
+                <button role="menuitem" className="text-left px-3 py-1.5 text-xs text-white/80 hover:bg-white/10 rounded-lg transition-colors w-full"
+                    onClick={() => { onBringToFront(pillMenu.appId); setPillMenu(null); }}>
+                    Bring to Front
+                </button>
+                <button role="menuitem" className="text-left px-3 py-1.5 text-xs text-white/80 hover:bg-white/10 rounded-lg transition-colors w-full"
+                    onClick={() => { onSendToBack(pillMenu.appId); setPillMenu(null); }}>
+                    Send to Back
+                </button>
+                <div className="h-px my-1 mx-2 bg-white/10" />
+                <button role="menuitem" className="text-left px-3 py-1.5 text-xs hover:bg-white/10 rounded-lg transition-colors w-full"
+                    style={{ color: '#ff453a' }}
+                    onClick={() => { onCloseApp(pillMenu.appId); setPillMenu(null); }}>
+                    Close
+                </button>
+            </div>,
+            document.body
+        )}
     );
 }
