@@ -18,6 +18,7 @@ function Window({
     isRestoring,
     isClosing = false,
     focused = true,
+    themeColor = '#0078d4',
 }) {
     const [maximized, setMaximized] = useState(false);
     const [pos, setPos] = useState(() => {
@@ -192,15 +193,13 @@ function Window({
         onFocus?.(id);
     };
 
-    const boxShadow = useMemo(() =>
-        maximized || isMinimizing || snapped
-            ? "none"
-            : isDragging
-                ? "inset 0 1px 0 rgba(255,255,255,0.3), 0 0 32px rgba(0,120,212,0.3), 0 35px 100px rgba(0,0,0,0.55)"
-                : focused
-                    ? "inset 0 1px 0 rgba(255,255,255,0.3), 0 0 24px rgba(0,120,212,0.25), 0 24px 80px rgba(0,0,0,0.4)"
-                    : "inset 0 1px 0 rgba(255,255,255,0.08), 0 6px 20px rgba(0,0,0,0.18)",
-    [maximized, isMinimizing, snapped, isDragging, focused]);
+    const boxShadow = useMemo(() => {
+        if (maximized || isMinimizing || snapped) return "none";
+        const c = themeColor;
+        if (isDragging) return `inset 0 1px 0 rgba(255,255,255,0.3), 0 0 32px ${c}4d, 0 35px 100px rgba(0,0,0,0.55)`;
+        if (focused)    return `inset 0 1px 0 rgba(255,255,255,0.3), 0 0 24px ${c}40, 0 24px 80px rgba(0,0,0,0.4)`;
+        return "inset 0 1px 0 rgba(255,255,255,0.08), 0 6px 20px rgba(0,0,0,0.18)";
+    }, [maximized, isMinimizing, snapped, isDragging, focused, themeColor]);
 
     const effectiveZIndex = pinned ? 9998 : zIndex;
 
@@ -242,7 +241,7 @@ function Window({
                 borderRadius: (maximized || snapped) ? 0 : 12,
                 boxShadow,
                 border: focused
-                    ? "1px solid rgba(0,120,212,0.45)"
+                    ? `1px solid ${themeColor}72`
                     : "1px solid rgba(255,255,255,0.12)",
                 backdropFilter: isMinimizing ? "none" : "blur(40px)",
                 background: "rgba(255, 255, 255, 0.1)",
@@ -256,7 +255,7 @@ function Window({
                 className="flex items-center gap-2 px-3 flex-shrink-0 cursor-default transition-colors duration-200"
                 style={{
                     height: 38,
-                    background: focused ? "rgba(0, 120, 212, 0.12)" : "rgba(10, 10, 20, 0.15)",
+                    background: focused ? `${themeColor}1e` : "rgba(10, 10, 20, 0.15)",
                     backdropFilter: "blur(20px)",
                     borderBottom: "1px solid rgba(255,255,255,0.12)",
                 }}

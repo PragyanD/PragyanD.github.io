@@ -20,6 +20,7 @@ const APPS = Object.fromEntries(
         height: app.height,
         initialX: app.initialX,
         initialY: app.initialY,
+        themeColor: app.themeColor,
     }])
 );
 
@@ -330,6 +331,7 @@ export default function Desktop({ onRestart }) {
                         isRestoring={restoring === appId}
                         isClosing={closing.has(appId)}
                         focused={focusOrder.at(-1) === appId}
+                        themeColor={app.themeColor}
                     >
                         <ErrorBoundary key={appId}>
                             <AppComponent darkTheme={darkTheme} onOpenApp={openApp} />
