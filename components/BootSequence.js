@@ -40,13 +40,14 @@ export default function BootSequence({ onComplete }) {
 
     useEffect(() => {
         if (phase === 'loading') {
+            const audio = new Audio('/startup.wav');
+            audio.load();
             let completionTimer;
             const interval = setInterval(() => {
                 setProgress(prev => {
                     if (prev >= 100) {
                         clearInterval(interval);
                         completionTimer = setTimeout(() => {
-                            const audio = new Audio('/startup.mp3');
                             audio.play().catch(() => { });
                             onComplete();
                         }, 500);
