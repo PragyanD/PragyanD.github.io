@@ -37,12 +37,28 @@ const RIGHT_ICONS = APPS_CONFIG.filter(app => app.rightColumn).map(app => ({
 }));
 
 const WALLPAPERS = [
-    { id: 'default', label: 'Bliss', value: "url('/wallpaper_bliss.avif')" },
-    { id: 'hierapolis', label: 'Hierapolis', value: "url('/wallpaper_hierapolis.avif')" },
-    { id: 'mysore', label: 'Mysore', value: "url('/wallpaper_mysore.jpg')" },
-    { id: 'pamukkale', label: 'Pamukkale', value: "url('/wallpaper_pamukkale.avif')" },
-    { id: 'salkantay', label: 'Salkantay', value: "url('/wallpaper_salkantay.png')" },
+    { id: 'default', label: 'Bliss', avif: '/wallpaper_bliss.avif', fallback: '/wallpaper_bliss.jpg' },
+    { id: 'hierapolis', label: 'Hierapolis', avif: '/wallpaper_hierapolis.avif', fallback: '/wallpaper_hierapolis.jpg' },
+    { id: 'mysore', label: 'Mysore', avif: '/wallpaper_mysore.avif', fallback: '/wallpaper_mysore.jpg' },
+    { id: 'pamukkale', label: 'Pamukkale', avif: '/wallpaper_pamukkale.avif', fallback: '/wallpaper_pamukkale.jpg' },
+    { id: 'salkantay', label: 'Salkantay', avif: '/wallpaper_salkantay.avif', fallback: '/wallpaper_salkantay.jpg' },
 ];
+
+function getCachedAvifSupport() {
+    if (typeof window === 'undefined') return false;
+    const cached = localStorage.getItem('pdos_avif_support');
+    if (cached !== null) return cached === 'true';
+    return null;
+}
+
+function detectAvifSupport() {
+    return new Promise((resolve) => {
+        const img = new window.Image();
+        img.onload = () => resolve(img.height === 1);
+        img.onerror = () => resolve(false);
+        img.src = 'data:image/avif;base64,AAAAIGZ0eXBhdmlmAAAAAGF2aWZtaWYxbWlhZk1BMUIAAADybWV0YQAAAAAAAAAoaGRscgAAAAAAAAAAcGljdAAAAAAAAAAAAAAAAGxpYmF2aWYAAAAADnBpdG0AAAAAAAEAAAAeaWxvYwAAAABEAAABAAEAAAABAAABGgAAAB0AAAAoaWluZgAAAAAAAQAAABppbmZlAgAAAAABAABhdjAxQ29sb3IAAAAAamlwcnAAAABLanAyaAAAAAAAAAAAAAAAAAAAAAAAABhpc3BlAAAAAAAAAAIAAAABAAAAEHBpeGkAAAAAAwgICAAAAAxhdjFDgQ0MAAAAABNjb2xybmNseAACAAIAAYAAAAAXaXBtYQAAAAAAAAABAAEEAQKDBAAAACVtZGF0EgAKBzgABpAQ0AIAAAAhAAkiGhAFfA';
+    });
+}
 
 export default function Desktop({ onRestart }) {
     const [startOpen, setStartOpen] = useState(false);
@@ -63,6 +79,7 @@ export default function Desktop({ onRestart }) {
         }
         return false;
     });
+    const [supportsAvif, setSupportsAvif] = useState(getCachedAvifSupport);
     const rafRef = useRef(null);
     const desktopRef = useRef(null);
     const samplerCanvasRef = useRef(null);
@@ -76,6 +93,19 @@ export default function Desktop({ onRestart }) {
     const dismissToast = useCallback((id) => {
         setToasts(prev => prev.filter(t => t.id !== id));
     }, []);
+
+    useEffect(() => {
+        if (supportsAvif === null) {
+            detectAvifSupport().then((supported) => {
+                setSupportsAvif(supported);
+                localStorage.setItem('pdos_avif_support', String(supported));
+            });
+        }
+    }, []);
+
+    const getWallpaperSrc = useCallback((wp) => {
+        return supportsAvif === true ? wp.avif : wp.fallback;
+    }, [supportsAvif]);
 
     const { volume, setVolume, isPlaying, setIsPlaying, soundOpen, setSoundOpen } = useAudio();
 
@@ -149,33 +179,24 @@ export default function Desktop({ onRestart }) {
     }, [contextMenu.visible]);
 
     const activeWallpaper = WALLPAPERS.find(w => w.id === wallpaper) || WALLPAPERS[0];
-    const isImageWallpaper = activeWallpaper.value.startsWith('url(');
+    const wallpaperSrc = getWallpaperSrc(activeWallpaper);
+    const wallpaperCssValue = `url('${wallpaperSrc}')`;
 
     const handleMouseMove = useCallback((e) => {
-        if (!isImageWallpaper) return;
         if (rafRef.current) return;
         rafRef.current = requestAnimationFrame(() => {
             const x = (50 + (e.clientX / window.innerWidth - 0.5) * -3).toFixed(2);
             const y = (50 + (e.clientY / window.innerHeight - 0.5) * -3).toFixed(2);
             if (desktopRef.current) {
                 desktopRef.current.style.background =
-                    `${activeWallpaper.value} ${x}% ${y}% / cover no-repeat`;
+                    `${wallpaperCssValue} ${x}% ${y}% / cover no-repeat`;
             }
             rafRef.current = null;
         });
-    }, [isImageWallpaper, activeWallpaper.value]);
+    }, [wallpaperCssValue]);
 
     useEffect(() => {
-        if (!isImageWallpaper) {
-            document.documentElement.style.removeProperty('--taskbar-tint-r');
-            document.documentElement.style.removeProperty('--taskbar-tint-g');
-            document.documentElement.style.removeProperty('--taskbar-tint-b');
-            return;
-        }
-        const urlMatch = activeWallpaper.value.match(/url\(['"]?([^'")\s]+)['"]?\)/);
-        if (!urlMatch) return;
         const img = new window.Image();
-        img.crossOrigin = 'anonymous';
         img.onload = () => {
             const canvas = samplerCanvasRef.current;
             if (!canvas) return;
@@ -199,18 +220,21 @@ export default function Desktop({ onRestart }) {
             document.documentElement.style.setProperty('--taskbar-tint-g', tg);
             document.documentElement.style.setProperty('--taskbar-tint-b', tb);
         };
-        img.src = urlMatch[1];
-        return () => { img.onload = null; };
-    }, [activeWallpaper.value, isImageWallpaper]);
+        img.onerror = () => {
+            document.documentElement.style.setProperty('--taskbar-tint-r', 10);
+            document.documentElement.style.setProperty('--taskbar-tint-g', 10);
+            document.documentElement.style.setProperty('--taskbar-tint-b', 20);
+        };
+        img.src = wallpaperSrc;
+        return () => { img.onload = null; img.onerror = null; };
+    }, [wallpaperSrc]);
 
     return (
         <div
             ref={desktopRef}
             className="fixed inset-0 overflow-hidden"
             style={{
-                background: isImageWallpaper
-                    ? `${activeWallpaper.value} 50% 50% / cover no-repeat`
-                    : activeWallpaper.value,
+                background: `${wallpaperCssValue} 50% 50% / cover no-repeat`,
             }}
             onMouseMove={handleMouseMove}
             onContextMenu={handleContextMenu}
@@ -454,9 +478,7 @@ export default function Desktop({ onRestart }) {
                                     <div
                                         className="rounded-lg w-full aspect-video transition-all"
                                         style={{
-                                            background: w.value.startsWith('url(')
-                                                ? `${w.value} center / cover no-repeat`
-                                                : w.value,
+                                            background: `url('${getWallpaperSrc(w)}') center / cover no-repeat`,
                                             outline: wallpaper === w.id ? '3px solid #0078d4' : '2px solid transparent',
                                             outlineOffset: '2px',
                                         }}

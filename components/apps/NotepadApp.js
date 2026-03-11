@@ -13,14 +13,14 @@ Written for curious recruiters and developers.
 
 [ CUSTOMISATION ]
   Right-click desktop → Change Wallpaper
-    Includes: Default (XP Bliss), Midnight, Aurora, Dusk, Slate
-  Right-click desktop → Toggle Dark / Light Mode
+    Includes: Bliss, Hierapolis, Mysore, Pamukkale, Salkantay
+  Right-click desktop → Display Settings (dark theme toggle)
 
 [ APPS WITH PERSONALITY ]
   Trash             Contains a curated list of files every
                     developer has definitely never committed
-  Terminal          Fully interactive. Try: help, ls, whoami,
-                    projects, skills, cat resume.txt, history
+  Terminal          Fully interactive. Type help to see
+                    all available commands
   Games             Hidden games hub
 
 [ BOOT SEQUENCE ]
