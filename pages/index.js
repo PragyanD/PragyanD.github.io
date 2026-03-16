@@ -88,7 +88,43 @@ export default function Home() {
         <meta name="twitter:title" content="Pragyan Das — Software Engineer" />
         <meta name="twitter:description" content="Explore my interactive desktop OS portfolio featuring projects, experience, and resume." />
         <meta name="twitter:image" content="https://pragyand.github.io/favicon.png" />
+
+        {/* Google Search Console verification */}
+        <meta name="google-site-verification" content="JvnKHVqiGJCAFCVpiUHze6qvOx8xvj-1fGDqOfXcB7g" />
+
+        {/* Structured Data */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Person",
+              name: "Pragyan Das",
+              url: "https://pragyand.github.io",
+              jobTitle: "Software Engineer",
+              sameAs: [
+                "https://github.com/PragyanD",
+                "https://www.linkedin.com/in/daspragyan",
+              ],
+            }),
+          }}
+        />
       </Head>
+
+      {/* Crawlable fallback for search engines */}
+      <noscript>
+        <div>
+          <h1>Pragyan Das — Software Engineer</h1>
+          <p>Interactive desktop OS portfolio featuring projects, experience, and resume.</p>
+          <ul>
+            <li><a href="https://github.com/PragyanD">GitHub</a></li>
+            <li><a href="https://www.linkedin.com/in/daspragyan">LinkedIn</a></li>
+            <li><a href="mailto:pragyan0506@gmail.com">Email</a></li>
+            <li><a href="/Pragyans_Resume.pdf">Resume</a></li>
+          </ul>
+        </div>
+      </noscript>
+
       {booting ? <BootSequence onComplete={handleBootComplete} /> : <Desktop onRestart={handleRestart} />}
     </>
   );
