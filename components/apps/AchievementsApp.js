@@ -38,7 +38,8 @@ export default function AchievementsApp({ darkTheme = false }) {
             {/* Header */}
             <div className="px-8 pt-8 pb-2">
                 <h1 className="text-2xl font-bold flex items-center gap-2" style={{ color: titleColor }}>
-                    🏆 Achievements
+                    <img src="/icon_achievements.svg" alt="Achievements" className="w-7 h-7" draggable={false} />
+                    Achievements
                 </h1>
                 <p className="text-xs mt-1" style={{ color: subColor }}>
                     {progress}/{total} unlocked
