@@ -68,8 +68,26 @@ export default function Home() {
     <>
       <Head>
         <title>PDOS</title>
-        <meta name="description" content="Pragyan Das — Software Engineer. Interactive desktop portfolio." />
+        <meta name="description" content="Pragyan Das — Software Engineer. Explore my interactive desktop OS portfolio featuring projects, experience, and resume." />
+        <meta name="keywords" content="Pragyan Das, software engineer, portfolio, developer, projects, resume" />
+        <meta name="author" content="Pragyan Das" />
+        <meta name="theme-color" content="#0078d4" />
+        <link rel="canonical" href="https://pragyand.github.io" />
         <link rel="icon" href="/favicon.png" />
+
+        {/* Open Graph */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://pragyand.github.io" />
+        <meta property="og:title" content="Pragyan Das — Software Engineer" />
+        <meta property="og:description" content="Explore my interactive desktop OS portfolio featuring projects, experience, and resume." />
+        <meta property="og:image" content="https://pragyand.github.io/favicon.png" />
+        <meta property="og:site_name" content="PDOS" />
+
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content="Pragyan Das — Software Engineer" />
+        <meta name="twitter:description" content="Explore my interactive desktop OS portfolio featuring projects, experience, and resume." />
+        <meta name="twitter:image" content="https://pragyand.github.io/favicon.png" />
       </Head>
       {booting ? <BootSequence onComplete={handleBootComplete} /> : <Desktop onRestart={handleRestart} />}
     </>
