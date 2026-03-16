@@ -16,7 +16,7 @@ const INIT_SNAKE = [[9, 9], [9, 8], [9, 7]];
 const INIT_FOOD  = [3, 9];
 const INIT_DIR   = [0, 1];
 
-export default function SnakeGame({ darkTheme }) {
+export default function SnakeGame({ darkTheme, onAchievement }) {
     const [snake, setSnake] = useState(INIT_SNAKE);
     const [food,  setFood]  = useState(INIT_FOOD);
     const [phase, setPhase] = useState('idle');
@@ -29,6 +29,8 @@ export default function SnakeGame({ darkTheme }) {
     const foodRef  = useRef(INIT_FOOD);
     const dirRef   = useRef(INIT_DIR);
     const phaseRef = useRef('idle');
+    const achievementRef = useRef(onAchievement);
+    achievementRef.current = onAchievement;
 
     const bg        = darkTheme ? '#0a0a1e' : '#f7f8fb';
     const textColor = darkTheme ? 'rgba(255,255,255,0.85)' : '#222';
@@ -91,6 +93,7 @@ export default function SnakeGame({ darkTheme }) {
             if (atFood) {
                 setScore(sc => {
                     const n = sc + 1;
+                    if (n >= 5 && achievementRef.current) achievementRef.current('gamer');
                     setBest(b => {
                         if (n > b) {
                             try { localStorage.setItem('pdos_snake_best', String(n)); } catch {}

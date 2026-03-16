@@ -90,7 +90,7 @@ const TILE_COLORS = {
     2048: ['#edc22e', '#fff'],
 };
 
-export default function Game2048({ darkTheme }) {
+export default function Game2048({ darkTheme, onAchievement }) {
     const [board, setBoard] = useState(initBoard);
     const [score, setScore] = useState(0);
     const [best,  setBest]  = useState(() => {
@@ -120,7 +120,7 @@ export default function Game2048({ darkTheme }) {
         if (!prev) return;
         const { board: next, score: gained } = applyMove(prev, dir);
         if (next.join() === prev.join()) return;
-        if (next.includes(2048)) setWon(true);
+        if (next.includes(2048)) { setWon(true); if (onAchievement) onAchievement('gamer'); }
         const withTile = addTile(next);
         if (isStuck(withTile)) setLost(true);
         setBoard(withTile);

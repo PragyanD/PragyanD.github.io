@@ -10,6 +10,9 @@ import useWindowManager from "../hooks/useWindowManager";
 import useAudio from "../hooks/useAudio";
 import Toast from "./Toast";
 import SystemWidget from "./SystemWidget";
+import { NotificationProvider, useNotifications } from "../contexts/NotificationContext";
+import { AchievementProvider, useAchievements } from "../contexts/AchievementContext";
+import NotificationCenter from "./NotificationCenter";
 
 const APPS = Object.fromEntries(
     APPS_CONFIG.map(app => [app.id, {
@@ -61,6 +64,16 @@ function detectAvifSupport() {
 }
 
 export default function Desktop({ onRestart }) {
+    return (
+        <NotificationProvider>
+            <AchievementProvider>
+                <DesktopInner onRestart={onRestart} />
+            </AchievementProvider>
+        </NotificationProvider>
+    );
+}
+
+function DesktopInner({ onRestart }) {
     const [startOpen, setStartOpen] = useState(false);
     const [contextMenu, setContextMenu] = useState({ visible: false, x: 0, y: 0 });
     const [spotlightOpen, setSpotlightOpen] = useState(false);
@@ -109,12 +122,93 @@ export default function Desktop({ onRestart }) {
 
     const { volume, setVolume, isPlaying, setIsPlaying, soundOpen, setSoundOpen } = useAudio();
 
+    const { notify } = useNotifications();
+    const { unlock, isUnlocked } = useAchievements();
+
     const {
         minimizedWindows, focusOrder, minimizing, restoring, closing,
         activeWindows, allRunning,
-        openApp, closeApp, minimizeApp, focusApp,
+        openApp: rawOpenApp, closeApp, minimizeApp, focusApp,
         maximizedWindows, toggleMaximize, sendToBack,
     } = useWindowManager(useCallback(() => setStartOpen(false), []));
+
+    // Track opened apps for explorer achievement
+    const openedAppsRef = useRef(() => {
+        try { return new Set(JSON.parse(localStorage.getItem('pdos_opened_apps') || '[]')); }
+        catch { return new Set(); }
+    });
+    // Initialize on mount
+    useEffect(() => {
+        if (typeof openedAppsRef.current === 'function') {
+            openedAppsRef.current = openedAppsRef.current();
+        }
+    }, []);
+
+    const APP_NOTIFICATIONS = {
+        terminal: { id: 'notif_terminal', message: "Welcome to the command line. Type 'help' if you're feeling lost.", icon: '⌨️' },
+        games_hub: { id: 'notif_games', message: 'Careful — productivity is about to drop.', icon: '🎮' },
+        trash: { id: 'notif_trash', message: "One person's trash is another person's... no, it's still trash.", icon: '🗑️' },
+        resume: { id: 'notif_resume', message: 'A fine document, if I do say so myself.', icon: '📄' },
+        projects: { id: 'notif_projects', message: 'Each one built with mass amounts of caffeine.', icon: '📁' },
+        about: { id: 'notif_about', message: "Here's everything you need to know.", icon: '👤' },
+        taskmanager: { id: 'notif_taskmanager', message: 'No, not that task manager. This one has my resume.', icon: '📊' },
+        notepad: { id: 'notif_notepad', message: 'Secrets inside. Handle with care.', icon: '🥚' },
+        achievements: { id: 'notif_achievements', message: 'How many have you unlocked?', icon: '🏆' },
+    };
+
+    // Wrap openApp to trigger notifications and achievements
+    const openApp = useCallback((appId) => {
+        rawOpenApp(appId);
+
+        // App-specific notification
+        const notifConfig = APP_NOTIFICATIONS[appId];
+        if (notifConfig) {
+            notify({ ...notifConfig, type: 'info', showOnce: true });
+        }
+
+        // Track for explorer achievement
+        if (typeof openedAppsRef.current !== 'function') {
+            openedAppsRef.current.add(appId);
+            localStorage.setItem('pdos_opened_apps', JSON.stringify([...openedAppsRef.current]));
+            const allAppIds = APPS_CONFIG.map(a => a.id);
+            if (allAppIds.every(id => openedAppsRef.current.has(id))) {
+                unlock('explorer');
+            }
+        }
+
+        // Specific achievements
+        if (appId === 'trash') unlock('archaeologist');
+    }, [rawOpenApp, notify, unlock]);
+
+    // Multitasker achievement: 4+ windows open
+    useEffect(() => {
+        const openCount = allRunning.filter(id => !minimizedWindows.includes(id)).length;
+        if (openCount >= 4) unlock('multitasker');
+    }, [allRunning, minimizedWindows, unlock]);
+
+    // Time-based notification
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            notify({ id: 'notif_5min', message: "Still here? I'm flattered.", icon: '⏱️', type: 'info', showOnce: true });
+        }, 5 * 60 * 1000);
+        return () => clearTimeout(timer);
+    }, [notify]);
+
+    // First boot achievement
+    useEffect(() => {
+        unlock('first_boot');
+    }, [unlock]);
+
+    // Right-click hint after 30s if context menu hasn't been opened
+    const hasContextMenudRef = useRef(false);
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (!hasContextMenudRef.current) {
+                notify({ id: 'notif_rightclick', message: 'Psst — try right-clicking the desktop.', icon: '💡', type: 'hint', showOnce: true });
+            }
+        }, 30000);
+        return () => clearTimeout(timer);
+    }, [notify]);
 
     // Expose focusOrder to keyboard handler via ref so the handler closure stays stable
     const focusOrderRef = useRef(null);
@@ -166,6 +260,7 @@ export default function Desktop({ onRestart }) {
     const handleContextMenu = useCallback((e) => {
         if (e.target.closest(".window-open") || e.target.closest("#start-button") || e.target.closest(".taskbar")) return;
         e.preventDefault();
+        hasContextMenudRef.current = true;
         const MENU_WIDTH = 180;
         const MENU_HEIGHT = 200; // approximate
         const x = Math.min(e.clientX, window.innerWidth - MENU_WIDTH - 8);
@@ -362,7 +457,7 @@ export default function Desktop({ onRestart }) {
                         onMaximize={() => toggleMaximize(appId)}
                     >
                         <ErrorBoundary key={appId}>
-                            <AppComponent darkTheme={darkTheme} onOpenApp={openApp} />
+                            <AppComponent darkTheme={darkTheme} onOpenApp={openApp} onAchievement={unlock} />
                         </ErrorBoundary>
                     </Window>
                 );
@@ -470,6 +565,7 @@ export default function Desktop({ onRestart }) {
                                         localStorage.setItem('pdos_wallpaper', w.id);
                                         setWallpaperPickerOpen(false);
                                         addToast(`Wallpaper changed to ${w.label}`, 'success');
+                                        unlock('wallpaper');
                                     }}
                                     className="flex flex-col items-center gap-1.5 group"
                                     aria-pressed={wallpaper === w.id}
@@ -516,6 +612,7 @@ export default function Desktop({ onRestart }) {
                                     setDarkTheme(next);
                                     localStorage.setItem('pdos_dark_theme', String(next));
                                     addToast(`Dark theme ${next ? 'enabled' : 'disabled'}`, 'success');
+                                    unlock('night_owl');
                                 }}
                                 className="relative flex-shrink-0 rounded-full transition-all duration-200"
                                 style={{
@@ -553,8 +650,11 @@ export default function Desktop({ onRestart }) {
                 </div>
             )}
 
-            {/* Toast Notifications */}
+            {/* Toast Notifications (legacy) */}
             <Toast toasts={toasts} onDismiss={dismissToast} />
+
+            {/* Achievement/System Notifications */}
+            <NotificationCenter />
 
             {/* Hidden canvas for wallpaper color sampling */}
             <canvas ref={samplerCanvasRef} style={{ display: 'none' }} aria-hidden="true" />

@@ -42,7 +42,7 @@ function bestMove(board) {
     return move;
 }
 
-export default function TicTacToeGame({ darkTheme }) {
+export default function TicTacToeGame({ darkTheme, onAchievement }) {
     const [board, setBoard] = useState(Array(9).fill(null));
     const [xIsNext, setXIsNext] = useState(true);
     const [thinking, setThinking] = useState(false);
@@ -90,8 +90,9 @@ export default function TicTacToeGame({ darkTheme }) {
                 try { localStorage.setItem('pdos_ttt_wins', String(n)); } catch {}
                 return n;
             });
+            if (onAchievement) onAchievement('gamer');
         }
-    }, [winner]);
+    }, [winner, onAchievement]);
 
     const reset = () => { setBoard(Array(9).fill(null)); setXIsNext(true); setThinking(false); };
 

@@ -23,7 +23,7 @@ const NEOFETCH = `
                                      Languages: Python Java C/C++ JS
 `.trim();
 
-export default function TerminalApp() {
+export default function TerminalApp({ onAchievement }) {
     const [history, setHistory] = useState([
         { type: 'output', content: 'Welcome to PDOS Terminal v1.0.0' },
         { type: 'output', content: 'Type "help" to see available commands.' },
@@ -36,6 +36,7 @@ export default function TerminalApp() {
     const cmdHistoryRef = useRef([]);
     const historyIdxRef = useRef(-1);
     const tabRef = useRef({ candidates: [], idx: -1, prefix: '' });
+    const cmdCountRef = useRef(0);
 
     useEffect(() => {
         if (containerRef.current) {
@@ -50,6 +51,11 @@ export default function TerminalApp() {
 
         setCmdHistory(prev => { const next = [fullCmd, ...prev]; cmdHistoryRef.current = next; return next; });
         historyIdxRef.current = -1;
+
+        // Achievement tracking
+        cmdCountRef.current += 1;
+        if (cmdCountRef.current >= 5 && onAchievement) onAchievement('terminal_user');
+        if (base === 'sudo' && onAchievement) onAchievement('hacker');
 
         let output = '';
 

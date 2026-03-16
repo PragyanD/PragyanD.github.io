@@ -53,7 +53,7 @@ const GAMES = [
     },
 ];
 
-export default function GamesHubApp({ darkTheme = false }) {
+export default function GamesHubApp({ darkTheme = false, onAchievement }) {
     const [activeGame, setActiveGame] = useState(null);
 
     const bg = darkTheme ? '#0a0a1e' : '#f7f8fb';
@@ -89,7 +89,7 @@ export default function GamesHubApp({ darkTheme = false }) {
                     </span>
                 </div>
                 <div className="flex-1 overflow-auto">
-                    <GameComponent darkTheme={darkTheme} />
+                    <GameComponent darkTheme={darkTheme} onAchievement={onAchievement} />
                 </div>
             </div>
         );
