@@ -4,12 +4,12 @@ const ALL_FILES = [
     { name: "works_on_my_machine.tar.gz",        size: "2.7 GB",        date: "Always" },
     { name: "final_final_FINAL_v3_USE_THIS.js",  size: "14 KB",         date: "2 hrs ago" },
     { name: "estimated_deadline.xlsx",           size: "—",             date: "corrupted" },
-    { name: "blockchain_mvp_pitch.pptx",         size: "47 slides",     date: "Q3 2021" },
-    { name: "metaverse_roadmap_Q4.pdf",          size: "22 MB",         date: "0 readers" },
-    { name: "my_nft_collection/",                size: "0 items",       date: "—" },
+    { name: "todo_definitely_final.md",            size: "3 lines",       date: "6 months ago" },
+    { name: "production_debug.log",              size: "847 MB",        date: "yesterday" },
+    { name: "unused_imports/",                   size: "—",             date: "everywhere" },
     { name: "flash_player_install.exe",          size: "3.1 MB",        date: "quarantined" },
     { name: "pr_2847_wip_DO_NOT_MERGE.patch",    size: "3,847 lines",   date: "open 847 days" },
-    { name: "rewrite_in_rust/",                  size: "—",             date: "abandoned" },
+    { name: "migration_v2_backup_OLD/",           size: "—",             date: "never finished" },
     { name: "node_modules/",                     size: "847,293 items", date: "do not open" },
 ];
 
@@ -24,8 +24,16 @@ function FileIcon({ name }) {
     return <span style={{ fontSize: 13 }}>🗒️</span>;
 }
 
+function loadTrashState() {
+    try {
+        const saved = localStorage.getItem('pdos_trash');
+        if (saved !== null) return JSON.parse(saved);
+    } catch {}
+    return ALL_FILES;
+}
+
 export default function TrashApp({ darkTheme = false }) {
-    const [files, setFiles] = useState(ALL_FILES);
+    const [files, setFiles] = useState(loadTrashState);
     const [confirming, setConfirming] = useState(false);
 
     const t = darkTheme ? {
@@ -83,6 +91,7 @@ export default function TrashApp({ darkTheme = false }) {
         } else {
             setFiles([]);
             setConfirming(false);
+            localStorage.setItem('pdos_trash', '[]');
         }
     };
 
@@ -160,7 +169,7 @@ export default function TrashApp({ darkTheme = false }) {
                         <span style={{ fontSize: 48, opacity: 0.3 }}>🗑️</span>
                         <p className="text-sm font-medium" style={{ color: t.emptyText }}>Trash is empty</p>
                         <p className="text-xs" style={{ color: t.emptySubText }}>
-                            (node_modules may have survived)
+                            Nothing here.
                         </p>
                     </div>
                 ) : (

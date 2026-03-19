@@ -7,7 +7,7 @@ const COMMANDS = [
 ];
 
 const FILES = {
-    'bio.txt': 'I am Pragyan, a Software Engineer passionate about building cool desktop simulations.',
+    'bio.txt': 'Software engineer. UW-Madison grad. Based in Bengaluru.',
     'projects.lnk': 'Pointing to: Scene Recognition AI, Proton Bot, BISS Encryption, Apache AGE.',
     'contact.cfg': 'LinkedIn: linkedin.com/in/daspragyan/\nGitHub: pragyanD\nStatus: Online',
 };
@@ -81,7 +81,7 @@ export default function TerminalApp({ onAchievement }) {
                 break;
             }
             case 'cd':
-                output = 'Permission Denied: You are already at peak performance.';
+                output = 'cd: restricted';
                 break;
             case 'echo':
                 output = args.join(' ') || '';
@@ -105,9 +105,9 @@ export default function TerminalApp({ onAchievement }) {
                 break;
             case 'sudo':
                 if (args.join(' ') === 'make me a sandwich') {
-                    output = 'Coming right up! 🥪';
+                    output = '🥪';
                 } else {
-                    output = 'This incident will be reported. (Not really, I trust you).';
+                    output = 'Nice try.';
                 }
                 break;
             case 'clear':
@@ -117,13 +117,13 @@ export default function TerminalApp({ onAchievement }) {
                 output = 'Task failed successfully.';
                 break;
             case 'hack':
-                output = 'Searching for a 12-digit password... 1-2-3-4-5... Oh wait.';
+                output = 'Connection refused.';
                 break;
             case 'make':
                 if (args[0] === 'me' && args[1] === 'a' && args[2] === 'sandwich') {
                     output = 'sudo make me a sandwich.';
                 } else {
-                    output = 'Command not found. Did you try turning it off and on again?';
+                    output = 'make: *** No rule to make target. Stop.';
                 }
                 break;
             case 'git': {
@@ -131,18 +131,17 @@ export default function TerminalApp({ onAchievement }) {
                 if (sub === 'blame') {
                     output = [
                         'commit a1b2c3d4 (HEAD -> main, origin/main)',
-                        'Author: Unknown Developer <definitely-not-me@dev.null>',
+                        'Author: Unknown Developer <not-me@dev.null>',
                         'Date:   3 years, 2 months ago',
                         '',
-                        '    src/everything.js: I have no idea why this works.',
-                        '                       Do NOT touch it. Seriously.',
+                        '    src/everything.js: do not touch this.',
                         '',
-                        'Blame: frontend → backend → PM → intern → gravity → cosmic rays',
+                        'Blame: frontend → backend → PM → intern',
                     ].join('\n');
                 } else if (sub === 'status') {
-                    output = 'On branch main\nYour branch is ahead of schedule by 3 sprints.\n\nnothing to commit, life is clean.';
+                    output = 'On branch main\nYour branch is ahead of schedule by 3 sprints.\n\nnothing to commit, working tree clean';
                 } else if (sub === 'commit') {
-                    output = '✓ Committed to excellence.\n(but not to git — no changes staged)';
+                    output = 'nothing to commit, working tree clean';
                 } else if (sub === 'push') {
                     output = 'error: failed to push some refs\nreason: stakeholders have rejected your changes.';
                 } else {
@@ -153,9 +152,9 @@ export default function TerminalApp({ onAchievement }) {
             case 'npm': {
                 const sub = args[0];
                 if (sub === 'install' || sub === 'i') {
-                    output = 'npm warn: found 847,293 packages\nnpm warn: 23,847 have vulnerabilities\nnpm warn: 1 is sentient\n\nadded 847,293 packages in 11m\n\n✓ Done. node_modules is now 2.3 GB.';
+                    output = 'npm warn: found 847,293 packages\nnpm warn: 23,847 have vulnerabilities\n\nadded 847,293 packages in 11m\n\n✓ Done. node_modules is now 2.3 GB.';
                 } else if (sub === 'audit') {
-                    output = 'found 0 vulnerabilities\n(the real vulnerability is us, the developers)';
+                    output = 'found 0 vulnerabilities';
                 } else if (sub === 'run' && args[1] === 'dev') {
                     output = '▲ Next.js 14.0.0\n- Local: http://localhost:3000\n\nReady in 2.4s ✓';
                 } else {
@@ -166,17 +165,17 @@ export default function TerminalApp({ onAchievement }) {
             case 'rm':
                 if ((args.includes('-rf') || args.includes('-r')) &&
                     (args.includes('/') || args.includes('*') || args.includes('.'))) {
-                    output = '🔥 Deleting everything...\n\n  [===                    ] 12%\n\nJust kidding. Root access denied.\nThis incident has been reported (it hasn\'t).';
+                    output = 'rm: it is dangerous to operate recursively on \'/\'\nrm: use --no-preserve-root to override this failsafe';
                 } else {
                     output = `rm: cannot remove '${args[0] || '?'}': Permission denied`;
                 }
                 break;
             case 'curl':
-                output = 'No. (we respect privacy here)';
+                output = 'curl: (7) Failed to connect: connection refused';
                 break;
             case 'python':
             case 'python3':
-                output = 'Python 3.12.0 (PDOS build, Mar  1 2026)\n>>>\nActually I can\'t run Python. But I believe in you.';
+                output = 'Python 3.12.0 (PDOS build, Mar  1 2026)\n>>>\nKeyboardInterrupt';
                 break;
             case '':
                 return;

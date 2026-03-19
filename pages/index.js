@@ -28,7 +28,7 @@ export default function Home() {
 
   const handleRestart = () => {
     // Clear layout state so the session starts fresh
-    const layoutKeys = ['pdos_open_windows', 'pdos_pill_order'];
+    const layoutKeys = ['pdos_open_windows', 'pdos_pill_order', 'pdos_trash'];
     layoutKeys.forEach(k => localStorage.removeItem(k));
     // Clear all window position/size entries
     Object.keys(localStorage)

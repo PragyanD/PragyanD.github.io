@@ -1,6 +1,6 @@
 const CONTENT = `PDOS — Hidden Features & Easter Eggs
 ======================================
-Written for curious recruiters and developers.
+A quick guide to what's hidden in here.
 
 [ KEYBOARD SHORTCUTS ]
   Cmd/Ctrl + K      Open Spotlight search
@@ -18,14 +18,14 @@ Written for curious recruiters and developers.
 
 [ APPS WITH PERSONALITY ]
   Trash             Contains a curated list of files every
-                    developer has definitely never committed
+                    developer has seen at some point
   Terminal          Fully interactive. Type help to see
                     all available commands
   Games             Hidden games hub
 
 [ BOOT SEQUENCE ]
   Hit Restart in the Start Menu to replay the boot sequence.
-  Specs are... slightly exaggerated.
+  Specs are slightly exaggerated.
 
 [ SOURCE CODE ]
   github.com/PragyanD/PragyanD.github.io

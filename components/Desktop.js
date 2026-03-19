@@ -145,15 +145,15 @@ function DesktopInner({ onRestart }) {
     }, []);
 
     const APP_NOTIFICATIONS = {
-        terminal: { id: 'notif_terminal', message: "Welcome to the command line. Type 'help' if you're feeling lost.", icon: '⌨️' },
-        games_hub: { id: 'notif_games', message: 'Careful — productivity is about to drop.', icon: '🎮' },
-        trash: { id: 'notif_trash', message: "One person's trash is another person's... no, it's still trash.", icon: '🗑️' },
-        resume: { id: 'notif_resume', message: 'A fine document, if I do say so myself.', icon: '📄' },
-        projects: { id: 'notif_projects', message: 'Each one built with mass amounts of caffeine.', icon: '📁' },
-        about: { id: 'notif_about', message: "Here's everything you need to know.", icon: '👤' },
-        taskmanager: { id: 'notif_taskmanager', message: 'No, not that task manager. This one has my resume.', icon: '📊' },
-        notepad: { id: 'notif_notepad', message: 'Secrets inside. Handle with care.', icon: '🥚' },
-        achievements: { id: 'notif_achievements', message: 'How many have you unlocked?', icon: '🏆' },
+        terminal: { id: 'notif_terminal', message: "Type 'help' to see available commands.", icon: '⌨️' },
+        games_hub: { id: 'notif_games', message: 'Take a break.', icon: '🎮' },
+        trash: { id: 'notif_trash', message: "You weren't supposed to find this.", icon: '🗑️' },
+        resume: { id: 'notif_resume', message: 'Updated and ready to download.', icon: '📄' },
+        projects: { id: 'notif_projects', message: "A selection of things I've built.", icon: '📁' },
+        about: { id: 'notif_about', message: "The short version.", icon: '👤' },
+        taskmanager: { id: 'notif_taskmanager', message: 'Experiences and skills at a glance.', icon: '📊' },
+        notepad: { id: 'notif_notepad', message: 'A few things worth knowing.', icon: '🥚' },
+        achievements: { id: 'notif_achievements', message: 'How many have you found?', icon: '🏆' },
     };
 
     // Wrap openApp to trigger notifications and achievements
@@ -189,7 +189,7 @@ function DesktopInner({ onRestart }) {
     // Time-based notification
     useEffect(() => {
         const timer = setTimeout(() => {
-            notify({ id: 'notif_5min', message: "Still here? I'm flattered.", icon: '⏱️', type: 'info', showOnce: true });
+            notify({ id: 'notif_5min', message: "Try the Terminal — it has a few surprises.", icon: '⌨️', type: 'hint', showOnce: true });
         }, 5 * 60 * 1000);
         return () => clearTimeout(timer);
     }, [notify]);
@@ -204,7 +204,7 @@ function DesktopInner({ onRestart }) {
     useEffect(() => {
         const timer = setTimeout(() => {
             if (!hasContextMenudRef.current) {
-                notify({ id: 'notif_rightclick', message: 'Psst — try right-clicking the desktop.', icon: '💡', type: 'hint', showOnce: true });
+                notify({ id: 'notif_rightclick', message: 'Try right-clicking the desktop.', icon: '💡', type: 'hint', showOnce: true });
             }
         }, 30000);
         return () => clearTimeout(timer);
