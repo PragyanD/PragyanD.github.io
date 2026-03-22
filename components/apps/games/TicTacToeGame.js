@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { get, set, STORAGE_KEYS } from '../../../lib/storage';
+import { useAchievements } from '../../../contexts/AchievementContext';
 
 const LINES = [
     [0,1,2],[3,4,5],[6,7,8],
@@ -43,7 +44,8 @@ function bestMove(board) {
     return move;
 }
 
-export default function TicTacToeGame({ darkTheme, onAchievement }) {
+export default function TicTacToeGame({ darkTheme }) {
+    const { unlock } = useAchievements();
     const [board, setBoard] = useState(Array(9).fill(null));
     const [xIsNext, setXIsNext] = useState(true);
     const [thinking, setThinking] = useState(false);
@@ -91,9 +93,9 @@ export default function TicTacToeGame({ darkTheme, onAchievement }) {
                 set(STORAGE_KEYS.TTT_WINS, String(n));
                 return n;
             });
-            if (onAchievement) onAchievement('gamer');
+            unlock('gamer');
         }
-    }, [winner, onAchievement]);
+    }, [winner, unlock]);
 
     const reset = () => { setBoard(Array(9).fill(null)); setXIsNext(true); setThinking(false); };
 

@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useAchievements } from '../../contexts/AchievementContext';
 
 const COMMANDS = [
     'cat', 'cd', 'clear', 'curl', 'date', 'echo', 'git', 'hack', 'help',
@@ -23,7 +24,8 @@ const NEOFETCH = `
                                      Languages: Python Java C/C++ JS
 `.trim();
 
-export default function TerminalApp({ onAchievement }) {
+export default function TerminalApp() {
+    const { unlock } = useAchievements();
     const [history, setHistory] = useState([
         { type: 'output', content: 'Welcome to PDOS Terminal v1.0.0' },
         { type: 'output', content: 'Type "help" to see available commands.' },
@@ -54,8 +56,8 @@ export default function TerminalApp({ onAchievement }) {
 
         // Achievement tracking
         cmdCountRef.current += 1;
-        if (cmdCountRef.current >= 5 && onAchievement) onAchievement('terminal_user');
-        if (base === 'sudo' && onAchievement) onAchievement('hacker');
+        if (cmdCountRef.current >= 5) unlock('terminal_user');
+        if (base === 'sudo') unlock('hacker');
 
         let output = '';
 

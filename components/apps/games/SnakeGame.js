@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { get, set, STORAGE_KEYS } from '../../../lib/storage';
+import { useAchievements } from '../../../contexts/AchievementContext';
 
 const ROWS = 18, COLS = 18, CELL = 22, TICK = 120;
 
@@ -17,7 +18,8 @@ const INIT_SNAKE = [[9, 9], [9, 8], [9, 7]];
 const INIT_FOOD  = [3, 9];
 const INIT_DIR   = [0, 1];
 
-export default function SnakeGame({ darkTheme, onAchievement }) {
+export default function SnakeGame({ darkTheme }) {
+    const { unlock } = useAchievements();
     const [snake, setSnake] = useState(INIT_SNAKE);
     const [food,  setFood]  = useState(INIT_FOOD);
     const [phase, setPhase] = useState('idle');
@@ -30,8 +32,8 @@ export default function SnakeGame({ darkTheme, onAchievement }) {
     const foodRef  = useRef(INIT_FOOD);
     const dirRef   = useRef(INIT_DIR);
     const phaseRef = useRef('idle');
-    const achievementRef = useRef(onAchievement);
-    achievementRef.current = onAchievement;
+    const unlockRef = useRef(unlock);
+    unlockRef.current = unlock;
 
     const bg        = darkTheme ? '#0a0a1e' : '#f7f8fb';
     const textColor = darkTheme ? 'rgba(255,255,255,0.85)' : '#222';
@@ -94,7 +96,7 @@ export default function SnakeGame({ darkTheme, onAchievement }) {
             if (atFood) {
                 setScore(sc => {
                     const n = sc + 1;
-                    if (n >= 5 && achievementRef.current) achievementRef.current('gamer');
+                    if (n >= 5) unlockRef.current('gamer');
                     setBest(b => {
                         if (n > b) {
                             set(STORAGE_KEYS.BEST_SNAKE, String(n));

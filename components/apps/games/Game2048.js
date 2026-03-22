@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { get, set, STORAGE_KEYS } from '../../../lib/storage';
+import { useAchievements } from '../../../contexts/AchievementContext';
 
 function slideRow(row) {
     const cells = row.filter(Boolean);
@@ -91,7 +92,8 @@ const TILE_COLORS = {
     2048: ['#edc22e', '#fff'],
 };
 
-export default function Game2048({ darkTheme, onAchievement }) {
+export default function Game2048({ darkTheme }) {
+    const { unlock } = useAchievements();
     const [board, setBoard] = useState(initBoard);
     const [score, setScore] = useState(0);
     const [best,  setBest]  = useState(() => {
@@ -121,7 +123,7 @@ export default function Game2048({ darkTheme, onAchievement }) {
         if (!prev) return;
         const { board: next, score: gained } = applyMove(prev, dir);
         if (next.join() === prev.join()) return;
-        if (next.includes(2048)) { setWon(true); if (onAchievement) onAchievement('gamer'); }
+        if (next.includes(2048)) { setWon(true); unlock('gamer'); }
         const withTile = addTile(next);
         if (isStuck(withTile)) setLost(true);
         setBoard(withTile);
