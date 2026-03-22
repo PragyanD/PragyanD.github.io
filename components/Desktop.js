@@ -11,13 +11,13 @@ import useAudio from "../hooks/useAudio";
 import { get, set, getJSON, setJSON, STORAGE_KEYS } from "../lib/storage";
 import Toast from "./Toast";
 import SystemWidget from "./SystemWidget";
-import DesktopContextMenu from "./DesktopContextMenu";
 import VolumeControl from "./VolumeControl";
 import WallpaperPicker from "./WallpaperPicker";
 import DisplaySettings from "./DisplaySettings";
 import { NotificationProvider, useNotifications } from "../contexts/NotificationContext";
 import { AchievementProvider, useAchievements } from "../contexts/AchievementContext";
 import NotificationCenter from "./NotificationCenter";
+import { PopupMenu, MenuItem, MenuDivider } from "./ui/PopupMenu";
 
 const APPS = Object.fromEntries(
     APPS_CONFIG.map(app => [app.id, {
@@ -333,16 +333,43 @@ function DesktopInner({ onRestart }) {
             onClick={() => { closeContextMenu(); setWallpaperPickerOpen(false); }}
         >
             {/* Context Menu */}
-            <DesktopContextMenu
+            <PopupMenu
                 visible={contextMenu.visible}
                 x={contextMenu.x}
                 y={contextMenu.y}
-                onRefresh={() => window.location.reload()}
-                onAbout={() => openApp("about")}
-                onChangeWallpaper={() => { setWallpaperPickerOpen(true); setContextMenu({ visible: false, x: 0, y: 0 }); }}
-                onDisplaySettings={() => { setDisplaySettingsOpen(true); setContextMenu({ visible: false, x: 0, y: 0 }); }}
-                onClose={() => setContextMenu(prev => ({ ...prev, visible: false }))}
-            />
+                onClose={closeContextMenu}
+                onKeyDown={(e) => {
+                    const items = e.currentTarget.querySelectorAll('[role="menuitem"]');
+                    const idx = Array.from(items).indexOf(document.activeElement);
+                    if (e.key === 'ArrowDown') {
+                        e.preventDefault();
+                        items[(idx + 1) % items.length]?.focus();
+                    } else if (e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        items[(idx - 1 + items.length) % items.length]?.focus();
+                    } else if (e.key === 'Escape') {
+                        setContextMenu(prev => ({ ...prev, visible: false }));
+                    }
+                }}
+            >
+                <MenuItem onClick={() => window.location.reload()}>
+                    Refresh Desktop
+                </MenuItem>
+                <MenuDivider />
+                <MenuItem onClick={() => openApp("about")}>
+                    About PDOS
+                </MenuItem>
+                <MenuItem onClick={() => window.open('https://github.com/PragyanD', '_blank')}>
+                    View GitHub
+                </MenuItem>
+                <MenuDivider />
+                <MenuItem onClick={(e) => { e.stopPropagation(); setWallpaperPickerOpen(true); setContextMenu({ visible: false, x: 0, y: 0 }); }}>
+                    Change Wallpaper
+                </MenuItem>
+                <MenuItem onClick={(e) => { e.stopPropagation(); setDisplaySettingsOpen(true); setContextMenu({ visible: false, x: 0, y: 0 }); }}>
+                    Display Settings
+                </MenuItem>
+            </PopupMenu>
 
             {/* Subtle dark overlay */}
             <div

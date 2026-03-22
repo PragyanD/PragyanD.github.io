@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback, useEffect, useMemo, memo } from "react";
 import { createPortal } from "react-dom";
 import { getJSON, setJSON, STORAGE_KEYS } from "../lib/storage";
+import { PopupMenu, MenuItem, MenuDivider } from "./ui/PopupMenu";
 
 function Window({
     id,
@@ -359,34 +360,21 @@ function Window({
 
             {/* Title-bar context menu */}
             {titleMenu && typeof document !== 'undefined' && createPortal(
-                <div
-                    role="menu"
-                    className="fixed z-[9999] flex flex-col p-1 rounded-xl shadow-2xl"
-                    style={{
-                        left: titleMenu.x,
-                        top: titleMenu.y,
-                        minWidth: 160,
-                        background: "rgba(20,20,32,0.92)",
-                        backdropFilter: "blur(32px)",
-                        border: "1px solid rgba(255,255,255,0.12)",
-                        boxShadow: "0 8px 32px rgba(0,0,0,0.6)",
-                    }}
+                <PopupMenu
+                    visible={true}
+                    x={titleMenu.x}
+                    y={titleMenu.y}
+                    width={160}
+                    onClose={() => setTitleMenu(null)}
                     onMouseLeave={() => setTitleMenu(null)}
-                    onContextMenu={e => e.preventDefault()}
-                    onMouseDown={e => e.stopPropagation()}
                 >
                     {titleMenuItems.map((item, i) => item === null
-                        ? <div key={i} className="h-px my-1 mx-2 bg-white/10" />
-                        : <button
-                            key={i}
-                            role="menuitem"
-                            onClick={item.action}
-                            className="text-left px-3 py-1.5 text-xs text-white/80 hover:bg-white/10 rounded-lg transition-colors w-full"
-                          >
+                        ? <MenuDivider key={i} />
+                        : <MenuItem key={i} onClick={item.action}>
                             {item.label}
-                          </button>
+                          </MenuItem>
                     )}
-                </div>,
+                </PopupMenu>,
                 document.body
             )}
         </div>
