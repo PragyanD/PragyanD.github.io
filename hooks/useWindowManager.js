@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from "react";
+import { getJSON, setJSON, STORAGE_KEYS } from "../lib/storage";
 
 /**
  * Manages open/minimized/focus state for all desktop windows.
@@ -6,10 +7,8 @@ import { useState, useCallback, useRef, useEffect } from "react";
  */
 export default function useWindowManager(onOpen) {
     const [openWindows, setOpenWindows] = useState(() => {
-        try {
-            const s = localStorage.getItem('pdos_open_windows');
-            return s ? [...new Set(JSON.parse(s))] : [];
-        } catch { return []; }
+        const s = getJSON(STORAGE_KEYS.OPEN_WINDOWS, null);
+        return s ? [...new Set(s)] : [];
     });
     const [minimizedWindows, setMinimizedWindows] = useState([]);
     const [focusOrder, setFocusOrder] = useState([]);
@@ -20,7 +19,7 @@ export default function useWindowManager(onOpen) {
     const closingTimers = useRef({});
 
     useEffect(() => {
-        try { localStorage.setItem('pdos_open_windows', JSON.stringify(openWindows)); } catch {}
+        setJSON(STORAGE_KEYS.OPEN_WINDOWS, openWindows);
     }, [openWindows]);
 
     const openApp = useCallback((appId) => {

@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react';
 import { useNotifications } from './NotificationContext';
+import { getJSON, setJSON, STORAGE_KEYS } from '../lib/storage';
 
 const AchievementContext = createContext(null);
 
@@ -84,13 +85,11 @@ export const ACHIEVEMENTS = [
 ];
 
 function getUnlockedState() {
-    try {
-        return JSON.parse(localStorage.getItem('pdos_achievements') || '{}');
-    } catch { return {}; }
+    return getJSON(STORAGE_KEYS.ACHIEVEMENTS, {});
 }
 
 function saveUnlockedState(state) {
-    localStorage.setItem('pdos_achievements', JSON.stringify(state));
+    setJSON(STORAGE_KEYS.ACHIEVEMENTS, state);
 }
 
 export function AchievementProvider({ children }) {

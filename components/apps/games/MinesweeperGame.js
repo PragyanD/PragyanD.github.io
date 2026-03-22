@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
+import { get, set, STORAGE_KEYS } from '../../../lib/storage';
 
 const ROWS = 9, COLS = 9, MINES = 10;
 
@@ -55,7 +56,7 @@ export default function MinesweeperGame({ darkTheme, onAchievement }) {
     const [flags, setFlags] = useState(0);
     const [time, setTime] = useState(0);
     const [bestTime, setBestTime] = useState(() => {
-        try { return parseInt(localStorage.getItem('pdos_ms_best_time') || '0'); } catch { return 0; }
+        return parseInt(get(STORAGE_KEYS.BEST_MINESWEEPER, '0'));
     });
     const timeRef = useRef(0);
 
@@ -98,7 +99,7 @@ export default function MinesweeperGame({ darkTheme, onAchievement }) {
             const t = timeRef.current;
             setBestTime(prev => {
                 const save = (prev === 0 || t < prev) ? t : prev;
-                try { localStorage.setItem('pdos_ms_best_time', String(save)); } catch {}
+                set(STORAGE_KEYS.BEST_MINESWEEPER, String(save));
                 return save;
             });
         }

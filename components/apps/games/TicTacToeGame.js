@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { get, set, STORAGE_KEYS } from '../../../lib/storage';
 
 const LINES = [
     [0,1,2],[3,4,5],[6,7,8],
@@ -47,7 +48,7 @@ export default function TicTacToeGame({ darkTheme, onAchievement }) {
     const [xIsNext, setXIsNext] = useState(true);
     const [thinking, setThinking] = useState(false);
     const [wins, setWins] = useState(() => {
-        try { return parseInt(localStorage.getItem('pdos_ttt_wins') || '0'); } catch { return 0; }
+        return parseInt(get(STORAGE_KEYS.TTT_WINS, '0'));
     });
     const winner = checkWinner(board);
 
@@ -87,7 +88,7 @@ export default function TicTacToeGame({ darkTheme, onAchievement }) {
         if (winner === 'X') {
             setWins(w => {
                 const n = w + 1;
-                try { localStorage.setItem('pdos_ttt_wins', String(n)); } catch {}
+                set(STORAGE_KEYS.TTT_WINS, String(n));
                 return n;
             });
             if (onAchievement) onAchievement('gamer');

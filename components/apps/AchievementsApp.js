@@ -1,12 +1,11 @@
 import { useAchievements } from '../../contexts/AchievementContext';
 import { useState, useEffect } from 'react';
+import { getJSON, setJSON, STORAGE_KEYS } from '../../lib/storage';
 
 export default function AchievementsApp({ darkTheme = false }) {
     const { achievements, unlocked, progress, total } = useAchievements();
     const [justSeen, setJustSeen] = useState(() => {
-        try {
-            return JSON.parse(localStorage.getItem('pdos_achievements_seen') || '{}');
-        } catch { return {}; }
+        return getJSON(STORAGE_KEYS.ACHIEVEMENTS_SEEN, {});
     });
 
     // Track which achievements are "new" (unlocked but not yet seen in trophy case)
@@ -18,7 +17,7 @@ export default function AchievementsApp({ darkTheme = false }) {
                 const next = { ...justSeen };
                 newlyUnlocked.forEach(a => { next[a.id] = true; });
                 setJustSeen(next);
-                localStorage.setItem('pdos_achievements_seen', JSON.stringify(next));
+                setJSON(STORAGE_KEYS.ACHIEVEMENTS_SEEN, next);
             }, 2000); // Show glow for 2s before marking as seen
             return () => clearTimeout(timer);
         }

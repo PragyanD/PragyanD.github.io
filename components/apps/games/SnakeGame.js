@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { get, set, STORAGE_KEYS } from '../../../lib/storage';
 
 const ROWS = 18, COLS = 18, CELL = 22, TICK = 120;
 
@@ -22,7 +23,7 @@ export default function SnakeGame({ darkTheme, onAchievement }) {
     const [phase, setPhase] = useState('idle');
     const [score, setScore] = useState(0);
     const [best, setBest] = useState(() => {
-        try { return parseInt(localStorage.getItem('pdos_snake_best') || '0'); } catch { return 0; }
+        return parseInt(get(STORAGE_KEYS.BEST_SNAKE, '0'));
     });
 
     const snakeRef = useRef(INIT_SNAKE);
@@ -96,7 +97,7 @@ export default function SnakeGame({ darkTheme, onAchievement }) {
                     if (n >= 5 && achievementRef.current) achievementRef.current('gamer');
                     setBest(b => {
                         if (n > b) {
-                            try { localStorage.setItem('pdos_snake_best', String(n)); } catch {}
+                            set(STORAGE_KEYS.BEST_SNAKE, String(n));
                             return n;
                         }
                         return b;
