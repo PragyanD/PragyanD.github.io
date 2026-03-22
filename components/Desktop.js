@@ -11,6 +11,10 @@ import useAudio from "../hooks/useAudio";
 import { get, set, getJSON, setJSON, STORAGE_KEYS } from "../lib/storage";
 import Toast from "./Toast";
 import SystemWidget from "./SystemWidget";
+import DesktopContextMenu from "./DesktopContextMenu";
+import VolumeControl from "./VolumeControl";
+import WallpaperPicker from "./WallpaperPicker";
+import DisplaySettings from "./DisplaySettings";
 import { NotificationProvider, useNotifications } from "../contexts/NotificationContext";
 import { AchievementProvider, useAchievements } from "../contexts/AchievementContext";
 import NotificationCenter from "./NotificationCenter";
@@ -329,61 +333,16 @@ function DesktopInner({ onRestart }) {
             onClick={() => { closeContextMenu(); setWallpaperPickerOpen(false); }}
         >
             {/* Context Menu */}
-            {contextMenu.visible && (
-                <div
-                    role="menu"
-                    className="fixed z-[100] flex flex-col p-1.5 rounded-xl shadow-2xl transition-all font-mono"
-                    style={{
-                        left: contextMenu.x,
-                        top: contextMenu.y,
-                        width: 180,
-                        background: "rgba(30, 30, 40, 0.6)",
-                        backdropFilter: "blur(40px)",
-                        border: "1px solid rgba(255,255,255,0.15)",
-                        boxShadow: "0 10px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.2)",
-                    }}
-                    onContextMenu={(e) => e.preventDefault()}
-                    onKeyDown={(e) => {
-                        const items = e.currentTarget.querySelectorAll('[role="menuitem"]');
-                        const idx = Array.from(items).indexOf(document.activeElement);
-                        if (e.key === 'ArrowDown') {
-                            e.preventDefault();
-                            items[(idx + 1) % items.length]?.focus();
-                        } else if (e.key === 'ArrowUp') {
-                            e.preventDefault();
-                            items[(idx - 1 + items.length) % items.length]?.focus();
-                        } else if (e.key === 'Escape') {
-                            setContextMenu(prev => ({ ...prev, visible: false }));
-                        }
-                    }}
-                >
-                    <button role="menuitem" onClick={() => window.location.reload()} className="text-left px-3 py-1.5 text-xs text-white hover:bg-white/10 rounded-lg transition-colors">
-                        Refresh Desktop
-                    </button>
-                    <div className="h-px my-1.5 mx-2" style={{ background: "linear-gradient(to right, transparent, rgba(255,255,255,0.18), transparent)" }} />
-                    <button role="menuitem" onClick={() => openApp("about")} className="text-left px-3 py-1.5 text-xs text-white hover:bg-white/10 rounded-lg transition-colors">
-                        About PDOS
-                    </button>
-                    <button role="menuitem" onClick={() => window.open('https://github.com/PragyanD', '_blank')} className="text-left px-3 py-1.5 text-xs text-white hover:bg-white/10 rounded-lg transition-colors">
-                        View GitHub
-                    </button>
-                    <div className="h-px my-1.5 mx-2" style={{ background: "linear-gradient(to right, transparent, rgba(255,255,255,0.18), transparent)" }} />
-                    <button
-                        role="menuitem"
-                        onClick={(e) => { e.stopPropagation(); setWallpaperPickerOpen(true); setContextMenu({ visible: false, x: 0, y: 0 }); }}
-                        className="text-left px-3 py-1.5 text-xs text-white hover:bg-white/10 rounded-lg transition-colors"
-                    >
-                        Change Wallpaper
-                    </button>
-                    <button
-                        role="menuitem"
-                        onClick={(e) => { e.stopPropagation(); setDisplaySettingsOpen(true); setContextMenu({ visible: false, x: 0, y: 0 }); }}
-                        className="text-left px-3 py-1.5 text-xs text-white hover:bg-white/10 rounded-lg transition-colors"
-                    >
-                        Display Settings
-                    </button>
-                </div>
-            )}
+            <DesktopContextMenu
+                visible={contextMenu.visible}
+                x={contextMenu.x}
+                y={contextMenu.y}
+                onRefresh={() => window.location.reload()}
+                onAbout={() => openApp("about")}
+                onChangeWallpaper={() => { setWallpaperPickerOpen(true); setContextMenu({ visible: false, x: 0, y: 0 }); }}
+                onDisplaySettings={() => { setDisplaySettingsOpen(true); setContextMenu({ visible: false, x: 0, y: 0 }); }}
+                onClose={() => setContextMenu(prev => ({ ...prev, visible: false }))}
+            />
 
             {/* Subtle dark overlay */}
             <div
@@ -485,39 +444,13 @@ function DesktopInner({ onRestart }) {
             />
 
             {/* Volume Control Popup */}
-            {soundOpen && (
-                <div
-                    className="fixed bottom-14 right-4 w-64 p-4 rounded-xl bg-[#1a1a1a]/80 backdrop-blur-3xl border border-white/10 shadow-2xl z-[300]"
-                    onClick={e => e.stopPropagation()}
-                >
-                    <div className="flex items-center justify-between mb-4">
-                        <span className="text-xs font-bold text-white/40 uppercase tracking-widest">Master Volume</span>
-                        <button
-                            onClick={() => setIsPlaying(!isPlaying)}
-                            className="text-xs px-2 py-0.5 rounded border border-white/10 text-white/60 hover:bg-white/5"
-                        >
-                            {isPlaying ? 'PAUSE' : 'PLAY'}
-                        </button>
-                    </div>
-                    <div className="flex items-center gap-3">
-                        <span className="text-sm opacity-40">🔈</span>
-                        <input
-                            type="range"
-                            min="0"
-                            max="1"
-                            step="0.01"
-                            value={volume}
-                            onChange={(e) => setVolume(parseFloat(e.target.value))}
-                            className="flex-1 accent-blue-500 h-1 bg-white/10 rounded-lg appearance-none cursor-pointer"
-                        />
-                        <span className="text-sm opacity-40">🔊</span>
-                        <span className="text-xs text-white/50 w-7 text-right tabular-nums">{Math.round(volume * 100)}%</span>
-                    </div>
-                    <div className="mt-3 text-xs text-blue-400 font-mono text-center">
-                        SomaFM Fluid · Chillhop — 128kbps
-                    </div>
-                </div>
-            )}
+            <VolumeControl
+                open={soundOpen}
+                volume={volume}
+                onVolumeChange={setVolume}
+                isPlaying={isPlaying}
+                onTogglePlay={() => setIsPlaying(!isPlaying)}
+            />
 
             {/* Spotlight Overlay */}
             <Spotlight
@@ -538,110 +471,34 @@ function DesktopInner({ onRestart }) {
             )}
 
             {/* Wallpaper Picker */}
-            {wallpaperPickerOpen && (
-                <div
-                    className="fixed inset-0 z-[400] flex items-center justify-center"
-                    onClick={() => setWallpaperPickerOpen(false)}
-                >
-                    <div
-                        className="rounded-2xl p-5 shadow-2xl border border-white/10"
-                        style={{ background: "rgba(18,18,30,0.95)", backdropFilter: "blur(40px)", width: 440 }}
-                        onClick={e => e.stopPropagation()}
-                    >
-                        <p className="text-xs font-semibold text-white/40 uppercase tracking-widest mb-4">Choose Wallpaper</p>
-                        <div className="grid grid-cols-5 gap-2">
-                            {WALLPAPERS.map(w => (
-                                <button
-                                    key={w.id}
-                                    onClick={() => {
-                                        setWallpaper(w.id);
-                                        set(STORAGE_KEYS.WALLPAPER, w.id);
-                                        setWallpaperPickerOpen(false);
-                                        addToast(`Wallpaper changed to ${w.label}`, 'success');
-                                        unlock('wallpaper');
-                                    }}
-                                    className="flex flex-col items-center gap-1.5 group"
-                                    aria-pressed={wallpaper === w.id}
-                                    aria-label={w.label + (wallpaper === w.id ? ' (selected)' : '')}
-                                >
-                                    <div
-                                        className="rounded-lg w-full aspect-video transition-all"
-                                        style={{
-                                            background: `url('${getWallpaperSrc(w)}') center / cover no-repeat`,
-                                            outline: wallpaper === w.id ? '3px solid #0078d4' : '2px solid transparent',
-                                            outlineOffset: '2px',
-                                        }}
-                                    />
-                                    <span className="text-xs text-white/50 group-hover:text-white/80 transition-colors">{w.label}</span>
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            )}
+            <WallpaperPicker
+                open={wallpaperPickerOpen}
+                onClose={() => setWallpaperPickerOpen(false)}
+                wallpapers={WALLPAPERS}
+                currentWallpaper={wallpaper}
+                onSelect={(w) => {
+                    setWallpaper(w.id);
+                    set(STORAGE_KEYS.WALLPAPER, w.id);
+                    setWallpaperPickerOpen(false);
+                    addToast(`Wallpaper changed to ${w.label}`, 'success');
+                    unlock('wallpaper');
+                }}
+                getWallpaperSrc={getWallpaperSrc}
+            />
 
             {/* Display Settings Modal */}
-            {displaySettingsOpen && (
-                <div
-                    className="fixed inset-0 z-[400] flex items-center justify-center"
-                    onClick={() => setDisplaySettingsOpen(false)}
-                >
-                    <div
-                        className="rounded-2xl p-6 shadow-2xl border border-white/10"
-                        style={{ background: "rgba(18,18,30,0.95)", backdropFilter: "blur(40px)", width: 300 }}
-                        onClick={e => e.stopPropagation()}
-                    >
-                        <p className="text-xs font-semibold uppercase tracking-widest mb-5" style={{ color: "rgba(255,255,255,0.4)" }}>Display Settings</p>
-
-                        {/* Dark Theme Toggle */}
-                        <div className="flex items-center justify-between mb-2">
-                            <div>
-                                <p className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.85)" }}>Dark App Theme</p>
-                                <p className="text-[11px] mt-0.5" style={{ color: "rgba(255,255,255,0.4)" }}>Dark backgrounds for About, Projects &amp; Task Manager</p>
-                            </div>
-                            <button
-                                onClick={() => {
-                                    const next = !darkTheme;
-                                    setDarkTheme(next);
-                                    set(STORAGE_KEYS.DARK_THEME, String(next));
-                                    addToast(`Dark theme ${next ? 'enabled' : 'disabled'}`, 'success');
-                                    unlock('night_owl');
-                                }}
-                                className="relative flex-shrink-0 rounded-full transition-all duration-200"
-                                style={{
-                                    width: 44,
-                                    height: 24,
-                                    background: darkTheme ? "#0078d4" : "rgba(255,255,255,0.15)",
-                                    border: darkTheme ? "1px solid #0078d4" : "1px solid rgba(255,255,255,0.2)",
-                                }}
-                                aria-label="Toggle dark theme"
-                            >
-                                <span
-                                    className="absolute top-0.5 rounded-full bg-white transition-all duration-200"
-                                    style={{
-                                        width: 19,
-                                        height: 19,
-                                        left: darkTheme ? 22 : 2,
-                                        boxShadow: "0 1px 4px rgba(0,0,0,0.3)",
-                                    }}
-                                />
-                            </button>
-                        </div>
-
-                        <div className="h-px my-4" style={{ background: "rgba(255,255,255,0.08)" }} />
-
-                        <button
-                            onClick={() => setDisplaySettingsOpen(false)}
-                            className="w-full py-1.5 rounded-lg text-xs transition-colors hover:bg-white/5"
-                            style={{ color: "rgba(255,255,255,0.5)" }}
-                            onMouseEnter={(e) => { e.currentTarget.style.color = "rgba(255,255,255,0.85)"; }}
-                            onMouseLeave={(e) => { e.currentTarget.style.color = "rgba(255,255,255,0.5)"; }}
-                        >
-                            Done
-                        </button>
-                    </div>
-                </div>
-            )}
+            <DisplaySettings
+                open={displaySettingsOpen}
+                onClose={() => setDisplaySettingsOpen(false)}
+                darkTheme={darkTheme}
+                onToggleDarkTheme={() => {
+                    const next = !darkTheme;
+                    setDarkTheme(next);
+                    set(STORAGE_KEYS.DARK_THEME, String(next));
+                    addToast(`Dark theme ${next ? 'enabled' : 'disabled'}`, 'success');
+                    unlock('night_owl');
+                }}
+            />
 
             {/* Toast Notifications (legacy) */}
             <Toast toasts={toasts} onDismiss={dismissToast} />
