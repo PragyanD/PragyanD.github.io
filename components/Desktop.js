@@ -13,6 +13,7 @@ import SystemWidget from "./SystemWidget";
 import { NotificationProvider, useNotifications } from "../contexts/NotificationContext";
 import { AchievementProvider, useAchievements } from "../contexts/AchievementContext";
 import NotificationCenter from "./NotificationCenter";
+import { trackAppOpen, trackSession } from "../lib/analytics";
 
 const APPS = Object.fromEntries(
     APPS_CONFIG.map(app => [app.id, {
@@ -154,11 +155,13 @@ function DesktopInner({ onRestart }) {
         taskmanager: { id: 'notif_taskmanager', message: 'Experiences and skills at a glance.', icon: '📊' },
         notepad: { id: 'notif_notepad', message: 'A few things worth knowing.', icon: '🥚' },
         achievements: { id: 'notif_achievements', message: 'How many have you found?', icon: '🏆' },
+        system_monitor: { id: 'notif_system_monitor', message: 'Your local analytics dashboard.', icon: '📈' },
     };
 
-    // Wrap openApp to trigger notifications and achievements
+    // Wrap openApp to trigger notifications, achievements, and analytics
     const openApp = useCallback((appId) => {
         rawOpenApp(appId);
+        trackAppOpen(appId);
 
         // App-specific notification
         const notifConfig = APP_NOTIFICATIONS[appId];
@@ -194,9 +197,10 @@ function DesktopInner({ onRestart }) {
         return () => clearTimeout(timer);
     }, [notify]);
 
-    // First boot achievement
+    // First boot achievement + session tracking
     useEffect(() => {
         unlock('first_boot');
+        trackSession();
     }, [unlock]);
 
     // Right-click hint after 30s if context menu hasn't been opened
