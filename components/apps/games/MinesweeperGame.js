@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
+import { useAchievements } from '../../../contexts/AchievementContext';
 
 const ROWS = 9, COLS = 9, MINES = 10;
 
@@ -49,7 +50,8 @@ function floodReveal(cells, idx) {
 
 const NUM_COLORS = ['', '#0078d4', '#34c759', '#ff453a', '#a855f7', '#febc2e', '#20d9d2', '#ff6b35', '#888'];
 
-export default function MinesweeperGame({ darkTheme, onAchievement }) {
+export default function MinesweeperGame({ darkTheme }) {
+    const { unlock } = useAchievements();
     const [cells, setCells] = useState(null);
     const [phase, setPhase] = useState('idle');
     const [flags, setFlags] = useState(0);
@@ -94,7 +96,7 @@ export default function MinesweeperGame({ darkTheme, onAchievement }) {
         setCells(next);
         if (won) {
             setPhase('won');
-            if (onAchievement) onAchievement('gamer');
+            unlock('gamer');
             const t = timeRef.current;
             setBestTime(prev => {
                 const save = (prev === 0 || t < prev) ? t : prev;

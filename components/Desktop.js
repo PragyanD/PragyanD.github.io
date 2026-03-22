@@ -457,7 +457,7 @@ function DesktopInner({ onRestart }) {
                         onMaximize={() => toggleMaximize(appId)}
                     >
                         <ErrorBoundary key={appId}>
-                            <AppComponent darkTheme={darkTheme} onOpenApp={openApp} onAchievement={unlock} />
+                            <AppComponent darkTheme={darkTheme} onOpenApp={openApp} />
                         </ErrorBoundary>
                     </Window>
                 );
