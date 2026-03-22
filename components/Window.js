@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback, useEffect, useMemo, memo } from "react";
 import { createPortal } from "react-dom";
+import { getJSON, setJSON, STORAGE_KEYS } from "../lib/storage";
 
 function Window({
     id,
@@ -23,20 +24,16 @@ function Window({
     onMaximize,
 }) {
     const [pos, setPos] = useState(() => {
-        try {
-            const saved = localStorage.getItem(`window_state_${id}`);
-            if (saved) { const s = JSON.parse(saved); return s.pos; }
-        } catch (_) { /* ignore */ }
+        const saved = getJSON(STORAGE_KEYS.windowState(id));
+        if (saved) return saved.pos;
         return {
             x: initialX ?? Math.max(60, Math.floor(Math.random() * 300) + 80),
             y: initialY ?? Math.max(40, Math.floor(Math.random() * 120) + 40),
         };
     });
     const [size, setSize] = useState(() => {
-        try {
-            const saved = localStorage.getItem(`window_state_${id}`);
-            if (saved) { const s = JSON.parse(saved); return s.size; }
-        } catch (_) { /* ignore */ }
+        const saved = getJSON(STORAGE_KEYS.windowState(id));
+        if (saved) return saved.size;
         return { w: initialWidth, h: initialHeight };
     });
 
@@ -172,12 +169,7 @@ function Window({
 
         const onMouseUp = () => {
             if (dragging.current || resizing.current) {
-                try {
-                    localStorage.setItem(
-                        `window_state_${id}`,
-                        JSON.stringify({ pos: posRef.current, size: sizeRef.current })
-                    );
-                } catch (_) { /* ignore */ }
+                setJSON(STORAGE_KEYS.windowState(id), { pos: posRef.current, size: sizeRef.current });
             }
             dragging.current = false;
             setIsDragging(false);

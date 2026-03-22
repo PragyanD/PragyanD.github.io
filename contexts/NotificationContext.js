@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useCallback, useRef, useEffect } from 'react';
+import { getJSON, setJSON, STORAGE_KEYS } from '../lib/storage';
 
 const NotificationContext = createContext(null);
 
@@ -6,15 +7,13 @@ const NOTIFICATION_LIMIT = 3;
 const AUTO_DISMISS_MS = 4000;
 
 function getShownNotifications() {
-    try {
-        return JSON.parse(localStorage.getItem('pdos_shown_notifications') || '{}');
-    } catch { return {}; }
+    return getJSON(STORAGE_KEYS.SHOWN_NOTIFICATIONS, {});
 }
 
 function markShown(id) {
     const shown = getShownNotifications();
     shown[id] = Date.now();
-    localStorage.setItem('pdos_shown_notifications', JSON.stringify(shown));
+    setJSON(STORAGE_KEYS.SHOWN_NOTIFICATIONS, shown);
 }
 
 export function NotificationProvider({ children }) {

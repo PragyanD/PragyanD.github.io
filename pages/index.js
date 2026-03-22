@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import Head from "next/head";
 import Desktop from "../components/Desktop";
 import BootSequence from "../components/BootSequence";
+import { remove, removeByPrefix, STORAGE_KEYS } from "../lib/storage";
 
 export default function Home() {
   const [booting, setBooting] = useState(true);
@@ -28,12 +29,10 @@ export default function Home() {
 
   const handleRestart = () => {
     // Clear layout state so the session starts fresh
-    const layoutKeys = ['pdos_open_windows', 'pdos_pill_order', 'pdos_trash'];
-    layoutKeys.forEach(k => localStorage.removeItem(k));
+    const layoutKeys = [STORAGE_KEYS.OPEN_WINDOWS, STORAGE_KEYS.PILL_ORDER, STORAGE_KEYS.TRASH];
+    layoutKeys.forEach(k => remove(k));
     // Clear all window position/size entries
-    Object.keys(localStorage)
-      .filter(k => k.startsWith('window_state_'))
-      .forEach(k => localStorage.removeItem(k));
+    removeByPrefix('window_state_');
     sessionStorage.removeItem("pdos_booted");
     setBooting(true);
   };

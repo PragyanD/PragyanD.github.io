@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import Image from "next/image";
 import favicon from "../public/favicon.png";
 import { APPS_CONFIG, renderWindowIcon } from "../lib/apps.config";
+import { getJSON, setJSON, STORAGE_KEYS } from "../lib/storage";
 
 const APP_META = Object.fromEntries(
     APPS_CONFIG.map(app => [app.id, { icon: renderWindowIcon(app), label: app.label }])
@@ -161,14 +162,12 @@ export default function Taskbar({
 
     // --- Pill ordering + drag-to-reorder ---
     const [pillOrder, setPillOrder] = useState(() => {
-        try {
-            const pillArr = JSON.parse(localStorage.getItem('pdos_pill_order') || '[]');
-            const winArr  = JSON.parse(localStorage.getItem('pdos_open_windows') || '[]');
-            // Keep saved pill order, then append any open windows not yet in it
-            const filtered = pillArr.filter(id => winArr.includes(id));
-            const extra    = winArr.filter(id => !filtered.includes(id));
-            return [...new Set([...filtered, ...extra])];
-        } catch { return []; }
+        const pillArr = getJSON(STORAGE_KEYS.PILL_ORDER, []);
+        const winArr  = getJSON(STORAGE_KEYS.OPEN_WINDOWS, []);
+        // Keep saved pill order, then append any open windows not yet in it
+        const filtered = pillArr.filter(id => winArr.includes(id));
+        const extra    = winArr.filter(id => !filtered.includes(id));
+        return [...new Set([...filtered, ...extra])];
     });
     const [dragId, setDragId] = useState(null);
     const [dragInsertIdx, setDragInsertIdx] = useState(null);
@@ -298,7 +297,7 @@ export default function Taskbar({
                 setPillOrder(prev => {
                     const without = prev.filter(id => id !== appId);
                     without.splice(Math.min(finalIdx, without.length), 0, appId);
-                    try { localStorage.setItem('pdos_pill_order', JSON.stringify(without)); } catch {}
+                    setJSON(STORAGE_KEYS.PILL_ORDER, without);
                     return without;
                 });
             }

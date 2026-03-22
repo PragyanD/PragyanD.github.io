@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { getJSON, setJSON, STORAGE_KEYS } from "../../lib/storage";
 
 const ALL_FILES = [
     { name: "works_on_my_machine.tar.gz",        size: "2.7 GB",        date: "Always" },
@@ -25,11 +26,8 @@ function FileIcon({ name }) {
 }
 
 function loadTrashState() {
-    try {
-        const saved = localStorage.getItem('pdos_trash');
-        if (saved !== null) return JSON.parse(saved);
-    } catch {}
-    return ALL_FILES;
+    const saved = getJSON(STORAGE_KEYS.TRASH, null);
+    return saved !== null ? saved : ALL_FILES;
 }
 
 export default function TrashApp({ darkTheme = false }) {
@@ -91,7 +89,7 @@ export default function TrashApp({ darkTheme = false }) {
         } else {
             setFiles([]);
             setConfirming(false);
-            localStorage.setItem('pdos_trash', '[]');
+            setJSON(STORAGE_KEYS.TRASH, []);
         }
     };
 

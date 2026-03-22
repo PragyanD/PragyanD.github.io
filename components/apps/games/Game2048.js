@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { get, set, STORAGE_KEYS } from '../../../lib/storage';
 
 function slideRow(row) {
     const cells = row.filter(Boolean);
@@ -94,7 +95,7 @@ export default function Game2048({ darkTheme, onAchievement }) {
     const [board, setBoard] = useState(initBoard);
     const [score, setScore] = useState(0);
     const [best,  setBest]  = useState(() => {
-        try { return parseInt(localStorage.getItem('pdos_2048_best') || '0'); } catch { return 0; }
+        return parseInt(get(STORAGE_KEYS.BEST_2048, '0'));
     });
     const [won, setWon] = useState(false);
     const [lost, setLost] = useState(false);
@@ -108,7 +109,7 @@ export default function Game2048({ darkTheme, onAchievement }) {
         if (score <= 0) return;
         setBest(b => {
             if (score > b) {
-                try { localStorage.setItem('pdos_2048_best', String(score)); } catch {}
+                set(STORAGE_KEYS.BEST_2048, String(score));
                 return score;
             }
             return b;

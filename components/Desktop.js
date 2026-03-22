@@ -8,6 +8,7 @@ import ErrorBoundary from "./ErrorBoundary";
 import { APPS_CONFIG, renderWindowIcon, renderDesktopIcon } from "../lib/apps.config";
 import useWindowManager from "../hooks/useWindowManager";
 import useAudio from "../hooks/useAudio";
+import { get, set, getJSON, setJSON, STORAGE_KEYS } from "../lib/storage";
 import Toast from "./Toast";
 import SystemWidget from "./SystemWidget";
 import { NotificationProvider, useNotifications } from "../contexts/NotificationContext";
@@ -48,8 +49,7 @@ const WALLPAPERS = [
 ];
 
 function getCachedAvifSupport() {
-    if (typeof window === 'undefined') return false;
-    const cached = localStorage.getItem('pdos_avif_support');
+    const cached = get(STORAGE_KEYS.AVIF_SUPPORT);
     if (cached !== null) return cached === 'true';
     return null;
 }
@@ -79,18 +79,12 @@ function DesktopInner({ onRestart }) {
     const [spotlightOpen, setSpotlightOpen] = useState(false);
     const [showSpotlightTip, setShowSpotlightTip] = useState(false);
     const [wallpaper, setWallpaper] = useState(() => {
-        if (typeof window !== 'undefined') {
-            return localStorage.getItem('pdos_wallpaper') || 'default';
-        }
-        return 'default';
+        return get(STORAGE_KEYS.WALLPAPER, 'default');
     });
     const [wallpaperPickerOpen, setWallpaperPickerOpen] = useState(false);
     const [displaySettingsOpen, setDisplaySettingsOpen] = useState(false);
     const [darkTheme, setDarkTheme] = useState(() => {
-        if (typeof window !== 'undefined') {
-            return localStorage.getItem('pdos_dark_theme') === 'true';
-        }
-        return false;
+        return get(STORAGE_KEYS.DARK_THEME) === 'true';
     });
     const [supportsAvif, setSupportsAvif] = useState(getCachedAvifSupport);
     const rafRef = useRef(null);
@@ -111,7 +105,7 @@ function DesktopInner({ onRestart }) {
         if (supportsAvif === null) {
             detectAvifSupport().then((supported) => {
                 setSupportsAvif(supported);
-                localStorage.setItem('pdos_avif_support', String(supported));
+                set(STORAGE_KEYS.AVIF_SUPPORT, String(supported));
             });
         }
     }, []);
@@ -134,8 +128,7 @@ function DesktopInner({ onRestart }) {
 
     // Track opened apps for explorer achievement
     const openedAppsRef = useRef(() => {
-        try { return new Set(JSON.parse(localStorage.getItem('pdos_opened_apps') || '[]')); }
-        catch { return new Set(); }
+        return new Set(getJSON(STORAGE_KEYS.OPENED_APPS, []));
     });
     // Initialize on mount
     useEffect(() => {
@@ -169,7 +162,7 @@ function DesktopInner({ onRestart }) {
         // Track for explorer achievement
         if (typeof openedAppsRef.current !== 'function') {
             openedAppsRef.current.add(appId);
-            localStorage.setItem('pdos_opened_apps', JSON.stringify([...openedAppsRef.current]));
+            setJSON(STORAGE_KEYS.OPENED_APPS, [...openedAppsRef.current]);
             const allAppIds = APPS_CONFIG.map(a => a.id);
             if (allAppIds.every(id => openedAppsRef.current.has(id))) {
                 unlock('explorer');
@@ -215,14 +208,14 @@ function DesktopInner({ onRestart }) {
     focusOrderRef.current = focusOrder;
 
     useEffect(() => {
-        const hasSeenTip = localStorage.getItem('spotlight_tip_seen');
+        const hasSeenTip = get(STORAGE_KEYS.SPOTLIGHT_TIP_SEEN);
         if (!hasSeenTip) {
             let innerTimer;
             const outerTimer = setTimeout(() => {
                 setShowSpotlightTip(true);
                 innerTimer = setTimeout(() => {
                     setShowSpotlightTip(false);
-                    localStorage.setItem('spotlight_tip_seen', 'true');
+                    set(STORAGE_KEYS.SPOTLIGHT_TIP_SEEN, 'true');
                 }, 8000);
             }, 3000);
             return () => {
@@ -562,7 +555,7 @@ function DesktopInner({ onRestart }) {
                                     key={w.id}
                                     onClick={() => {
                                         setWallpaper(w.id);
-                                        localStorage.setItem('pdos_wallpaper', w.id);
+                                        set(STORAGE_KEYS.WALLPAPER, w.id);
                                         setWallpaperPickerOpen(false);
                                         addToast(`Wallpaper changed to ${w.label}`, 'success');
                                         unlock('wallpaper');
@@ -610,7 +603,7 @@ function DesktopInner({ onRestart }) {
                                 onClick={() => {
                                     const next = !darkTheme;
                                     setDarkTheme(next);
-                                    localStorage.setItem('pdos_dark_theme', String(next));
+                                    set(STORAGE_KEYS.DARK_THEME, String(next));
                                     addToast(`Dark theme ${next ? 'enabled' : 'disabled'}`, 'success');
                                     unlock('night_owl');
                                 }}
