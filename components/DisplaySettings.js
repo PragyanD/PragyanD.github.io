@@ -7,9 +7,27 @@ export default function DisplaySettings({ open, onClose, darkTheme, onToggleDark
             onClick={onClose}
         >
             <div
+                role="dialog"
+                aria-modal="true"
+                aria-label="Display Settings"
                 className="rounded-2xl p-6 shadow-2xl border border-white/10"
                 style={{ background: "rgba(18,18,30,0.95)", backdropFilter: "blur(40px)", width: 300 }}
                 onClick={e => e.stopPropagation()}
+                ref={(node) => {
+                    if (!node) return;
+                    const focusables = node.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+                    if (focusables.length) focusables[0].focus();
+                    node.onkeydown = (e) => {
+                        if (e.key !== 'Tab') return;
+                        const first = focusables[0];
+                        const last = focusables[focusables.length - 1];
+                        if (e.shiftKey) {
+                            if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+                        } else {
+                            if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+                        }
+                    };
+                }}
             >
                 <p className="text-xs font-semibold uppercase tracking-widest mb-5" style={{ color: "rgba(255,255,255,0.4)" }}>Display Settings</p>
 

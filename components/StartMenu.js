@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import profilePic from "../public/profilePic.jpg";
 import { APPS_CONFIG, renderWindowIcon } from "../lib/apps.config";
@@ -20,6 +20,31 @@ const LINKS = [
 ];
 
 export default function StartMenu({ open, onClose, onOpenApp, onRestart }) {
+    const panelRef = useRef(null);
+
+    useEffect(() => {
+        if (!open || !panelRef.current) return;
+        const node = panelRef.current;
+        const focusables = node.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+        if (focusables.length) focusables[0].focus();
+
+        const handleKeyDown = (e) => {
+            if (e.key !== 'Tab') return;
+            const updatedFocusables = node.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+            if (!updatedFocusables.length) return;
+            const first = updatedFocusables[0];
+            const last = updatedFocusables[updatedFocusables.length - 1];
+            if (e.shiftKey) {
+                if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+            } else {
+                if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+            }
+        };
+
+        node.addEventListener('keydown', handleKeyDown);
+        return () => node.removeEventListener('keydown', handleKeyDown);
+    }, [open]);
+
     if (!open) return null;
 
     return (
@@ -29,6 +54,10 @@ export default function StartMenu({ open, onClose, onOpenApp, onRestart }) {
 
             {/* Menu Panel */}
             <div
+                ref={panelRef}
+                role="dialog"
+                aria-modal="true"
+                aria-label="Start Menu"
                 className="start-menu-open fixed z-50 flex overflow-hidden"
                 style={{
                     bottom: 48,
