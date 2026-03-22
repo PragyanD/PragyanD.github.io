@@ -114,6 +114,18 @@ export default function ProjectsApp({ darkTheme = false }) {
         pillBg: "rgba(255,255,255,0.08)",
         pillText: "rgba(255,255,255,0.6)",
         pillBorder: "rgba(255,255,255,0.12)",
+        linkBorder: "rgba(255,255,255,0.15)",
+        linkBorderHover: "rgba(255,255,255,0.35)",
+        linkText: "rgba(255,255,255,0.7)",
+        sectionTitle: "rgba(255,255,255,0.5)",
+        repoBg: "rgba(255,255,255,0.03)",
+        repoBorder: "rgba(255,255,255,0.08)",
+        repoBorderHover: "rgba(255,255,255,0.18)",
+        repoName: "rgba(255,255,255,0.9)",
+        repoDesc: "rgba(255,255,255,0.5)",
+        repoLang: "rgba(255,255,255,0.35)",
+        viewAllLink: "#60a5fa",
+        viewAllLinkHover: "#93c5fd",
     } : {
         containerBg: "#f7f8fb",
         cardBg: "#fff",
@@ -125,6 +137,18 @@ export default function ProjectsApp({ darkTheme = false }) {
         pillBg: "#f0f0f0",
         pillText: "#555",
         pillBorder: "#e0e0e0",
+        linkBorder: "#ccc",
+        linkBorderHover: "#999",
+        linkText: "#555",
+        sectionTitle: "#888",
+        repoBg: "#f5f5f5",
+        repoBorder: "#e0e0e0",
+        repoBorderHover: "#ccc",
+        repoName: "#111",
+        repoDesc: "#666",
+        repoLang: "#999",
+        viewAllLink: "#2563eb",
+        viewAllLinkHover: "#1d4ed8",
     };
 
     return (
@@ -217,15 +241,16 @@ export default function ProjectsApp({ darkTheme = false }) {
                                 {project.github && (
                                     <a href={project.github} target="_blank" rel="noopener noreferrer"
                                        className="text-xs px-2 py-1 rounded-lg transition-colors"
-                                       style={{ border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.7)' }}
-                                       onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.35)'}
-                                       onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)'}>
+                                       style={{ border: `1px solid ${t.linkBorder}`, color: t.linkText }}
+                                       onMouseEnter={e => e.currentTarget.style.borderColor = t.linkBorderHover}
+                                       onMouseLeave={e => e.currentTarget.style.borderColor = t.linkBorder}>
                                         GitHub →
                                     </a>
                                 )}
                                 {project.demo && (
                                     <a href={project.demo} target="_blank" rel="noopener noreferrer"
-                                       className="text-xs px-2 py-1 rounded-lg text-white bg-blue-600/80 hover:bg-blue-600 transition-colors">
+                                       className="text-xs px-2 py-1 rounded-lg transition-colors"
+                                       style={{ background: 'rgba(37,99,235,0.8)', color: '#fff' }}>
                                         Live Demo →
                                     </a>
                                 )}
@@ -237,7 +262,7 @@ export default function ProjectsApp({ darkTheme = false }) {
 
             {/* GitHub Repositories */}
             <div className="mt-6 px-0 pb-4">
-                <h3 className="text-xs font-semibold text-white/50 uppercase tracking-widest mb-3">On GitHub</h3>
+                <h3 className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: t.sectionTitle }}>On GitHub</h3>
                 <div className="grid grid-cols-2 gap-2">
                     {[
                         { name: 'PragyanD.github.io', desc: 'This portfolio — desktop OS built with Next.js & React', lang: 'JavaScript' },
@@ -249,13 +274,13 @@ export default function ProjectsApp({ darkTheme = false }) {
                             target="_blank"
                             rel="noopener noreferrer"
                             className="p-3 rounded-xl transition-colors"
-                            style={{ border: '1px solid rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.03)' }}
-                            onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.18)'}
-                            onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'}
+                            style={{ border: `1px solid ${t.repoBorder}`, background: t.repoBg }}
+                            onMouseEnter={e => e.currentTarget.style.borderColor = t.repoBorderHover}
+                            onMouseLeave={e => e.currentTarget.style.borderColor = t.repoBorder}
                         >
-                            <p className="text-xs font-semibold text-white/90 truncate">{repo.name}</p>
-                            <p className="text-xs text-white/50 mt-1 leading-tight line-clamp-2">{repo.desc}</p>
-                            <p className="text-xs text-white/35 mt-2">● {repo.lang}</p>
+                            <p className="text-xs font-semibold truncate" style={{ color: t.repoName }}>{repo.name}</p>
+                            <p className="text-xs mt-1 leading-tight line-clamp-2" style={{ color: t.repoDesc }}>{repo.desc}</p>
+                            <p className="text-xs mt-2" style={{ color: t.repoLang }}>● {repo.lang}</p>
                         </a>
                     ))}
                 </div>
@@ -263,7 +288,10 @@ export default function ProjectsApp({ darkTheme = false }) {
                     href="https://github.com/PragyanD"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block mt-3 text-center text-xs text-blue-400 hover:text-blue-300 transition-colors"
+                    className="block mt-3 text-center text-xs transition-colors"
+                    style={{ color: t.viewAllLink }}
+                    onMouseEnter={e => e.currentTarget.style.color = t.viewAllLinkHover}
+                    onMouseLeave={e => e.currentTarget.style.color = t.viewAllLink}
                 >
                     View all repositories →
                 </a>
