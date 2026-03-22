@@ -247,6 +247,9 @@ function Window({
 
     return (
         <div
+            role="dialog"
+            aria-label={title}
+            tabIndex={-1}
             className={`${openClass} fixed flex flex-col overflow-hidden select-none${animClass ? ` ${animClass}` : ""}`.trim()}
             style={{
                 ...style,
