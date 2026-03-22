@@ -75,6 +75,12 @@ export default function DesktopIcon({ icon, label, onDoubleClick, style }) {
         <button
             ref={buttonRef}
             onMouseDown={handleMouseDown}
+            onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    onDoubleClick?.();
+                }
+            }}
             onDragStart={(e) => e.preventDefault()}
             className="flex flex-col items-center gap-1.5 p-2 rounded-lg transition-all group focus:outline-none"
             style={{
