@@ -75,6 +75,10 @@ export default function Home() {
         <link rel="canonical" href="https://pragyand.github.io" />
         <link rel="icon" href="/favicon.png" />
 
+        {/* Preload default wallpaper so it's ready after boot */}
+        <link rel="preload" as="image" href="/wallpaper_bliss.avif" type="image/avif" />
+        <link rel="preload" as="image" href="/wallpaper_bliss.jpg" />
+
         {/* Open Graph */}
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://pragyand.github.io" />
