@@ -13,6 +13,7 @@ import SystemWidget from "./SystemWidget";
 import { NotificationProvider, useNotifications } from "../contexts/NotificationContext";
 import { AchievementProvider, useAchievements } from "../contexts/AchievementContext";
 import NotificationCenter from "./NotificationCenter";
+import { PopupMenu, MenuItem, MenuDivider } from "./ui/PopupMenu";
 
 const APPS = Object.fromEntries(
     APPS_CONFIG.map(app => [app.id, {
@@ -336,61 +337,43 @@ function DesktopInner({ onRestart }) {
             onClick={() => { closeContextMenu(); setWallpaperPickerOpen(false); }}
         >
             {/* Context Menu */}
-            {contextMenu.visible && (
-                <div
-                    role="menu"
-                    className="fixed z-[100] flex flex-col p-1.5 rounded-xl shadow-2xl transition-all font-mono"
-                    style={{
-                        left: contextMenu.x,
-                        top: contextMenu.y,
-                        width: 180,
-                        background: "rgba(30, 30, 40, 0.6)",
-                        backdropFilter: "blur(40px)",
-                        border: "1px solid rgba(255,255,255,0.15)",
-                        boxShadow: "0 10px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.2)",
-                    }}
-                    onContextMenu={(e) => e.preventDefault()}
-                    onKeyDown={(e) => {
-                        const items = e.currentTarget.querySelectorAll('[role="menuitem"]');
-                        const idx = Array.from(items).indexOf(document.activeElement);
-                        if (e.key === 'ArrowDown') {
-                            e.preventDefault();
-                            items[(idx + 1) % items.length]?.focus();
-                        } else if (e.key === 'ArrowUp') {
-                            e.preventDefault();
-                            items[(idx - 1 + items.length) % items.length]?.focus();
-                        } else if (e.key === 'Escape') {
-                            setContextMenu(prev => ({ ...prev, visible: false }));
-                        }
-                    }}
-                >
-                    <button role="menuitem" onClick={() => window.location.reload()} className="text-left px-3 py-1.5 text-xs text-white hover:bg-white/10 rounded-lg transition-colors">
-                        Refresh Desktop
-                    </button>
-                    <div className="h-px my-1.5 mx-2" style={{ background: "linear-gradient(to right, transparent, rgba(255,255,255,0.18), transparent)" }} />
-                    <button role="menuitem" onClick={() => openApp("about")} className="text-left px-3 py-1.5 text-xs text-white hover:bg-white/10 rounded-lg transition-colors">
-                        About PDOS
-                    </button>
-                    <button role="menuitem" onClick={() => window.open('https://github.com/PragyanD', '_blank')} className="text-left px-3 py-1.5 text-xs text-white hover:bg-white/10 rounded-lg transition-colors">
-                        View GitHub
-                    </button>
-                    <div className="h-px my-1.5 mx-2" style={{ background: "linear-gradient(to right, transparent, rgba(255,255,255,0.18), transparent)" }} />
-                    <button
-                        role="menuitem"
-                        onClick={(e) => { e.stopPropagation(); setWallpaperPickerOpen(true); setContextMenu({ visible: false, x: 0, y: 0 }); }}
-                        className="text-left px-3 py-1.5 text-xs text-white hover:bg-white/10 rounded-lg transition-colors"
-                    >
-                        Change Wallpaper
-                    </button>
-                    <button
-                        role="menuitem"
-                        onClick={(e) => { e.stopPropagation(); setDisplaySettingsOpen(true); setContextMenu({ visible: false, x: 0, y: 0 }); }}
-                        className="text-left px-3 py-1.5 text-xs text-white hover:bg-white/10 rounded-lg transition-colors"
-                    >
-                        Display Settings
-                    </button>
-                </div>
-            )}
+            <PopupMenu
+                visible={contextMenu.visible}
+                x={contextMenu.x}
+                y={contextMenu.y}
+                onClose={closeContextMenu}
+                onKeyDown={(e) => {
+                    const items = e.currentTarget.querySelectorAll('[role="menuitem"]');
+                    const idx = Array.from(items).indexOf(document.activeElement);
+                    if (e.key === 'ArrowDown') {
+                        e.preventDefault();
+                        items[(idx + 1) % items.length]?.focus();
+                    } else if (e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        items[(idx - 1 + items.length) % items.length]?.focus();
+                    } else if (e.key === 'Escape') {
+                        setContextMenu(prev => ({ ...prev, visible: false }));
+                    }
+                }}
+            >
+                <MenuItem onClick={() => window.location.reload()}>
+                    Refresh Desktop
+                </MenuItem>
+                <MenuDivider />
+                <MenuItem onClick={() => openApp("about")}>
+                    About PDOS
+                </MenuItem>
+                <MenuItem onClick={() => window.open('https://github.com/PragyanD', '_blank')}>
+                    View GitHub
+                </MenuItem>
+                <MenuDivider />
+                <MenuItem onClick={(e) => { e.stopPropagation(); setWallpaperPickerOpen(true); setContextMenu({ visible: false, x: 0, y: 0 }); }}>
+                    Change Wallpaper
+                </MenuItem>
+                <MenuItem onClick={(e) => { e.stopPropagation(); setDisplaySettingsOpen(true); setContextMenu({ visible: false, x: 0, y: 0 }); }}>
+                    Display Settings
+                </MenuItem>
+            </PopupMenu>
 
             {/* Subtle dark overlay */}
             <div

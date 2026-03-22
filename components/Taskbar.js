@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import Image from "next/image";
 import favicon from "../public/favicon.png";
 import { APPS_CONFIG, renderWindowIcon } from "../lib/apps.config";
+import { PopupMenu, MenuItem, MenuDivider } from "./ui/PopupMenu";
 
 const APP_META = Object.fromEntries(
     APPS_CONFIG.map(app => [app.id, { icon: renderWindowIcon(app), label: app.label }])
@@ -445,63 +446,46 @@ export default function Taskbar({
 
         {/* Pill right-click context menu */}
         {pillMenu && typeof document !== 'undefined' && createPortal(
-            <div
+            <PopupMenu
                 ref={pillMenuRef}
-                role="menu"
-                className="fixed flex flex-col p-1 rounded-xl shadow-2xl"
-                style={{
-                    left: Math.min(pillMenu.x, window.innerWidth - 164),
-                    bottom: 52,
-                    width: 156,
-                    zIndex: 9999,
-                    background: "rgba(18,18,30,0.96)",
-                    backdropFilter: "blur(40px)",
-                    border: "1px solid rgba(255,255,255,0.12)",
-                    boxShadow: "0 -4px 24px rgba(0,0,0,0.6), 0 8px 32px rgba(0,0,0,0.4)",
-                }}
-                onContextMenu={e => e.preventDefault()}
-                onMouseDown={e => e.stopPropagation()}
+                visible={true}
+                x={Math.min(pillMenu.x, window.innerWidth - 164)}
+                width={156}
+                onClose={() => setPillMenu(null)}
+                style={{ top: 'auto', bottom: 52 }}
             >
                 {minimizedWindows.includes(pillMenu.appId) ? (
-                    <button role="menuitem" className="text-left px-3 py-1.5 text-xs text-white/80 hover:bg-white/10 rounded-lg transition-colors w-full"
-                        onClick={() => { onRestoreWindow(pillMenu.appId); setPillMenu(null); }}>
+                    <MenuItem onClick={() => { onRestoreWindow(pillMenu.appId); setPillMenu(null); }}>
                         Restore
-                    </button>
+                    </MenuItem>
                 ) : (
-                    <button role="menuitem" className="text-left px-3 py-1.5 text-xs text-white/80 hover:bg-white/10 rounded-lg transition-colors w-full"
-                        onClick={() => { onMinimizeApp(pillMenu.appId); setPillMenu(null); }}>
+                    <MenuItem onClick={() => { onMinimizeApp(pillMenu.appId); setPillMenu(null); }}>
                         Minimize
-                    </button>
+                    </MenuItem>
                 )}
                 {!minimizedWindows.includes(pillMenu.appId) && (
                     maximizedWindows?.has(pillMenu.appId) ? (
-                        <button role="menuitem" className="text-left px-3 py-1.5 text-xs text-white/80 hover:bg-white/10 rounded-lg transition-colors w-full"
-                            onClick={() => { onMaximizeApp(pillMenu.appId); setPillMenu(null); }}>
+                        <MenuItem onClick={() => { onMaximizeApp(pillMenu.appId); setPillMenu(null); }}>
                             Restore Down
-                        </button>
+                        </MenuItem>
                     ) : (
-                        <button role="menuitem" className="text-left px-3 py-1.5 text-xs text-white/80 hover:bg-white/10 rounded-lg transition-colors w-full"
-                            onClick={() => { onMaximizeApp(pillMenu.appId); setPillMenu(null); }}>
+                        <MenuItem onClick={() => { onMaximizeApp(pillMenu.appId); setPillMenu(null); }}>
                             Maximize
-                        </button>
+                        </MenuItem>
                     )
                 )}
-                <div className="h-px my-1 mx-2 bg-white/10" />
-                <button role="menuitem" className="text-left px-3 py-1.5 text-xs text-white/80 hover:bg-white/10 rounded-lg transition-colors w-full"
-                    onClick={() => { onBringToFront(pillMenu.appId); setPillMenu(null); }}>
+                <MenuDivider />
+                <MenuItem onClick={() => { onBringToFront(pillMenu.appId); setPillMenu(null); }}>
                     Bring to Front
-                </button>
-                <button role="menuitem" className="text-left px-3 py-1.5 text-xs text-white/80 hover:bg-white/10 rounded-lg transition-colors w-full"
-                    onClick={() => { onSendToBack(pillMenu.appId); setPillMenu(null); }}>
+                </MenuItem>
+                <MenuItem onClick={() => { onSendToBack(pillMenu.appId); setPillMenu(null); }}>
                     Send to Back
-                </button>
-                <div className="h-px my-1 mx-2 bg-white/10" />
-                <button role="menuitem" className="text-left px-3 py-1.5 text-xs hover:bg-white/10 rounded-lg transition-colors w-full"
-                    style={{ color: '#ff453a' }}
-                    onClick={() => { onCloseApp(pillMenu.appId); setPillMenu(null); }}>
+                </MenuItem>
+                <MenuDivider />
+                <MenuItem danger onClick={() => { onCloseApp(pillMenu.appId); setPillMenu(null); }}>
                     Close
-                </button>
-            </div>,
+                </MenuItem>
+            </PopupMenu>,
             document.body
         )}
         </>
