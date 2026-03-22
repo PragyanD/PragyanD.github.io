@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import Head from "next/head";
 import Desktop from "../components/Desktop";
 import BootSequence from "../components/BootSequence";
+import MobileLayout from "../components/MobileLayout";
 
 export default function Home() {
   const [booting, setBooting] = useState(true);
@@ -40,27 +41,12 @@ export default function Home() {
 
   if (isMobile) {
     return (
-      <div className="fixed inset-0 flex flex-col items-center justify-center bg-[#0a0a1e] text-white p-8 text-center">
-        <div className="text-4xl mb-6">💻</div>
-        <h1 className="text-xl font-semibold mb-3">PDOS works best on desktop</h1>
-        <p className="text-sm text-white/60 mb-6 max-w-xs">
-          This portfolio is a full desktop OS experience. Please visit on a larger screen for the full experience.
-        </p>
-        <div className="flex flex-col gap-3 w-full max-w-xs">
-          <a href="/Pragyans_Resume.pdf" target="_blank" rel="noopener noreferrer"
-             className="py-3 px-6 rounded-xl bg-blue-600 text-white text-sm font-medium text-center hover:bg-blue-700 transition-colors">
-            View Resume
-          </a>
-          <a href="https://github.com/PragyanD" target="_blank" rel="noopener noreferrer"
-             className="py-3 px-6 rounded-xl border border-white/20 text-white/80 text-sm font-medium text-center hover:bg-white/5 transition-colors">
-            GitHub Profile
-          </a>
-          <a href="mailto:pragyan0506@gmail.com"
-             className="py-3 px-6 rounded-xl border border-white/20 text-white/80 text-sm font-medium text-center hover:bg-white/5 transition-colors">
-            Get In Touch
-          </a>
-        </div>
-      </div>
+      <>
+        <Head>
+          <title>Pragyan Das — Software Engineer</title>
+        </Head>
+        <MobileLayout />
+      </>
     );
   }
 
