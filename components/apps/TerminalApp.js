@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAchievements } from '../../contexts/AchievementContext';
+import { getResponse } from '../../lib/chatbot';
 
 const COMMANDS = [
-    'cat', 'cd', 'clear', 'curl', 'date', 'echo', 'git', 'hack', 'help',
+    'ask', 'cat', 'cd', 'chat', 'clear', 'curl', 'date', 'echo', 'git', 'hack', 'help',
     'history', 'ls', 'make', 'neofetch', 'npm', 'python', 'python3',
     'pwd', 'rm', 'sudo', 'uname', 'whoami', 'win',
 ];
@@ -63,8 +64,14 @@ export default function TerminalApp() {
 
         switch (base) {
             case 'help':
-                output = 'Available commands:\n  ls · pwd · cat · cd · echo · date · uname\n  whoami · neofetch · history · clear\n  git · npm · rm · curl · python\n  sudo · win · hack · make';
+                output = 'Available commands:\n  ls · pwd · cat · cd · echo · date · uname\n  whoami · neofetch · history · clear\n  git · npm · rm · curl · python\n  sudo · win · hack · make\n  ask <question> · chat <question>  — portfolio chatbot';
                 break;
+            case 'ask':
+            case 'chat': {
+                const question = args.join(' ');
+                output = getResponse(question);
+                break;
+            }
             case 'ls':
                 output = Object.keys(FILES).join('  ');
                 break;
