@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 
 const BOOT_LOG = [
     { text: 'BIOS Version 2.0.26 - Pragyan Labs', delay: 200 },
@@ -18,6 +18,27 @@ export default function BootSequence({ onComplete }) {
     const [lines, setLines] = useState([]);
     const [progress, setProgress] = useState(0);
     const [phase, setPhase] = useState('bios');
+    const [showSkipHint, setShowSkipHint] = useState(false);
+    const containerRef = useRef(null);
+    const skippedRef = useRef(false);
+
+    const handleSkip = useCallback(() => {
+        if (!skippedRef.current) {
+            skippedRef.current = true;
+            onComplete();
+        }
+    }, [onComplete]);
+
+    // Auto-focus the container so keyboard events work immediately
+    useEffect(() => {
+        containerRef.current?.focus();
+    }, []);
+
+    // Show the skip hint after 1.5 seconds
+    useEffect(() => {
+        const timer = setTimeout(() => setShowSkipHint(true), 1500);
+        return () => clearTimeout(timer);
+    }, []);
 
     useEffect(() => {
         let cancelled = false;
@@ -64,7 +85,15 @@ export default function BootSequence({ onComplete }) {
     }, [phase, onComplete]);
 
     return (
-        <div className="fixed inset-0 z-[1000] bg-black text-[#00ff41] font-mono p-10 flex flex-col items-start justify-start select-none cursor-none">
+        <div
+            ref={containerRef}
+            tabIndex={0}
+            role="region"
+            aria-label="Boot sequence — press any key to skip"
+            onClick={handleSkip}
+            onKeyDown={handleSkip}
+            className="fixed inset-0 z-[1000] bg-black text-[#00ff41] font-mono p-10 flex flex-col items-start justify-start select-none cursor-none outline-none"
+        >
             {/* CRT scanlines */}
             <div className="absolute inset-0 pointer-events-none z-10" style={{
                 background: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px)",
@@ -92,7 +121,14 @@ export default function BootSequence({ onComplete }) {
                         <span className="font-light">OS</span>
                     </div>
 
-                    <div className="w-64 h-2 bg-white/5 rounded-full overflow-hidden border border-white/10 p-[1px]">
+                    <div
+                        className="w-64 h-2 bg-white/5 rounded-full overflow-hidden border border-white/10 p-[1px]"
+                        role="progressbar"
+                        aria-valuenow={progress}
+                        aria-valuemin={0}
+                        aria-valuemax={100}
+                        aria-label="Boot progress"
+                    >
                         <div
                             className="h-full bg-gradient-to-r from-blue-600 via-blue-400 to-blue-600 transition-all duration-100 ease-linear rounded-full shadow-[0_0_15px_rgba(59,130,246,0.5)]"
                             style={{ width: `${progress}%` }}
@@ -102,6 +138,13 @@ export default function BootSequence({ onComplete }) {
                     <div className="mt-6 text-xs text-white/30 uppercase tracking-widest font-light">
                         Kernel v2.0.26-release
                     </div>
+                </div>
+            )}
+
+            {/* Skip hint */}
+            {showSkipHint && (
+                <div className="absolute bottom-8 left-0 right-0 text-center text-xs text-white/20 tracking-widest uppercase transition-opacity duration-700 animate-pulse">
+                    Press any key or click to skip
                 </div>
             )}
         </div>
