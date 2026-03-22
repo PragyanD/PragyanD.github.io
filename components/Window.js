@@ -52,8 +52,13 @@ function Window({
     const posRef = useRef(pos);
     const sizeRef = useRef(size);
 
+    const [snapped, setSnapped] = useState(false); // 'left' | 'right' | false
+    const [snapPreview, setSnapPreview] = useState(null); // 'left' | 'right' | null
+    const snappedRef = useRef(false);
+
     useEffect(() => { posRef.current = pos; }, [pos]);
     useEffect(() => { sizeRef.current = size; }, [size]);
+    useEffect(() => { snappedRef.current = snapped; }, [snapped]);
 
     const prevMaximizedRef = useRef(maximized);
     useEffect(() => {
@@ -76,6 +81,61 @@ function Window({
         offset.current = { x: e.clientX - posRef.current.x, y: e.clientY - posRef.current.y };
         onFocus?.(id);
         e.preventDefault();
+
+        const onDragMove = (ev) => {
+            // If dragged away from snapped state, restore original size and calculate new relative pos
+            if (snappedRef.current) {
+                setSnapped(false);
+                // Prevent jumping: set the mouse offset to center of the restored window title bar
+                offset.current = { x: sizeRef.current.w / 2, y: 20 };
+            }
+
+            const TASKBAR = 48;
+            let newX = ev.clientX - offset.current.x;
+            let newY = Math.max(0, Math.min(window.innerHeight - TASKBAR - 40, ev.clientY - offset.current.y));
+
+            // Snap preview
+            if (ev.clientX <= 20) {
+                setSnapPreview('left');
+            } else if (ev.clientX >= window.innerWidth - 20) {
+                setSnapPreview('right');
+            } else {
+                setSnapPreview(null);
+            }
+
+            // Snap logic
+            if (ev.clientX <= 20) {
+                setSnapped('left');
+                prevState.current = { pos: { x: newX, y: newY }, size: { ...sizeRef.current } };
+                setPos({ x: 0, y: 0 });
+            } else if (ev.clientX >= window.innerWidth - 20) {
+                setSnapped('right');
+                prevState.current = { pos: { x: newX, y: newY }, size: { ...sizeRef.current } };
+                setPos({ x: window.innerWidth / 2, y: 0 });
+            } else {
+                setPos({
+                    x: Math.max(0, Math.min(window.innerWidth - sizeRef.current.w, newX)),
+                    y: newY,
+                });
+            }
+        };
+
+        const onDragUp = () => {
+            try {
+                localStorage.setItem(
+                    `window_state_${id}`,
+                    JSON.stringify({ pos: posRef.current, size: sizeRef.current })
+                );
+            } catch (_) { /* ignore */ }
+            dragging.current = false;
+            setIsDragging(false);
+            setSnapPreview(null);
+            window.removeEventListener("mousemove", onDragMove);
+            window.removeEventListener("mouseup", onDragUp);
+        };
+
+        window.addEventListener("mousemove", onDragMove);
+        window.addEventListener("mouseup", onDragUp);
     }, [maximized, id, onFocus]);
 
     const onMouseDownResize = useCallback((e, dir) => {
@@ -92,106 +152,56 @@ function Window({
         onFocus?.(id);
         e.preventDefault();
         e.stopPropagation();
-    }, [maximized, id, onFocus]);
 
-    const [snapped, setSnapped] = useState(false); // 'left' | 'right' | false
-    const [snapPreview, setSnapPreview] = useState(null); // 'left' | 'right' | null
+        const onResizeMove = (ev) => {
+            if (snappedRef.current) setSnapped(false);
+            const deltaX = ev.clientX - offset.current.startX;
+            const deltaY = ev.clientY - offset.current.startY;
 
-    useEffect(() => {
-        const onMouseMove = (e) => {
-            if (dragging.current) {
-                // If dragged away from snapped state, restore original size and calculate new relative pos
-                if (snapped) {
-                    setSnapped(false);
-                    // Prevent jumping: set the mouse offset to center of the restored window title bar
-                    offset.current = { x: size.w / 2, y: 20 };
-                }
+            let newW = offset.current.startW;
+            let newH = offset.current.startH;
+            let newX = offset.current.startXPos;
+            let newY = offset.current.startYPos;
 
-                const TASKBAR = 48;
-                let newX = e.clientX - offset.current.x;
-                let newY = Math.max(0, Math.min(window.innerHeight - TASKBAR - 40, e.clientY - offset.current.y));
-
-                // Snap preview
-                if (e.clientX <= 20) {
-                    setSnapPreview('left');
-                } else if (e.clientX >= window.innerWidth - 20) {
-                    setSnapPreview('right');
-                } else {
-                    setSnapPreview(null);
-                }
-
-                // Snap logic
-                if (e.clientX <= 20) {
-                    setSnapped('left');
-                    prevState.current = { pos: { x: newX, y: newY }, size: { ...size } };
-                    setPos({ x: 0, y: 0 });
-                } else if (e.clientX >= window.innerWidth - 20) {
-                    setSnapped('right');
-                    prevState.current = { pos: { x: newX, y: newY }, size: { ...size } };
-                    setPos({ x: window.innerWidth / 2, y: 0 });
-                } else {
-                    setPos({
-                        x: Math.max(0, Math.min(window.innerWidth - size.w, newX)),
-                        y: newY,
-                    });
-                }
-            } else if (resizing.current) {
-                if (snapped) setSnapped(false);
-                const dir = resizing.current;
-                const deltaX = e.clientX - offset.current.startX;
-                const deltaY = e.clientY - offset.current.startY;
-
-                let newW = offset.current.startW;
-                let newH = offset.current.startH;
-                let newX = offset.current.startXPos;
-                let newY = offset.current.startYPos;
-
-                if (dir.includes('e')) {
-                    newW = Math.max(300, offset.current.startW + deltaX);
-                }
-                if (dir.includes('s')) {
-                    newH = Math.max(200, offset.current.startH + deltaY);
-                }
-                if (dir.includes('w')) {
-                    newW = Math.max(300, offset.current.startW - deltaX);
-                    if (newW > 300) {
-                        newX = offset.current.startXPos + deltaX;
-                    }
-                }
-                if (dir.includes('n')) {
-                    newH = Math.max(200, offset.current.startH - deltaY);
-                    if (newH > 200) {
-                        newY = offset.current.startYPos + deltaY;
-                    }
-                }
-
-                setSize({ w: newW, h: newH });
-                setPos({ x: newX, y: newY });
+            if (dir.includes('e')) {
+                newW = Math.max(300, offset.current.startW + deltaX);
             }
+            if (dir.includes('s')) {
+                newH = Math.max(200, offset.current.startH + deltaY);
+            }
+            if (dir.includes('w')) {
+                newW = Math.max(300, offset.current.startW - deltaX);
+                if (newW > 300) {
+                    newX = offset.current.startXPos + deltaX;
+                }
+            }
+            if (dir.includes('n')) {
+                newH = Math.max(200, offset.current.startH - deltaY);
+                if (newH > 200) {
+                    newY = offset.current.startYPos + deltaY;
+                }
+            }
+
+            setSize({ w: newW, h: newH });
+            setPos({ x: newX, y: newY });
         };
 
-        const onMouseUp = () => {
-            if (dragging.current || resizing.current) {
-                try {
-                    localStorage.setItem(
-                        `window_state_${id}`,
-                        JSON.stringify({ pos: posRef.current, size: sizeRef.current })
-                    );
-                } catch (_) { /* ignore */ }
-            }
-            dragging.current = false;
-            setIsDragging(false);
+        const onResizeUp = () => {
+            try {
+                localStorage.setItem(
+                    `window_state_${id}`,
+                    JSON.stringify({ pos: posRef.current, size: sizeRef.current })
+                );
+            } catch (_) { /* ignore */ }
             resizing.current = false;
             setSnapPreview(null);
+            window.removeEventListener("mousemove", onResizeMove);
+            window.removeEventListener("mouseup", onResizeUp);
         };
 
-        window.addEventListener("mousemove", onMouseMove);
-        window.addEventListener("mouseup", onMouseUp);
-        return () => {
-            window.removeEventListener("mousemove", onMouseMove);
-            window.removeEventListener("mouseup", onMouseUp);
-        };
-    }, [size, snapped]);
+        window.addEventListener("mousemove", onResizeMove);
+        window.addEventListener("mouseup", onResizeUp);
+    }, [maximized, id, onFocus]);
 
     const toggleMaximize = useCallback(() => {
         if (!maximized) {
