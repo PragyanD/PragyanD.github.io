@@ -6,10 +6,11 @@ export default function NotificationCenter() {
     if (notifications.length === 0) return null;
 
     return (
-        <div className="fixed top-4 right-4 flex flex-col gap-2 z-[600] pointer-events-none" style={{ maxWidth: 340 }}>
+        <div className="fixed top-4 right-4 flex flex-col gap-2 z-[600] pointer-events-none" style={{ maxWidth: 340 }} aria-live="polite">
             {notifications.map((n) => (
                 <div
                     key={n.nid}
+                    role="status"
                     className="pointer-events-auto flex items-start gap-3 px-4 py-3 rounded-xl shadow-2xl border text-xs font-medium"
                     style={{
                         background: n.type === 'achievement'

@@ -5,7 +5,7 @@ import { memo, useEffect } from "react";
  */
 export default function Toast({ toasts, onDismiss }) {
     return (
-        <div className="fixed bottom-16 right-4 flex flex-col gap-2 z-[500] pointer-events-none">
+        <div className="fixed bottom-16 right-4 flex flex-col gap-2 z-[500] pointer-events-none" aria-live="polite">
             {toasts.map(t => (
                 <ToastItem key={t.id} toast={t} onDismiss={onDismiss} />
             ))}
@@ -21,6 +21,7 @@ const ToastItem = memo(function ToastItem({ toast, onDismiss }) {
 
     return (
         <div
+            role="status"
             className="pointer-events-auto flex items-center gap-3 px-4 py-2.5 rounded-xl shadow-2xl border border-white/10 text-xs font-medium text-white/90 animate-fadeIn"
             style={{
                 background: "rgba(18,18,30,0.92)",
