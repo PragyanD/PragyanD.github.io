@@ -9,9 +9,10 @@ export default function Support() {
         <meta name="description" content="FocusStar Support" />
       </Head>
       <style jsx global>{`
-        html, body {
+        html, body, #__next {
           overflow: auto !important;
           height: auto !important;
+          width: auto !important;
           user-select: text !important;
           -webkit-user-select: text !important;
         }

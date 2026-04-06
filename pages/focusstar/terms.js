@@ -9,9 +9,10 @@ export default function Terms() {
         <meta name="description" content="FocusStar Terms of Service" />
       </Head>
       <style jsx global>{`
-        html, body {
+        html, body, #__next {
           overflow: auto !important;
           height: auto !important;
+          width: auto !important;
           user-select: text !important;
           -webkit-user-select: text !important;
         }
