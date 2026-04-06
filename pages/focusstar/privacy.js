@@ -7,6 +7,14 @@ export default function Privacy() {
         <title>Privacy Policy — FocusStar</title>
         <meta name="description" content="FocusStar Privacy Policy" />
       </Head>
+      <style jsx global>{`
+        html, body {
+          overflow: auto !important;
+          height: auto !important;
+          user-select: text !important;
+          -webkit-user-select: text !important;
+        }
+      `}</style>
       <div style={{ maxWidth: 720, margin: "0 auto", padding: "40px 20px", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", color: "#e0e0e0", backgroundColor: "#0a0a0a", minHeight: "100vh" }}>
         <h1 style={{ fontSize: 28, marginBottom: 8 }}>Privacy Policy — FocusStar</h1>
         <p style={{ color: "#888", marginBottom: 32 }}>Last updated: April 6, 2026</p>
