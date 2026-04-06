@@ -7,6 +7,7 @@ export default function Terms() {
       <Head>
         <title>Terms of Service — FocusStar</title>
         <meta name="description" content="FocusStar Terms of Service" />
+        <link rel="icon" href="/focusstar-favicon.png" type="image/png" />
       </Head>
       <style jsx global>{`
         html, body, #__next {
@@ -125,7 +126,6 @@ export default function Terms() {
         <Section title="17. Contact">
           <p>For questions about these Terms:</p>
           <p>Email: <a href="mailto:pragyan0506@gmail.com" style={{ color: "#6cb4ff" }}>pragyan0506@gmail.com</a></p>
-          <p>GitHub: <a href="https://github.com/PragyanD" style={{ color: "#6cb4ff" }}>github.com/PragyanD</a></p>
         </Section>
 
         <p style={{ color: "#555", marginTop: 40, fontSize: 14 }}>FocusStar is built and maintained by Pragyan Das as an independent developer.</p>

@@ -7,6 +7,7 @@ export default function Support() {
       <Head>
         <title>Support — FocusStar</title>
         <meta name="description" content="FocusStar Support" />
+        <link rel="icon" href="/focusstar-favicon.png" type="image/png" />
       </Head>
       <style jsx global>{`
         html, body, #__next {

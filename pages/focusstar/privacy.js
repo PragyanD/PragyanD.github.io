@@ -6,6 +6,7 @@ export default function Privacy() {
       <Head>
         <title>Privacy Policy — FocusStar</title>
         <meta name="description" content="FocusStar Privacy Policy" />
+        <link rel="icon" href="/focusstar-favicon.png" type="image/png" />
       </Head>
       <style jsx global>{`
         html, body, #__next {
@@ -119,7 +120,6 @@ export default function Privacy() {
 
         <Section title="Contact">
           <p>Email: <a href="mailto:pragyan0506@gmail.com" style={{ color: "#6cb4ff" }}>pragyan0506@gmail.com</a></p>
-          <p>GitHub: <a href="https://github.com/PragyanD" style={{ color: "#6cb4ff" }}>github.com/PragyanD</a></p>
         </Section>
 
         <Section title="Applicable Law">
