@@ -1,4 +1,5 @@
 import Head from "next/head";
+import Link from "next/link";
 
 export default function Support() {
   return (
@@ -40,6 +41,11 @@ export default function Support() {
           </div>
 
           <div style={{ marginBottom: 20 }}>
+            <h3 style={{ fontSize: 16, color: "#fff", marginBottom: 4 }}>How do I cancel FocusStar Pro?</h3>
+            <p style={{ color: "#ccc", lineHeight: 1.7 }}>Open the Settings app on your iPhone, tap your name at the top, then tap Subscriptions. Find FocusStar and tap Cancel Subscription. You can also manage your subscription directly at <a href="https://apps.apple.com/account/subscriptions" style={{ color: "#6cb4ff" }}>Apple Subscription Management</a>. If you cancel, you keep Pro features until the end of your current billing period.</p>
+          </div>
+
+          <div style={{ marginBottom: 20 }}>
             <h3 style={{ fontSize: 16, color: "#fff", marginBottom: 4 }}>Can I export my data?</h3>
             <p style={{ color: "#ccc", lineHeight: 1.7 }}>Yes. Go to Settings and use the data export option to export your tasks, habits, and mood data.</p>
           </div>
@@ -50,7 +56,16 @@ export default function Support() {
           </div>
         </section>
 
-        <p style={{ color: "#555", marginTop: 40, fontSize: 14 }}>FocusStar is built and maintained by Pragyan Das.</p>
+        <section style={{ marginBottom: 32 }}>
+          <h2 style={{ fontSize: 20, marginBottom: 12, color: "#fff" }}>Legal</h2>
+          <p style={{ lineHeight: 1.7, color: "#ccc" }}>
+            <Link href="/focusstar/privacy" style={{ color: "#6cb4ff" }}>Privacy Policy</Link>
+            {" · "}
+            <Link href="/focusstar/terms" style={{ color: "#6cb4ff" }}>Terms of Service</Link>
+          </p>
+        </section>
+
+        <p style={{ color: "#555", marginTop: 40, fontSize: 14 }}>FocusStar is built and maintained by Pragyan Das. I typically respond to support emails within 48 hours.</p>
       </div>
     </>
   );

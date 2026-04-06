@@ -27,17 +27,18 @@ export default function Privacy() {
 
         <Section title="AI Features (Brain Dump)">
           <p>The Brain Dump feature sends the text you enter to Anthropic&apos;s Claude API (primary) or OpenAI&apos;s API (fallback) for processing. Only the text you explicitly submit is sent. No other app data — including tasks, moods, health data, or usage patterns — is included in AI requests.</p>
-          <p>AI providers process this data according to their own privacy policies:</p>
+          <p>By using the Brain Dump feature, you consent to the transfer of the text you submit to servers operated by Anthropic (USA) and/or OpenAI (USA). This constitutes a cross-border transfer of data. These providers process your data according to their own privacy policies:</p>
           <ul>
             <li><a href="https://www.anthropic.com/privacy" style={{ color: "#6cb4ff" }}>Anthropic Privacy Policy</a></li>
             <li><a href="https://openai.com/privacy" style={{ color: "#6cb4ff" }}>OpenAI Privacy Policy</a></li>
           </ul>
           <p>You can use the App without the Brain Dump feature. All other features work entirely offline.</p>
+          <p>If you encounter objectionable or inappropriate AI-generated content, please report it to <a href="mailto:pragyan0506@gmail.com" style={{ color: "#6cb4ff" }}>pragyan0506@gmail.com</a>.</p>
         </Section>
 
-        <Section title="HealthKit Data">
-          <p>If you grant permission, the App reads the following HealthKit data types: sleep analysis, exercise minutes, and heart rate variability (HRV).</p>
-          <p>This data is displayed within the App to help you understand how physical health relates to your productivity. HealthKit data is never transmitted externally, never sent to AI services, never shared with third parties, and never used for advertising or analytics. You can revoke HealthKit access at any time in iOS Settings.</p>
+        <Section title="HealthKit Data (Sensitive Personal Data)">
+          <p>If you grant permission, the App reads the following HealthKit data types: sleep analysis, exercise minutes, and heart rate variability (HRV). Under the Information Technology (SPDI) Rules, 2011, health data is classified as Sensitive Personal Data or Information.</p>
+          <p>This data is used solely to display wellness context within the App to help you understand how physical health relates to your productivity. HealthKit data is never transmitted externally, never sent to AI services, never shared with third parties, never stored in iCloud, and never used for advertising, data mining, or analytics. You can revoke HealthKit access and withdraw consent at any time in iOS Settings.</p>
         </Section>
 
         <Section title="Calendar Data">
@@ -78,17 +79,42 @@ export default function Privacy() {
           </table>
         </Section>
 
+        <Section title="Data Retention and Deletion">
+          <p>All data is stored locally on your device. You can delete all app data at any time by deleting the App or using the data reset option in Settings. No data is retained by the Developer after deletion because no data is ever transmitted to the Developer&apos;s servers.</p>
+        </Section>
+
+        <Section title="Your Privacy Rights">
+          <p>Because FocusStar does not collect, store, or transmit personal data to any server, there is no personal data held by the Developer to access, correct, or delete. HealthKit and calendar data are read locally and never transmitted.</p>
+          <p>You have the right to withdraw consent for any data processing at any time. For HealthKit and calendar data, revoke access in iOS Settings. For the Brain Dump feature, simply stop using the feature — no prior submissions are stored by the Developer.</p>
+          <p>This applies regardless of your jurisdiction, including under the Digital Personal Data Protection Act, 2023 (India), the IT (SPDI) Rules, 2011 (India), the GDPR (EU), and the CCPA (California).</p>
+        </Section>
+
+        <Section title="Tracking">
+          <p>FocusStar does not use Apple&apos;s AppTrackingTransparency framework because no cross-app or cross-site tracking occurs. The App contains no advertising SDKs, analytics trackers, or fingerprinting.</p>
+        </Section>
+
         <Section title="Children's Privacy">
-          <p>The App does not knowingly collect data from children under 13. The App does not require an account and stores all data locally.</p>
+          <p>The App is intended for users aged 13 and above. The App does not knowingly collect or transmit data from children under 13. All data is stored locally on the device.</p>
         </Section>
 
         <Section title="Changes to This Policy">
           <p>If this policy changes, the updated version will be posted at this URL with a new &ldquo;last updated&rdquo; date.</p>
         </Section>
 
+        <Section title="Grievance Officer">
+          <p>In accordance with the Information Technology (Reasonable Security Practices and Procedures and Sensitive Personal Data or Information) Rules, 2011, the Grievance Officer is:</p>
+          <p>Name: Pragyan Das</p>
+          <p>Email: <a href="mailto:pragyan0506@gmail.com" style={{ color: "#6cb4ff" }}>pragyan0506@gmail.com</a></p>
+          <p>Complaints will be acknowledged within 48 hours and resolved within one month of receipt.</p>
+        </Section>
+
         <Section title="Contact">
           <p>Email: <a href="mailto:pragyan0506@gmail.com" style={{ color: "#6cb4ff" }}>pragyan0506@gmail.com</a></p>
           <p>GitHub: <a href="https://github.com/PragyanD" style={{ color: "#6cb4ff" }}>github.com/PragyanD</a></p>
+        </Section>
+
+        <Section title="Applicable Law">
+          <p>This Privacy Policy is published in compliance with the Information Technology Act, 2000 (Section 43A), the Information Technology (Reasonable Security Practices and Procedures and Sensitive Personal Data or Information) Rules, 2011, and the Digital Personal Data Protection Act, 2023 (to the extent notified and in force).</p>
         </Section>
 
         <p style={{ color: "#555", marginTop: 40, fontSize: 14 }}>FocusStar is built and maintained by Pragyan Das as an independent developer.</p>
